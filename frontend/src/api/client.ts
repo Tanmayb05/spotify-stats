@@ -43,6 +43,9 @@ import type {
   TopTrack,
   MonthlyData,
   PlatformStat,
+  MoodSummary,
+  MoodContexts,
+  MonthlyMood,
 } from '../types/api';
 
 // API functions
@@ -76,8 +79,23 @@ export const api = {
     return response.data;
   },
 
-  // Placeholder for future phases
   // Phase 2 - Moods
+  getMoodSummary: async (window: '7d' | '30d' | '90d' | 'all' = '30d'): Promise<MoodSummary> => {
+    const response = await apiClient.get<MoodSummary>(`/api/mood/summary?window=${window}`);
+    return response.data;
+  },
+
+  getMoodContexts: async (): Promise<MoodContexts> => {
+    const response = await apiClient.get<MoodContexts>('/api/mood/contexts');
+    return response.data;
+  },
+
+  getMoodMonthly: async (): Promise<MonthlyMood[]> => {
+    const response = await apiClient.get<MonthlyMood[]>('/api/mood/monthly');
+    return response.data;
+  },
+
+  // Placeholder for future phases
   // Phase 3 - Discovery
   // Phase 4 - Milestones
   // Phase 5 - Sessions

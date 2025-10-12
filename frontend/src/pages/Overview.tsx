@@ -5,6 +5,8 @@ import {
   Paper,
   Skeleton,
   Grid,
+  Chip,
+  Slider,
 } from '@mui/material';
 import {
   MusicNote,
@@ -35,6 +37,8 @@ export default function Overview() {
   const [topTracks, setTopTracks] = useState<TopTrack[]>([]);
   const [monthlyData, setMonthlyData] = useState<MonthlyData[]>([]);
   const [platformStats, setPlatformStats] = useState<PlatformStat[]>([]);
+  const [chartRange, setChartRange] = useState<'all' | '12m' | '6m' | '3m'>('all');
+  const [sliderValue, setSliderValue] = useState<number>(0);
   const { setError } = useAppStore();
 
   useEffect(() => {
@@ -73,6 +77,31 @@ export default function Overview() {
       );
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Filter monthly data based on chart range and slider position
+  const getRangeMonths = () => {
+    if (chartRange === 'all') return monthlyData.length;
+    return parseInt(chartRange);
+  };
+
+  const getMaxSliderValue = () => {
+    const rangeMonths = getRangeMonths();
+    return Math.max(0, monthlyData.length - rangeMonths);
+  };
+
+  const filteredMonthlyData = chartRange === 'all'
+    ? monthlyData
+    : monthlyData.slice(sliderValue, sliderValue + getRangeMonths());
+
+  const handleRangeChange = (newRange: typeof chartRange) => {
+    setChartRange(newRange);
+    if (newRange === 'all') {
+      setSliderValue(0);
+    } else {
+      const rangeMonths = parseInt(newRange);
+      setSliderValue(Math.max(0, monthlyData.length - rangeMonths));
     }
   };
 
@@ -134,24 +163,100 @@ export default function Overview() {
       <Grid container spacing={{ xs: 3, lg: 5 }} direction="column">
         {/* Monthly Trends */}
         <Grid xs={12}>
-          <Paper sx={{ p: 5 }}>
-            <Typography variant="h5" gutterBottom fontWeight={700} sx={{ mb: 4 }}>
-              Monthly Listening Trends
-            </Typography>
+          <Paper sx={{
+            p: 5,
+            transition: 'all 0.3s ease-in-out',
+            '&:hover': {
+              boxShadow: '0 8px 16px rgba(0, 0, 0, 0.12)',
+            },
+          }}>
+            <Box sx={{ mb: 4 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: chartRange !== 'all' && getMaxSliderValue() > 0 ? 3 : 0 }}>
+                <Typography variant="h5" fontWeight={700}>
+                  Monthly Listening Trends
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <Chip
+                    label="All"
+                    size="small"
+                    onClick={() => handleRangeChange('all')}
+                    color={chartRange === 'all' ? 'primary' : 'default'}
+                    sx={{ cursor: 'pointer' }}
+                  />
+                  <Chip
+                    label="12M"
+                    size="small"
+                    onClick={() => handleRangeChange('12m')}
+                    color={chartRange === '12m' ? 'primary' : 'default'}
+                    sx={{ cursor: 'pointer' }}
+                  />
+                  <Chip
+                    label="6M"
+                    size="small"
+                    onClick={() => handleRangeChange('6m')}
+                    color={chartRange === '6m' ? 'primary' : 'default'}
+                    sx={{ cursor: 'pointer' }}
+                  />
+                  <Chip
+                    label="3M"
+                    size="small"
+                    onClick={() => handleRangeChange('3m')}
+                    color={chartRange === '3m' ? 'primary' : 'default'}
+                    sx={{ cursor: 'pointer' }}
+                  />
+                </Box>
+              </Box>
+
+              {/* Time Range Slider */}
+              {chartRange !== 'all' && getMaxSliderValue() > 0 && (
+                <Box sx={{ mt: 2, px: 1 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Typography variant="caption" color="text.secondary" sx={{ minWidth: 'fit-content', flexShrink: 0 }}>
+                      Time period:
+                    </Typography>
+                    <Box sx={{ flex: 1 }}>
+                      <Slider
+                        value={sliderValue}
+                        onChange={(_, value) => setSliderValue(value as number)}
+                        min={0}
+                        max={getMaxSliderValue()}
+                        step={1}
+                        marks={[
+                          { value: 0, label: monthlyData[0]?.month || '' },
+                          { value: getMaxSliderValue(), label: monthlyData[monthlyData.length - 1]?.month || '' },
+                        ]}
+                        valueLabelDisplay="auto"
+                        valueLabelFormat={(value) => {
+                          const startMonth = monthlyData[value]?.month || '';
+                          const endMonth = monthlyData[Math.min(value + getRangeMonths() - 1, monthlyData.length - 1)]?.month || '';
+                          return `${startMonth} - ${endMonth}`;
+                        }}
+                        sx={{
+                          '& .MuiSlider-markLabel': {
+                            fontSize: '0.75rem',
+                          },
+                        }}
+                      />
+                    </Box>
+                  </Box>
+                </Box>
+              )}
+            </Box>
+
             {loading ? (
               <Skeleton variant="rectangular" height={600} />
             ) : (
               <LineChart
                 xAxis={[
                   {
-                    data: monthlyData.map((_, idx) => idx),
+                    data: filteredMonthlyData.map((_, idx) => idx),
                     scaleType: 'point',
-                    valueFormatter: (value) => monthlyData[value]?.month || '',
+                    valueFormatter: (value) => filteredMonthlyData[value]?.month || '',
                   },
                 ]}
                 series={[
                   {
-                    data: monthlyData.map((d) => d.streams),
+                    data: filteredMonthlyData.map((d) => d.streams),
                     label: 'Streams',
                     color: '#2dd881',
                   },
@@ -164,24 +269,100 @@ export default function Overview() {
 
         {/* Monthly Hours */}
         <Grid xs={12}>
-          <Paper sx={{ p: 5 }}>
-            <Typography variant="h5" gutterBottom fontWeight={700} sx={{ mb: 4 }}>
-              Monthly Listening Hours
-            </Typography>
+          <Paper sx={{
+            p: 5,
+            transition: 'all 0.3s ease-in-out',
+            '&:hover': {
+              boxShadow: '0 8px 16px rgba(0, 0, 0, 0.12)',
+            },
+          }}>
+            <Box sx={{ mb: 4 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: chartRange !== 'all' && getMaxSliderValue() > 0 ? 3 : 0 }}>
+                <Typography variant="h5" fontWeight={700}>
+                  Monthly Listening Hours
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <Chip
+                    label="All"
+                    size="small"
+                    onClick={() => handleRangeChange('all')}
+                    color={chartRange === 'all' ? 'primary' : 'default'}
+                    sx={{ cursor: 'pointer' }}
+                  />
+                  <Chip
+                    label="12M"
+                    size="small"
+                    onClick={() => handleRangeChange('12m')}
+                    color={chartRange === '12m' ? 'primary' : 'default'}
+                    sx={{ cursor: 'pointer' }}
+                  />
+                  <Chip
+                    label="6M"
+                    size="small"
+                    onClick={() => handleRangeChange('6m')}
+                    color={chartRange === '6m' ? 'primary' : 'default'}
+                    sx={{ cursor: 'pointer' }}
+                  />
+                  <Chip
+                    label="3M"
+                    size="small"
+                    onClick={() => handleRangeChange('3m')}
+                    color={chartRange === '3m' ? 'primary' : 'default'}
+                    sx={{ cursor: 'pointer' }}
+                  />
+                </Box>
+              </Box>
+
+              {/* Time Range Slider */}
+              {chartRange !== 'all' && getMaxSliderValue() > 0 && (
+                <Box sx={{ mt: 2, px: 1 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Typography variant="caption" color="text.secondary" sx={{ minWidth: 'fit-content', flexShrink: 0 }}>
+                      Time period:
+                    </Typography>
+                    <Box sx={{ flex: 1 }}>
+                      <Slider
+                        value={sliderValue}
+                        onChange={(_, value) => setSliderValue(value as number)}
+                        min={0}
+                        max={getMaxSliderValue()}
+                        step={1}
+                        marks={[
+                          { value: 0, label: monthlyData[0]?.month || '' },
+                          { value: getMaxSliderValue(), label: monthlyData[monthlyData.length - 1]?.month || '' },
+                        ]}
+                        valueLabelDisplay="auto"
+                        valueLabelFormat={(value) => {
+                          const startMonth = monthlyData[value]?.month || '';
+                          const endMonth = monthlyData[Math.min(value + getRangeMonths() - 1, monthlyData.length - 1)]?.month || '';
+                          return `${startMonth} - ${endMonth}`;
+                        }}
+                        sx={{
+                          '& .MuiSlider-markLabel': {
+                            fontSize: '0.75rem',
+                          },
+                        }}
+                      />
+                    </Box>
+                  </Box>
+                </Box>
+              )}
+            </Box>
+
             {loading ? (
               <Skeleton variant="rectangular" height={600} />
             ) : (
               <LineChart
                 xAxis={[
                   {
-                    data: monthlyData.map((_, idx) => idx),
+                    data: filteredMonthlyData.map((_, idx) => idx),
                     scaleType: 'point',
-                    valueFormatter: (value) => monthlyData[value]?.month || '',
+                    valueFormatter: (value) => filteredMonthlyData[value]?.month || '',
                   },
                 ]}
                 series={[
                   {
-                    data: monthlyData.map((d) => d.hours),
+                    data: filteredMonthlyData.map((d) => d.hours),
                     label: 'Hours',
                     color: '#4ea699',
                     curve: 'catmullRom',
@@ -195,7 +376,13 @@ export default function Overview() {
 
         {/* Top Artists */}
         <Grid item xs={12}>
-          <Paper sx={{ p: 5 }}>
+          <Paper sx={{
+            p: 5,
+            transition: 'all 0.3s ease-in-out',
+            '&:hover': {
+              boxShadow: '0 8px 16px rgba(0, 0, 0, 0.12)',
+            },
+          }}>
             <Typography variant="h5" gutterBottom fontWeight={700} sx={{ mb: 4 }}>
               Top 10 Artists
             </Typography>
@@ -225,7 +412,13 @@ export default function Overview() {
 
         {/* Top Tracks */}
         <Grid item xs={12}>
-          <Paper sx={{ p: 5 }}>
+          <Paper sx={{
+            p: 5,
+            transition: 'all 0.3s ease-in-out',
+            '&:hover': {
+              boxShadow: '0 8px 16px rgba(0, 0, 0, 0.12)',
+            },
+          }}>
             <Typography variant="h5" gutterBottom fontWeight={700} sx={{ mb: 4 }}>
               Top 10 Tracks
             </Typography>
@@ -255,7 +448,13 @@ export default function Overview() {
 
         {/* Platform Distribution */}
         <Grid item xs={12}>
-          <Paper sx={{ p: 5 }}>
+          <Paper sx={{
+            p: 5,
+            transition: 'all 0.3s ease-in-out',
+            '&:hover': {
+              boxShadow: '0 8px 16px rgba(0, 0, 0, 0.12)',
+            },
+          }}>
             <Typography variant="h5" gutterBottom fontWeight={700} sx={{ mb: 4 }}>
               Platform Distribution
             </Typography>
