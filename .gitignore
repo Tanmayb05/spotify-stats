@@ -1,0 +1,54 @@
+# Spotify Data - PRIVATE
+data/
+*.json
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb
+
+# Environment
+.env
+.env.local
+
+# Node.js / Frontend
+node_modules/
+frontend/dist/
+frontend/build/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Backend (uses root .venv, not local venv)
+backend/__pycache__/
+backend/.pytest_cache/
+backend/.coverage
+backend/htmlcov/
+
+# Outputs (optional - uncomment if you want to exclude outputs too)
+# outputs/
+# *.png
+# *.csv

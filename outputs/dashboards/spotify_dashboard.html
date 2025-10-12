@@ -1,0 +1,436 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify Streaming History Dashboard</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #1DB954;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #1DB954;
+            padding-bottom: 10px;
+            margin-top: 40px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+        }
+        .chart {
+            margin: 20px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .stat-card h3 {
+            margin: 0;
+            font-size: 2em;
+            font-weight: bold;
+        }
+        .stat-card p {
+            margin: 10px 0 0 0;
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Spotify Streaming History Dashboard</h1>
+
+        <p class="subtitle">Complete Overview of Your Spotify Listening History</p>
+        <div class="stats">
+            <div class="stat-card">
+                <h3>71,052</h3>
+                <p>Total Streams</p>
+            </div>
+            <div class="stat-card">
+                <h3>3,245</h3>
+                <p>Hours Listened</p>
+            </div>
+            <div class="stat-card">
+                <h3>4,344</h3>
+                <p>Unique Artists</p>
+            </div>
+            <div class="stat-card">
+                <h3>11,803</h3>
+                <p>Unique Tracks</p>
+            </div>
+            <div class="stat-card">
+                <h3>28</h3>
+                <p>Avg Streams/Day</p>
+            </div>
+            <div class="stat-card">
+                <h3>135</h3>
+                <p>Days Listened</p>
+            </div>
+        </div>
+
+        <h2>Top 20 Artists</h2>
+        <div id="chart_top_artists" class="chart" style="height: 600px;"></div>
+        <script type="text/javascript">
+            google.charts.load('current', {'packages':['corechart']});
+            google.charts.setOnLoadCallback(drawTopArtists);
+
+            function drawTopArtists() {
+                var data = google.visualization.arrayToDataTable([
+                    ['Artist', 'Streams'],
+                    ['ZAYN', 3284],
+            ['Post Malone', 2242],
+            ['Taylor Swift', 1434],
+            ['Pritam', 1372],
+            ['Linkin Park', 1193],
+            ['AP Dhillon', 1137],
+            ['Harry Styles', 882],
+            ['John Williams', 733],
+            ['Coldplay', 695],
+            ['Anuv Jain', 689],
+            ['Eminem', 686],
+            ['DIVINE', 633],
+            ['Juice WRLD', 612],
+            ['Cigarettes After Sex', 605],
+            ['John Mayer', 593],
+            ['Brainy', 545],
+            ['Queen', 536],
+            ['Imagine Dragons', 509],
+            ['A.R. Rahman', 474],
+            ['Selena Gomez', 472]
+                ]);
+
+                var options = {
+                    title: 'Most Streamed Artists',
+                    chartArea: {width: '60%', height: '80%'},
+                    hAxis: {title: 'Number of Streams'},
+                    vAxis: {title: 'Artist'},
+                    colors: ['#1DB954'],
+                    legend: {position: 'none'},
+                    animation: {
+                        startup: true,
+                        duration: 1000,
+                        easing: 'out'
+                    }
+                };
+
+                var chart = new google.visualization.BarChart(document.getElementById('chart_top_artists'));
+                chart.draw(data, options);
+            }
+        </script>
+
+        <h2>Listening Activity Over Time</h2>
+        <div id="chart_over_time" class="chart" style="height: 500px;"></div>
+        <script type="text/javascript">
+            google.charts.setOnLoadCallback(drawOverTime);
+
+            function drawOverTime() {
+                var data = google.visualization.arrayToDataTable([
+                    ['Month', 'Streams', 'Hours'],
+                    ['2018-10', 14, 0.67],
+            ['2018-11', 64, 1.53],
+            ['2018-12', 12, 0.06],
+            ['2019-01', 3, 0.00],
+            ['2019-02', 149, 5.93],
+            ['2019-03', 1581, 46.73],
+            ['2019-04', 1271, 41.66],
+            ['2019-05', 1495, 50.81],
+            ['2019-06', 668, 27.64],
+            ['2019-07', 979, 42.22],
+            ['2019-08', 1313, 52.59],
+            ['2019-09', 946, 42.27],
+            ['2019-10', 1913, 87.54],
+            ['2019-11', 1430, 65.37],
+            ['2019-12', 910, 42.44],
+            ['2020-01', 1179, 54.97],
+            ['2020-02', 1334, 43.84],
+            ['2020-03', 934, 41.91],
+            ['2020-04', 1028, 48.21],
+            ['2020-05', 780, 31.70],
+            ['2020-06', 294, 12.39],
+            ['2020-07', 1368, 48.06],
+            ['2020-08', 746, 39.50],
+            ['2020-09', 1101, 59.87],
+            ['2020-10', 534, 29.98],
+            ['2020-11', 722, 40.11],
+            ['2020-12', 623, 27.07],
+            ['2021-01', 765, 40.15],
+            ['2021-02', 522, 25.76],
+            ['2021-03', 455, 22.85],
+            ['2021-04', 372, 17.11],
+            ['2021-05', 262, 13.54],
+            ['2021-06', 508, 16.70],
+            ['2021-07', 879, 44.94],
+            ['2021-08', 1048, 53.52],
+            ['2021-09', 691, 35.25],
+            ['2021-10', 415, 20.95],
+            ['2021-11', 496, 25.66],
+            ['2021-12', 505, 29.74],
+            ['2022-01', 338, 19.16],
+            ['2022-02', 776, 40.09],
+            ['2022-03', 1402, 65.83],
+            ['2022-04', 1398, 66.86],
+            ['2022-05', 1809, 83.51],
+            ['2022-06', 1481, 65.79],
+            ['2022-07', 964, 43.23],
+            ['2022-08', 934, 50.00],
+            ['2022-09', 1571, 78.57],
+            ['2022-10', 1603, 62.73],
+            ['2022-11', 877, 44.69],
+            ['2022-12', 1242, 59.19],
+            ['2023-01', 1579, 71.54],
+            ['2023-02', 1375, 62.32],
+            ['2023-03', 1400, 58.72],
+            ['2023-04', 1466, 67.68],
+            ['2023-05', 1245, 52.32],
+            ['2023-06', 1758, 84.36],
+            ['2023-07', 1121, 42.82],
+            ['2023-08', 1179, 56.73],
+            ['2023-09', 799, 38.07],
+            ['2023-10', 819, 38.53],
+            ['2023-11', 735, 34.91],
+            ['2023-12', 648, 31.74],
+            ['2024-01', 470, 26.28],
+            ['2024-02', 417, 23.87],
+            ['2024-03', 412, 22.42],
+            ['2024-04', 801, 42.20],
+            ['2024-05', 594, 32.94],
+            ['2024-06', 463, 24.96],
+            ['2024-07', 341, 14.23],
+            ['2024-08', 310, 14.29],
+            ['2024-09', 505, 22.40],
+            ['2024-10', 651, 28.08],
+            ['2024-11', 669, 28.96],
+            ['2024-12', 401, 17.15],
+            ['2025-01', 487, 25.50],
+            ['2025-02', 397, 18.66],
+            ['2025-03', 668, 32.90],
+            ['2025-04', 635, 33.27],
+            ['2025-05', 648, 30.91],
+            ['2025-06', 1156, 53.42],
+            ['2025-07', 833, 36.97],
+            ['2025-08', 710, 32.84],
+            ['2025-09', 558, 26.46],
+            ['2025-10', 98, 5.26]
+                ]);
+
+                var options = {
+                    title: 'Monthly Listening Trends',
+                    curveType: 'function',
+                    legend: {position: 'bottom'},
+                    chartArea: {width: '80%', height: '70%'},
+                    series: {
+                        0: {targetAxisIndex: 0, color: '#1DB954'},
+                        1: {targetAxisIndex: 1, color: '#FF6B6B'}
+                    },
+                    vAxes: {
+                        0: {title: 'Number of Streams'},
+                        1: {title: 'Hours Listened'}
+                    },
+                    hAxis: {
+                        title: 'Month',
+                        slantedText: true,
+                        slantedTextAngle: 45
+                    }
+                };
+
+                var chart = new google.visualization.LineChart(document.getElementById('chart_over_time'));
+                chart.draw(data, options);
+            }
+        </script>
+
+        <h2>Listening by Hour of Day</h2>
+        <div id="chart_hourly" class="chart" style="height: 400px;"></div>
+        <script type="text/javascript">
+            google.charts.setOnLoadCallback(drawHourly);
+
+            function drawHourly() {
+                var data = google.visualization.arrayToDataTable([
+                    ['Hour', 'Streams'],
+                    ['0:00', 852],
+            ['1:00', 892],
+            ['2:00', 1417],
+            ['3:00', 2575],
+            ['4:00', 4360],
+            ['5:00', 4111],
+            ['6:00', 2678],
+            ['7:00', 2516],
+            ['8:00', 2393],
+            ['9:00', 3071],
+            ['10:00', 2878],
+            ['11:00', 3169],
+            ['12:00', 3422],
+            ['13:00', 3293],
+            ['14:00', 3301],
+            ['15:00', 2987],
+            ['16:00', 5183],
+            ['17:00', 5039],
+            ['18:00', 4549],
+            ['19:00', 4073],
+            ['20:00', 3427],
+            ['21:00', 2313],
+            ['22:00', 1404],
+            ['23:00', 1149]
+                ]);
+
+                var options = {
+                    title: 'Listening Activity by Hour',
+                    chartArea: {width: '80%', height: '70%'},
+                    legend: {position: 'none'},
+                    colors: ['#4ECDC4'],
+                    hAxis: {title: 'Hour of Day'},
+                    vAxis: {title: 'Number of Streams'}
+                };
+
+                var chart = new google.visualization.ColumnChart(document.getElementById('chart_hourly'));
+                chart.draw(data, options);
+            }
+        </script>
+
+        <h2>Listening by Day of Week</h2>
+        <div id="chart_daily" class="chart" style="height: 400px;"></div>
+        <script type="text/javascript">
+            google.charts.setOnLoadCallback(drawDaily);
+
+            function drawDaily() {
+                var data = google.visualization.arrayToDataTable([
+                    ['Day', 'Streams'],
+                    ['Mon', 10276],
+            ['Tue', 10512],
+            ['Wed', 9639],
+            ['Thu', 9729],
+            ['Fri', 10869],
+            ['Sat', 9634],
+            ['Sun', 10393]
+                ]);
+
+                var options = {
+                    title: 'Listening Activity by Day of Week',
+                    chartArea: {width: '80%', height: '70%'},
+                    legend: {position: 'none'},
+                    colors: ['#FFD93D'],
+                    hAxis: {title: 'Day of Week'},
+                    vAxis: {title: 'Number of Streams'}
+                };
+
+                var chart = new google.visualization.ColumnChart(document.getElementById('chart_daily'));
+                chart.draw(data, options);
+            }
+        </script>
+
+        <h2>Platform Usage Distribution</h2>
+        <div id="chart_platform" class="chart" style="height: 500px;"></div>
+        <script type="text/javascript">
+            google.charts.setOnLoadCallback(drawPlatform);
+
+            function drawPlatform() {
+                var data = google.visualization.arrayToDataTable([
+                    ['Platform', 'Streams'],
+                    ['ios', 23304],
+            ['Android OS 9 API 28 (Xiaomi, Redmi Note 5 Pro)', 16192],
+            ['Android OS 11 API 30 (motorola, moto g(60))', 6800],
+            ['Windows 10 (10.0.19041; x64; AppX)', 4472],
+            ['Android OS 12 API 31 (motorola, moto g(60))', 2965],
+            ['osx', 2742],
+            ['Windows 10 (10.0.18362; x64)', 2282],
+            ['not_applicable', 1596],
+            ['Android OS 8.1.0 API 27 (Xiaomi, Redmi Note 5 Pro)', 1312],
+            ['iOS 16.0.2 (iPhone14,5)', 1083]
+                ]);
+
+                var options = {
+                    title: 'Top 10 Platforms Used',
+                    is3D: true,
+                    chartArea: {width: '90%', height: '80%'},
+                    colors: ['#1DB954', '#1ed760', '#169c46', '#117a37', '#0d5829',
+                            '#ff6b6b', '#ee5a6f', '#c44569', '#f79f1f', '#ffa502']
+                };
+
+                var chart = new google.visualization.PieChart(document.getElementById('chart_platform'));
+                chart.draw(data, options);
+            }
+        </script>
+
+        <h2>Yearly Comparison</h2>
+        <div id="chart_yearly" class="chart" style="height: 500px;"></div>
+        <script type="text/javascript">
+            google.charts.setOnLoadCallback(drawYearly);
+
+            function drawYearly() {
+                var data = google.visualization.arrayToDataTable([
+                    ['Year', 'Streams', 'Hours'],
+                    ['2018', 90.0, 2.26],
+            ['2019', 12658.0, 505.21],
+            ['2020', 10643.0, 477.61],
+            ['2021', 6918.0, 346.16],
+            ['2022', 14395.0, 679.65],
+            ['2023', 14124.0, 639.74],
+            ['2024', 6034.0, 297.78],
+            ['2025', 6190.0, 296.19]
+                ]);
+
+                var options = {
+                    title: 'Listening Activity by Year',
+                    chartArea: {width: '75%', height: '70%'},
+                    legend: {position: 'bottom'},
+                    series: {
+                        0: {targetAxisIndex: 0, color: '#1DB954', type: 'bars'},
+                        1: {targetAxisIndex: 1, color: '#FF6B6B', type: 'line'}
+                    },
+                    vAxes: {
+                        0: {title: 'Number of Streams'},
+                        1: {title: 'Hours Listened'}
+                    },
+                    hAxis: {title: 'Year'}
+                };
+
+                var chart = new google.visualization.ComboChart(document.getElementById('chart_yearly'));
+                chart.draw(data, options);
+            }
+        </script>
+
+        <div class="footer">
+            <p>Generated on 2025-10-11 20:16:12</p>
+            <p>Spotify Streaming History Analysis</p>
+        </div>
+    </div>
+</body>
+</html>
