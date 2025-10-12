@@ -1,6 +1,6 @@
-# Spotify Data - PRIVATE
-data/
-*.json
+# # Spotify Data - PRIVATE
+# data/
+# *.json
 
 # IMPORTANT: Allow package.json and related files for builds
 !package.json
