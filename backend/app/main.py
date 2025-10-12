@@ -16,6 +16,7 @@ app.add_middleware(
         "http://localhost:3010",  # Frontend dev server
         "http://localhost:5173",  # Vite default
         "http://localhost:3000",  # Alternative dev port
+        "https://tanmays-spotify-stats.netlify.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
