@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import {
   Box,
   Typography,
-  Grid,
   Paper,
   Skeleton,
+  Grid,
 } from '@mui/material';
 import {
   MusicNote,
@@ -19,7 +19,7 @@ import { BarChart } from '@mui/x-charts/BarChart';
 import StatCard from '../components/StatCard';
 import { api } from '../api/client';
 import { useAppStore } from '../store/app';
-import { formatNumber, formatHours, formatCompact } from '../utils/format';
+import { formatNumber, formatCompact } from '../utils/format';
 import type {
   OverviewStats,
   TopArtist,
@@ -87,7 +87,7 @@ export default function Overview() {
 
       {/* Stat Cards */}
       <Grid container spacing={{ xs: 2, md: 3 }} sx={{ mb: 8 }}>
-        <Grid item xs={12} sm={6} md={4} lg={3} sx={{ display: 'flex' }}>
+        <Grid xs={12} sm={6} md={4} lg={3} sx={{ display: 'flex' }}>
           <StatCard
             title="Total Streams"
             value={stats ? formatNumber(stats.total_streams) : '—'}
@@ -95,7 +95,7 @@ export default function Overview() {
             loading={loading}
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={4} lg={3} sx={{ display: 'flex' }}>
+        <Grid xs={12} sm={6} md={4} lg={3} sx={{ display: 'flex' }}>
           <StatCard
             title="Listening Time"
             value={stats ? formatCompact(stats.total_hours) + 'h' : '—'}
@@ -104,7 +104,7 @@ export default function Overview() {
             loading={loading}
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={4} lg={3} sx={{ display: 'flex' }}>
+        <Grid xs={12} sm={6} md={4} lg={3} sx={{ display: 'flex' }}>
           <StatCard
             title="Unique Artists"
             value={stats ? formatNumber(stats.unique_artists) : '—'}
@@ -112,7 +112,7 @@ export default function Overview() {
             loading={loading}
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={4} lg={3} sx={{ display: 'flex' }}>
+        <Grid xs={12} sm={6} md={4} lg={3} sx={{ display: 'flex' }}>
           <StatCard
             title="Unique Tracks"
             value={stats ? formatNumber(stats.unique_tracks) : '—'}
@@ -120,7 +120,7 @@ export default function Overview() {
             loading={loading}
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={4} lg={3} sx={{ display: 'flex' }}>
+        <Grid xs={12} sm={6} md={4} lg={3} sx={{ display: 'flex' }}>
           <StatCard
             title="Unique Albums"
             value={stats ? formatNumber(stats.unique_albums) : '—'}
@@ -133,7 +133,7 @@ export default function Overview() {
       {/* Charts */}
       <Grid container spacing={{ xs: 3, lg: 5 }} direction="column">
         {/* Monthly Trends */}
-        <Grid item xs={12}>
+        <Grid xs={12}>
           <Paper sx={{ p: 5 }}>
             <Typography variant="h5" gutterBottom fontWeight={700} sx={{ mb: 4 }}>
               Monthly Listening Trends
@@ -163,7 +163,7 @@ export default function Overview() {
         </Grid>
 
         {/* Monthly Hours */}
-        <Grid item xs={12}>
+        <Grid xs={12}>
           <Paper sx={{ p: 5 }}>
             <Typography variant="h5" gutterBottom fontWeight={700} sx={{ mb: 4 }}>
               Monthly Listening Hours
@@ -270,7 +270,7 @@ export default function Overview() {
                       value: p.streams,
                       label: p.platform,
                     })),
-                    highlightScope: { faded: 'global', highlighted: 'item' },
+                    highlightScope: { fade: 'global', highlight: 'item' },
                   },
                 ]}
                 height={500}

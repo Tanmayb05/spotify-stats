@@ -2,6 +2,14 @@
 data/
 *.json
 
+# IMPORTANT: Allow package.json and related files for builds
+!package.json
+!package-lock.json
+!tsconfig*.json
+!**/package.json
+!**/package-lock.json
+!**/tsconfig*.json
+
 # Python
 .venv/
 venv/
