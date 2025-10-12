@@ -35,6 +35,14 @@ spotify-stats/
 
 An interactive web dashboard built with React and FastAPI for exploring your Spotify streaming history.
 
+### 🚀 Live Deployment
+
+The application is deployed and accessible at:
+
+- **Frontend**: [tanmays-spotify-stats.netlify.app](https://tanmays-spotify-stats.netlify.app)
+- **Backend API**: [https://tanmays-spotify-stats.onrender.com](https://tanmays-spotify-stats.onrender.com)
+- **API Docs**: [https://tanmays-spotify-stats.onrender.com/docs](https://tanmays-spotify-stats.onrender.com/docs)
+
 ### Quick Start (macOS)
 
 ```bash
