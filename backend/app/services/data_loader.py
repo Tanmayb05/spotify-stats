@@ -1,8 +1,9 @@
 import json
 from pathlib import Path
-from typing import List, Dict, Any
-from datetime import datetime
+from typing import List, Dict, Any, Optional
+from datetime import datetime, timedelta
 from collections import defaultdict
+import statistics
 
 # Path to data directory
 DATA_DIR = Path(__file__).parent.parent.parent.parent / 'data'
@@ -179,6 +180,249 @@ class SpotifyDataLoader:
 
         if other_count > 0:
             result.append({'platform': 'Other', 'streams': other_count})
+
+        return result
+
+    def _calculate_mood_metrics(self, record: Dict[str, Any]) -> Dict[str, Optional[float]]:
+        """
+        Calculate mood metrics from listening behavior patterns.
+
+        Returns valence, energy, and danceability scores (0-1 scale)
+        based on listening context and behavior.
+        """
+        ts = record.get('ts')
+        if not ts:
+            return {'valence': None, 'energy': None, 'danceability': None}
+
+        dt = datetime.fromisoformat(ts.replace('Z', '+00:00'))
+        hour = dt.hour
+        is_weekend = dt.weekday() >= 5
+
+        # Valence (happiness): Based on time of day and day of week
+        # Higher on weekends and during daytime (10am-8pm)
+        valence = 0.5
+        if is_weekend:
+            valence += 0.15
+        if 10 <= hour <= 20:
+            valence += 0.15
+        elif 6 <= hour < 10 or 20 < hour <= 23:
+            valence += 0.05
+        else:  # Late night/early morning
+            valence -= 0.10
+
+        # Energy: Based on time of day and listening intensity
+        # Higher in morning/afternoon, lower at night
+        energy = 0.5
+        if 6 <= hour <= 12:  # Morning
+            energy += 0.25
+        elif 12 < hour <= 18:  # Afternoon
+            energy += 0.15
+        elif 18 < hour <= 22:  # Evening
+            energy += 0.05
+        else:  # Night/early morning
+            energy -= 0.15
+
+        # Danceability: Based on skip behavior and play duration
+        # Higher for tracks played longer (not skipped)
+        ms_played = record.get('ms_played', 0)
+        skipped = record.get('skipped', False)
+
+        danceability = 0.5
+        if ms_played >= 180000:  # 3+ minutes = full listen
+            danceability += 0.25
+        elif ms_played >= 60000:  # 1-3 minutes
+            danceability += 0.10
+        else:  # < 1 minute = probably skipped
+            danceability -= 0.15
+
+        if skipped:
+            danceability -= 0.20
+
+        # Clamp values to 0-1 range
+        valence = max(0.0, min(1.0, valence))
+        energy = max(0.0, min(1.0, energy))
+        danceability = max(0.0, min(1.0, danceability))
+
+        return {
+            'valence': round(valence, 3),
+            'energy': round(energy, 3),
+            'danceability': round(danceability, 3)
+        }
+
+    def get_mood_summary(self, window_days: int = 30) -> Dict[str, Any]:
+        """
+        Get mood statistics for a time window based on listening patterns
+
+        Args:
+            window_days: Number of days to look back (7, 30, 90, etc.)
+
+        Returns:
+            Average valence, energy, danceability and sample size
+        """
+        if not self._loaded:
+            self.load_data()
+
+        # Use timezone-aware datetime to match data timestamps
+        from datetime import timezone
+        cutoff_date = datetime.now(timezone.utc) - timedelta(days=window_days)
+
+        valences = []
+        energies = []
+        danceabilities = []
+
+        for record in self._data:
+            ts = record.get('ts')
+            if not ts:
+                continue
+
+            dt = datetime.fromisoformat(ts.replace('Z', '+00:00'))
+            if dt < cutoff_date:
+                continue
+
+            # Calculate mood metrics from listening behavior
+            metrics = self._calculate_mood_metrics(record)
+
+            if metrics['valence'] is not None:
+                valences.append(metrics['valence'])
+            if metrics['energy'] is not None:
+                energies.append(metrics['energy'])
+            if metrics['danceability'] is not None:
+                danceabilities.append(metrics['danceability'])
+
+        return {
+            'window_days': window_days,
+            'avg_valence': round(statistics.mean(valences), 3) if valences else None,
+            'avg_energy': round(statistics.mean(energies), 3) if energies else None,
+            'avg_danceability': round(statistics.mean(danceabilities), 3) if danceabilities else None,
+            'sample_size': len(valences),
+        }
+
+    def get_mood_contexts(self) -> Dict[str, Any]:
+        """
+        Compare mood metrics across different contexts based on listening patterns:
+        - Weekday vs Weekend
+        - Different platforms (if available)
+
+        Returns:
+            Dictionary with context comparisons
+        """
+        if not self._loaded:
+            self.load_data()
+
+        weekday_moods = {'valence': [], 'energy': [], 'danceability': []}
+        weekend_moods = {'valence': [], 'energy': [], 'danceability': []}
+        platform_moods = defaultdict(lambda: {'valence': [], 'energy': [], 'danceability': []})
+
+        for record in self._data:
+            ts = record.get('ts')
+            if not ts:
+                continue
+
+            dt = datetime.fromisoformat(ts.replace('Z', '+00:00'))
+            is_weekend = dt.weekday() >= 5  # Saturday=5, Sunday=6
+            platform = record.get('platform', 'unknown')
+
+            # Calculate mood metrics from listening behavior
+            metrics = self._calculate_mood_metrics(record)
+
+            valence = metrics['valence']
+            energy = metrics['energy']
+            danceability = metrics['danceability']
+
+            if valence is not None:
+                if is_weekend:
+                    weekend_moods['valence'].append(valence)
+                else:
+                    weekday_moods['valence'].append(valence)
+                platform_moods[platform]['valence'].append(valence)
+
+            if energy is not None:
+                if is_weekend:
+                    weekend_moods['energy'].append(energy)
+                else:
+                    weekday_moods['energy'].append(energy)
+                platform_moods[platform]['energy'].append(energy)
+
+            if danceability is not None:
+                if is_weekend:
+                    weekend_moods['danceability'].append(danceability)
+                else:
+                    weekday_moods['danceability'].append(danceability)
+                platform_moods[platform]['danceability'].append(danceability)
+
+        # Calculate averages
+        def avg_or_none(lst):
+            return round(statistics.mean(lst), 3) if lst else None
+
+        result = {
+            'weekday_vs_weekend': {
+                'weekday': {
+                    'avg_valence': avg_or_none(weekday_moods['valence']),
+                    'avg_energy': avg_or_none(weekday_moods['energy']),
+                    'avg_danceability': avg_or_none(weekday_moods['danceability']),
+                    'sample_size': len(weekday_moods['valence']),
+                },
+                'weekend': {
+                    'avg_valence': avg_or_none(weekend_moods['valence']),
+                    'avg_energy': avg_or_none(weekend_moods['energy']),
+                    'avg_danceability': avg_or_none(weekend_moods['danceability']),
+                    'sample_size': len(weekend_moods['valence']),
+                }
+            },
+            'by_platform': {
+                platform: {
+                    'avg_valence': avg_or_none(moods['valence']),
+                    'avg_energy': avg_or_none(moods['energy']),
+                    'avg_danceability': avg_or_none(moods['danceability']),
+                    'sample_size': len(moods['valence']),
+                }
+                for platform, moods in platform_moods.items()
+                if len(moods['valence']) >= 10  # Only include platforms with enough data
+            }
+        }
+
+        return result
+
+    def get_mood_monthly(self) -> List[Dict[str, Any]]:
+        """Get monthly mood averages over time based on listening patterns"""
+        if not self._loaded:
+            self.load_data()
+
+        monthly_moods = defaultdict(lambda: {
+            'valence': [],
+            'energy': [],
+            'danceability': []
+        })
+
+        for record in self._data:
+            ts = record.get('ts')
+            if not ts:
+                continue
+
+            dt = datetime.fromisoformat(ts.replace('Z', '+00:00'))
+            month_key = dt.strftime('%Y-%m')
+
+            # Calculate mood metrics from listening behavior
+            metrics = self._calculate_mood_metrics(record)
+
+            if metrics['valence'] is not None:
+                monthly_moods[month_key]['valence'].append(metrics['valence'])
+            if metrics['energy'] is not None:
+                monthly_moods[month_key]['energy'].append(metrics['energy'])
+            if metrics['danceability'] is not None:
+                monthly_moods[month_key]['danceability'].append(metrics['danceability'])
+
+        # Calculate monthly averages
+        result = []
+        for month in sorted(monthly_moods.keys()):
+            moods = monthly_moods[month]
+            result.append({
+                'month': month,
+                'avg_valence': round(statistics.mean(moods['valence']), 3) if moods['valence'] else None,
+                'avg_energy': round(statistics.mean(moods['energy']), 3) if moods['energy'] else None,
+                'avg_danceability': round(statistics.mean(moods['danceability']), 3) if moods['danceability'] else None,
+                'sample_size': len(moods['valence']),
+            })
 
         return result
 

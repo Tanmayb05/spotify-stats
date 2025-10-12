@@ -17,7 +17,14 @@ export default function StatCard({
   loading = false,
 }: StatCardProps) {
   return (
-    <Card sx={{ height: '100%' }}>
+    <Card sx={{
+      height: '100%',
+      transition: 'all 0.3s ease-in-out',
+      '&:hover': {
+        transform: 'translateY(-8px)',
+        boxShadow: '0 12px 24px rgba(0, 0, 0, 0.15)',
+      },
+    }}>
       <CardContent sx={{ p: 3 }}>
         <Box display="flex" justifyContent="space-between" alignItems="flex-start" gap={2}>
           <Box>
