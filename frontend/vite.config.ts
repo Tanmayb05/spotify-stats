@@ -7,4 +7,17 @@ export default defineConfig({
   server: {
     port: 3010,
   },
+  build: {
+    // Optimize build for production
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-mui': ['@mui/material', '@emotion/react', '@emotion/styled', '@mui/icons-material'],
+          'vendor-charts': ['@mui/x-charts'],
+        },
+      },
+    },
+  },
 })

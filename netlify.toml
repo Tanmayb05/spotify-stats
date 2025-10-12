@@ -1,0 +1,36 @@
+# Netlify configuration for Spotify Stats webapp
+
+[build]
+  # Base directory for the build
+  base = "frontend"
+
+  # Build command
+  command = "npm run build"
+
+  # Directory with the build output (publish directory)
+  publish = "dist"
+
+# Redirect rules for client-side routing (SPA)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Environment variables (configure these in Netlify UI)
+# VITE_API_BASE_URL = "https://your-backend-url.com"
+
+# Optional: Custom headers for security
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+
+# Asset caching
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
