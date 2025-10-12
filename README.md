@@ -43,6 +43,10 @@ The application is deployed and accessible at:
 - **Backend API**: [https://tanmays-spotify-stats.onrender.com](https://tanmays-spotify-stats.onrender.com)
 - **API Docs**: [https://tanmays-spotify-stats.onrender.com/docs](https://tanmays-spotify-stats.onrender.com/docs)
 
+**Deployment Dashboards** (for management):
+- **Netlify Dashboard**: [https://app.netlify.com/projects/tanmays-spotify-stats/overview](https://app.netlify.com/projects/tanmays-spotify-stats/overview)
+- **Render Dashboard**: [https://dashboard.render.com/web/srv-d3lia0umcj7s739v028g/events](https://dashboard.render.com/web/srv-d3lia0umcj7s739v028g/events)
+
 ### Quick Start (macOS)
 
 ```bash
