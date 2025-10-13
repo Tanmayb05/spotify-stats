@@ -54,6 +54,14 @@ import type {
   DailyDistribution,
   SkipBehavior,
   YearlyComparison,
+  SessionDuration,
+  BingeSession,
+  SessionStatistics,
+  WeekendWeekdayComparison,
+  ListeningStreak,
+  RepeatedTrack,
+  MonthlyDiversity,
+  HeatmapData,
 } from '../types/api';
 
 // API functions
@@ -156,6 +164,47 @@ export const api = {
 
   exportMonthlySummary: (): string => {
     return `${API_BASE_URL}/api/export/monthly-summary`;
+  },
+
+  // Listening Patterns endpoints
+  getSessionDurations: async (): Promise<SessionDuration[]> => {
+    const response = await apiClient.get<SessionDuration[]>('/api/patterns/session-durations');
+    return response.data;
+  },
+
+  getBingeSessions: async (limit = 20): Promise<BingeSession[]> => {
+    const response = await apiClient.get<BingeSession[]>(`/api/patterns/binge-sessions?limit=${limit}`);
+    return response.data;
+  },
+
+  getSessionStatistics: async (): Promise<SessionStatistics> => {
+    const response = await apiClient.get<SessionStatistics>('/api/patterns/session-statistics');
+    return response.data;
+  },
+
+  getWeekendWeekdayComparison: async (): Promise<WeekendWeekdayComparison> => {
+    const response = await apiClient.get<WeekendWeekdayComparison>('/api/patterns/weekend-weekday');
+    return response.data;
+  },
+
+  getListeningStreaks: async (limit = 10): Promise<ListeningStreak[]> => {
+    const response = await apiClient.get<ListeningStreak[]>(`/api/patterns/listening-streaks?limit=${limit}`);
+    return response.data;
+  },
+
+  getRepeatedTracks: async (limit = 20): Promise<RepeatedTrack[]> => {
+    const response = await apiClient.get<RepeatedTrack[]>(`/api/patterns/repeated-tracks?limit=${limit}`);
+    return response.data;
+  },
+
+  getMonthlyDiversity: async (): Promise<MonthlyDiversity[]> => {
+    const response = await apiClient.get<MonthlyDiversity[]>('/api/patterns/monthly-diversity');
+    return response.data;
+  },
+
+  getListeningHeatmap: async (): Promise<HeatmapData[]> => {
+    const response = await apiClient.get<HeatmapData[]>('/api/patterns/heatmap');
+    return response.data;
   },
 
   // Placeholder for future phases

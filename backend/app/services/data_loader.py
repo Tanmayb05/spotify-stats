@@ -811,6 +811,429 @@ class SpotifyDataLoader:
 
         return result
 
+    def get_session_durations(self) -> List[Dict[str, Any]]:
+        """
+        Get distribution of session durations (grouped listening periods)
+        Session = continuous listening with <30min gaps
+
+        Returns:
+            List of {duration_minutes, session_count} for histogram
+        """
+        if not self._loaded:
+            self.load_data()
+
+        # Group streams into sessions (30min gap threshold)
+        sessions = []
+        current_session_start = None
+        current_session_end = None
+
+        sorted_records = sorted(
+            [r for r in self._data if r.get('ts')],
+            key=lambda x: datetime.fromisoformat(x['ts'].replace('Z', '+00:00'))
+        )
+
+        for record in sorted_records:
+            ts = record.get('ts')
+            if not ts:
+                continue
+
+            dt = datetime.fromisoformat(ts.replace('Z', '+00:00'))
+
+            if current_session_start is None:
+                current_session_start = dt
+                current_session_end = dt
+            else:
+                # Check if this is same session (<30min gap)
+                gap = (dt - current_session_end).total_seconds() / 60
+                if gap <= 30:
+                    current_session_end = dt
+                else:
+                    # Save previous session and start new one
+                    duration_mins = (current_session_end - current_session_start).total_seconds() / 60
+                    sessions.append(duration_mins)
+                    current_session_start = dt
+                    current_session_end = dt
+
+        # Don't forget last session
+        if current_session_start and current_session_end:
+            duration_mins = (current_session_end - current_session_start).total_seconds() / 60
+            sessions.append(duration_mins)
+
+        # Group into buckets for distribution
+        buckets = defaultdict(int)
+        for duration in sessions:
+            if duration < 15:
+                buckets['0-15'] += 1
+            elif duration < 30:
+                buckets['15-30'] += 1
+            elif duration < 60:
+                buckets['30-60'] += 1
+            elif duration < 120:
+                buckets['60-120'] += 1
+            elif duration < 180:
+                buckets['120-180'] += 1
+            else:
+                buckets['180+'] += 1
+
+        bucket_order = ['0-15', '15-30', '30-60', '60-120', '120-180', '180+']
+        result = [
+            {'duration_range': bucket, 'session_count': buckets.get(bucket, 0)}
+            for bucket in bucket_order
+        ]
+
+        return result
+
+    def get_binge_sessions(self, limit: int = 20) -> List[Dict[str, Any]]:
+        """
+        Get top binge sessions (longest continuous listening periods)
+
+        Returns:
+            List of {session_date, duration_minutes, track_count}
+        """
+        if not self._loaded:
+            self.load_data()
+
+        # Group streams into sessions (30min gap threshold)
+        sessions = []
+        current_session = {
+            'start': None,
+            'end': None,
+            'tracks': 0
+        }
+
+        sorted_records = sorted(
+            [r for r in self._data if r.get('ts')],
+            key=lambda x: datetime.fromisoformat(x['ts'].replace('Z', '+00:00'))
+        )
+
+        for record in sorted_records:
+            ts = record.get('ts')
+            if not ts:
+                continue
+
+            dt = datetime.fromisoformat(ts.replace('Z', '+00:00'))
+
+            if current_session['start'] is None:
+                current_session['start'] = dt
+                current_session['end'] = dt
+                current_session['tracks'] = 1
+            else:
+                gap = (dt - current_session['end']).total_seconds() / 60
+                if gap <= 30:
+                    current_session['end'] = dt
+                    current_session['tracks'] += 1
+                else:
+                    # Save and start new
+                    sessions.append(current_session.copy())
+                    current_session = {
+                        'start': dt,
+                        'end': dt,
+                        'tracks': 1
+                    }
+
+        # Don't forget last session
+        if current_session['start']:
+            sessions.append(current_session)
+
+        # Calculate durations and sort
+        for session in sessions:
+            duration = (session['end'] - session['start']).total_seconds() / 60
+            session['duration_minutes'] = round(duration, 1)
+            session['session_date'] = session['start'].strftime('%Y-%m-%d %H:%M')
+
+        sessions.sort(key=lambda x: x['duration_minutes'], reverse=True)
+
+        return [
+            {
+                'session_date': s['session_date'],
+                'duration_minutes': s['duration_minutes'],
+                'track_count': s['tracks']
+            }
+            for s in sessions[:limit]
+        ]
+
+    def get_session_statistics(self) -> Dict[str, Any]:
+        """
+        Get aggregate session statistics
+
+        Returns:
+            Overall session stats (avg duration, tracks per session, etc.)
+        """
+        if not self._loaded:
+            self.load_data()
+
+        sessions = []
+        current_session = {'start': None, 'end': None, 'tracks': 0}
+
+        sorted_records = sorted(
+            [r for r in self._data if r.get('ts')],
+            key=lambda x: datetime.fromisoformat(x['ts'].replace('Z', '+00:00'))
+        )
+
+        for record in sorted_records:
+            ts = record.get('ts')
+            if not ts:
+                continue
+
+            dt = datetime.fromisoformat(ts.replace('Z', '+00:00'))
+
+            if current_session['start'] is None:
+                current_session = {'start': dt, 'end': dt, 'tracks': 1}
+            else:
+                gap = (dt - current_session['end']).total_seconds() / 60
+                if gap <= 30:
+                    current_session['end'] = dt
+                    current_session['tracks'] += 1
+                else:
+                    sessions.append(current_session.copy())
+                    current_session = {'start': dt, 'end': dt, 'tracks': 1}
+
+        if current_session['start']:
+            sessions.append(current_session)
+
+        # Calculate stats
+        durations = [(s['end'] - s['start']).total_seconds() / 60 for s in sessions]
+        track_counts = [s['tracks'] for s in sessions]
+
+        return {
+            'total_sessions': len(sessions),
+            'avg_duration_minutes': round(statistics.mean(durations), 1) if durations else 0,
+            'median_duration_minutes': round(statistics.median(durations), 1) if durations else 0,
+            'avg_tracks_per_session': round(statistics.mean(track_counts), 1) if track_counts else 0,
+            'longest_session_minutes': round(max(durations), 1) if durations else 0,
+        }
+
+    def get_weekend_weekday_comparison(self) -> Dict[str, Any]:
+        """
+        Detailed weekend vs weekday listening comparison
+
+        Returns:
+            Comparison statistics and breakdown
+        """
+        if not self._loaded:
+            self.load_data()
+
+        weekday_streams = 0
+        weekend_streams = 0
+        weekday_hours = 0.0
+        weekend_hours = 0.0
+
+        for record in self._data:
+            ts = record.get('ts')
+            if not ts:
+                continue
+
+            dt = datetime.fromisoformat(ts.replace('Z', '+00:00'))
+            is_weekend = dt.weekday() >= 5
+            hours = record.get('ms_played', 0) / 3_600_000
+
+            if is_weekend:
+                weekend_streams += 1
+                weekend_hours += hours
+            else:
+                weekday_streams += 1
+                weekday_hours += hours
+
+        return {
+            'weekday': {
+                'streams': weekday_streams,
+                'hours': round(weekday_hours, 2),
+                'avg_per_day': round(weekday_streams / 5, 1) if weekday_streams > 0 else 0
+            },
+            'weekend': {
+                'streams': weekend_streams,
+                'hours': round(weekend_hours, 2),
+                'avg_per_day': round(weekend_streams / 2, 1) if weekend_streams > 0 else 0
+            }
+        }
+
+    def get_listening_streaks(self, limit: int = 10) -> List[Dict[str, Any]]:
+        """
+        Get consecutive day listening streaks
+
+        Returns:
+            List of {start_date, end_date, length_days, total_streams}
+        """
+        if not self._loaded:
+            self.load_data()
+
+        # Get unique dates with stream counts
+        daily_streams = defaultdict(int)
+        for record in self._data:
+            ts = record.get('ts')
+            if not ts:
+                continue
+            dt = datetime.fromisoformat(ts.replace('Z', '+00:00'))
+            daily_streams[dt.date()] += 1
+
+        if not daily_streams:
+            return []
+
+        # Find streaks
+        sorted_dates = sorted(daily_streams.keys())
+        streaks = []
+        current_streak = {
+            'start': sorted_dates[0],
+            'end': sorted_dates[0],
+            'streams': daily_streams[sorted_dates[0]]
+        }
+
+        for i in range(1, len(sorted_dates)):
+            if (sorted_dates[i] - sorted_dates[i-1]).days == 1:
+                # Continue streak
+                current_streak['end'] = sorted_dates[i]
+                current_streak['streams'] += daily_streams[sorted_dates[i]]
+            else:
+                # End streak, save and start new
+                if (current_streak['end'] - current_streak['start']).days >= 2:
+                    streaks.append(current_streak.copy())
+                current_streak = {
+                    'start': sorted_dates[i],
+                    'end': sorted_dates[i],
+                    'streams': daily_streams[sorted_dates[i]]
+                }
+
+        # Don't forget last streak
+        if (current_streak['end'] - current_streak['start']).days >= 2:
+            streaks.append(current_streak)
+
+        # Sort by length
+        for streak in streaks:
+            streak['length_days'] = (streak['end'] - streak['start']).days + 1
+            streak['start_date'] = streak['start'].isoformat()
+            streak['end_date'] = streak['end'].isoformat()
+            streak['total_streams'] = streak['streams']
+            del streak['start']
+            del streak['end']
+            del streak['streams']
+
+        streaks.sort(key=lambda x: x['length_days'], reverse=True)
+
+        return streaks[:limit]
+
+    def get_most_repeated_tracks(self, limit: int = 20) -> List[Dict[str, Any]]:
+        """
+        Get tracks played most frequently (on repeat)
+
+        Returns:
+            List of {track, artist, play_count, repeat_score}
+        """
+        if not self._loaded:
+            self.load_data()
+
+        track_plays = defaultdict(lambda: {'count': 0, 'dates': set(), 'artist': None})
+
+        for record in self._data:
+            track = record.get('master_metadata_track_name')
+            artist = record.get('master_metadata_album_artist_name')
+            ts = record.get('ts')
+
+            if not track or not artist or not ts:
+                continue
+
+            key = f"{track}|||{artist}"
+            dt = datetime.fromisoformat(ts.replace('Z', '+00:00'))
+
+            track_plays[key]['count'] += 1
+            track_plays[key]['dates'].add(dt.date())
+            track_plays[key]['artist'] = artist
+
+        # Calculate repeat score (plays per unique day)
+        results = []
+        for key, data in track_plays.items():
+            if data['count'] < 5:  # Minimum threshold
+                continue
+
+            repeat_score = data['count'] / len(data['dates'])
+            track_name = key.split('|||')[0]
+
+            results.append({
+                'track': track_name,
+                'artist': data['artist'],
+                'play_count': data['count'],
+                'repeat_score': round(repeat_score, 2)
+            })
+
+        results.sort(key=lambda x: x['repeat_score'], reverse=True)
+
+        return results[:limit]
+
+    def get_monthly_diversity(self) -> List[Dict[str, Any]]:
+        """
+        Get artist diversity over time (unique artists per month)
+
+        Returns:
+            List of {month, unique_artists, total_streams}
+        """
+        if not self._loaded:
+            self.load_data()
+
+        monthly_artists = defaultdict(set)
+        monthly_streams = defaultdict(int)
+
+        for record in self._data:
+            ts = record.get('ts')
+            artist = record.get('master_metadata_album_artist_name')
+
+            if not ts or not artist:
+                continue
+
+            dt = datetime.fromisoformat(ts.replace('Z', '+00:00'))
+            month_key = dt.strftime('%Y-%m')
+
+            monthly_artists[month_key].add(artist)
+            monthly_streams[month_key] += 1
+
+        result = [
+            {
+                'month': month,
+                'unique_artists': len(artists),
+                'total_streams': monthly_streams[month],
+                'diversity_ratio': round(len(artists) / monthly_streams[month] * 100, 2) if monthly_streams[month] > 0 else 0
+            }
+            for month, artists in sorted(monthly_artists.items())
+        ]
+
+        return result
+
+    def get_listening_heatmap(self) -> List[Dict[str, Any]]:
+        """
+        Get day-hour heatmap data
+
+        Returns:
+            List of {day, hour, stream_count} for heatmap visualization
+        """
+        if not self._loaded:
+            self.load_data()
+
+        heatmap_data = defaultdict(int)
+
+        for record in self._data:
+            ts = record.get('ts')
+            if not ts:
+                continue
+
+            dt = datetime.fromisoformat(ts.replace('Z', '+00:00'))
+            day = dt.weekday()  # 0=Monday, 6=Sunday
+            hour = dt.hour
+
+            key = (day, hour)
+            heatmap_data[key] += 1
+
+        day_names = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+
+        result = [
+            {
+                'day': day_names[day],
+                'hour': hour,
+                'stream_count': heatmap_data.get((day, hour), 0)
+            }
+            for day in range(7)
+            for hour in range(24)
+        ]
+
+        return result
+
 
 # Global instance
 spotify_data = SpotifyDataLoader()

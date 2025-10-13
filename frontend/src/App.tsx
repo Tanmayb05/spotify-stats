@@ -5,7 +5,7 @@ import ErrorBanner from './components/ErrorBanner';
 
 // Pages
 import Overview from './pages/Overview';
-import Moods from './pages/Moods';
+import ListeningPatterns from './pages/ListeningPatterns';
 import Discovery from './pages/Discovery';
 import Milestones from './pages/Milestones';
 import Sessions from './pages/Sessions';
@@ -20,7 +20,7 @@ function App() {
         <Routes>
           <Route path="/" element={<AppLayout />}>
             <Route index element={<Overview />} />
-            <Route path="moods" element={<Moods />} />
+            <Route path="listening-patterns" element={<ListeningPatterns />} />
             <Route path="discovery" element={<Discovery />} />
             <Route path="milestones" element={<Milestones />} />
             <Route path="sessions" element={<Sessions />} />

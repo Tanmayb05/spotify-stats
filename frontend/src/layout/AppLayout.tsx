@@ -34,7 +34,7 @@ const drawerWidth = 240;
 
 const menuItems = [
   { label: 'Overview', path: '/', icon: <Dashboard /> },
-  { label: 'Moods', path: '/moods', icon: <Mood /> },
+  { label: 'Listening Patterns', path: '/listening-patterns', icon: <Mood /> },
   { label: 'Discovery', path: '/discovery', icon: <Explore /> },
   { label: 'Milestones', path: '/milestones', icon: <EmojiEvents /> },
   { label: 'Sessions', path: '/sessions', icon: <Workspaces /> },
