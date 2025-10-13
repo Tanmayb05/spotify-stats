@@ -59,6 +59,538 @@ If you're making a web page, you can use the following HTML and CSS:
   :root { font-family: InterVariable, sans-serif; }
 }
 
+-----
+
+Complete Specifications for Line Graph
+
+  1. Container Structure
+
+  <Grid size={12}>  // Full width
+    <Paper sx={{
+      p: 5,  // 40px padding
+      transition: 'all 0.3s ease-in-out',
+      '&:hover': {
+        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.12)',
+      },
+    }}>
+
+  2. Header Section
+
+  <Box sx={{ mb: 4 }}>  // 32px bottom margin
+    {/* Header with Title and Controls */}
+    <Box sx={{
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      mb: 3  // 24px bottom margin
+    }}>
+      <Typography variant="h5" fontWeight={700}>
+        Section Title
+      </Typography>
+
+      {/* Optional: Export Button */}
+      <Button
+        variant="outlined"
+        size="small"
+        startIcon={<Download />}
+        onClick={() => handleExportCSV(url, 'filename.csv')}
+        sx={{ mr: 1 }}
+      >
+        Export CSV
+      </Button>
+    </Box>
+  </Box>
+
+  3. Time Range Chips (Optional)
+
+  <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+    <Chip
+      label="All"
+      size="small"
+      onClick={() => handleRangeChange('all')}
+      color={chartRange === 'all' ? 'primary' : 'default'}
+      sx={{ cursor: 'pointer' }}
+    />
+    <Chip label="12M" size="small" ... />
+    <Chip label="6M" size="small" ... />
+    <Chip label="3M" size="small" ... />
+  </Box>
+
+  4. Tabs (if multiple data series)
+
+  <Tabs
+    value={tabValue}
+    onChange={(_, newValue) => setTabValue(newValue)}
+    sx={{
+      mb: 3,  // 24px bottom margin
+      borderBottom: 1,
+      borderColor: 'divider',
+    }}
+  >
+    <Tab
+      label="Series 1"
+      value="series1"
+      sx={{
+        textTransform: 'none',
+        fontWeight: 600,
+        fontSize: '1rem',
+      }}
+    />
+    <Tab
+      label="Series 2"
+      value="series2"
+      sx={{
+        textTransform: 'none',
+        fontWeight: 600,
+        fontSize: '1rem',
+      }}
+    />
+  </Tabs>
+
+  5. Time Period Slider (Optional)
+
+  {chartRange !== 'all' && getMaxSliderValue() > 0 && (
+    <Box sx={{ mt: 2, px: 1 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Typography 
+          variant="caption" 
+          color="text.secondary" 
+          sx={{ minWidth: 'fit-content', flexShrink: 0 }}
+        >
+          Time period:
+        </Typography>
+        <Box sx={{ flex: 1 }}>
+          <Slider
+            value={sliderValue}
+            onChange={(_, value) => setSliderValue(value as number)}
+            min={0}
+            max={getMaxSliderValue()}
+            step={1}
+            marks={[
+              { value: 0, label: data[0]?.label || '' },
+              { value: getMaxSliderValue(), label: data[data.length - 1]?.label || '' },
+            ]}
+            valueLabelDisplay="auto"
+            valueLabelFormat={(value) => {
+              const startLabel = data[value]?.label || '';
+              const endLabel = data[Math.min(value + getRangeMonths() - 1, data.length - 1)]?.label || '';
+              return `${startLabel} - ${endLabel}`;
+            }}
+            sx={{
+              '& .MuiSlider-markLabel': {
+                fontSize: '0.75rem',
+              },
+            }}
+          />
+        </Box>
+      </Box>
+    </Box>
+  )}
+
+  6. LineChart Component
+
+  {loading ? (
+    <Skeleton variant="rectangular" height={600} />
+  ) : (
+    <LineChart
+      xAxis={[
+        {
+          data: filteredData.map((_, idx) => idx),
+          scaleType: 'point',
+          valueFormatter: (value) => filteredData[value]?.label || '',
+        },
+      ]}
+      series={[
+        {
+          data: filteredData.map((d) => d.value),
+          label: 'Label Name',
+          color: '#2dd881',  // Use brand colors: #2dd881, #4ea699, #6fedb7
+          curve: 'catmullRom',  // Smooth curve
+        },
+      ]}
+      height={600}  // Standard height for main charts
+      margin={{ left: 60, right: 40, top: 40, bottom: 60 }}  // Margins for labels
+    />
+  )}
+
+  7. Brand Colors Reference
+
+  // Primary colors from your palette
+  '#2dd881'  // Emerald (main accent)
+  '#4ea699'  // Keppel (secondary)
+  '#6fedb7'  // Aquamarine (tertiary)
+  '#140d4f'  // Federal blue (dark accent)
+  '#1c0b19'  // Dark purple (darkest)
+
+  8. Complete State Management Example
+
+  // State
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<DataType[]>([]);
+  const [chartRange, setChartRange] = useState<'all' | '12m' | '6m' | '3m'>('all');
+  const [sliderValue, setSliderValue] = useState<number>(0);
+  const [tabValue, setTabValue] = useState<'option1' | 'option2'>('option1');
+
+  // Helper functions
+  const getRangeMonths = () => {
+    if (chartRange === 'all') return data.length;
+    return parseInt(chartRange);
+  };
+
+  const getMaxSliderValue = () => {
+    const rangeMonths = getRangeMonths();
+    return Math.max(0, data.length - rangeMonths);
+  };
+
+  const filteredData = chartRange === 'all'
+    ? data
+    : data.slice(sliderValue, sliderValue + getRangeMonths());
+
+  const handleRangeChange = (newRange: typeof chartRange) => {
+    setChartRange(newRange);
+    if (newRange === 'all') {
+      setSliderValue(0);
+    } else {
+      const rangeMonths = parseInt(newRange);
+      setSliderValue(Math.max(0, data.length - rangeMonths));
+    }
+  };
+
+  9. Responsive Considerations
+
+  - Height: 600px for main charts, 400-500px for secondary charts
+  - Margins: Adjust based on label length
+    - Short labels: { left: 60, right: 40, top: 40, bottom: 60 }
+    - Long labels: { left: 80, right: 60, top: 40, bottom: 80 }
+  - Grid: Always use size={12} for full-width line charts
+
+  10. Loading State
+
+  {loading ? (
+    <Skeleton variant="rectangular" height={600} />
+  ) : (
+    <LineChart ... />
+  )}
+
+  11. Accessibility Features
+
+  - aria-label for charts
+  - Keyboard navigation for tabs and chips
+  - Screen reader announcements for data updates
+  - Sufficient color contrast
+
+  Quick Template
+
+  Here's a ready-to-use template:
+
+  <Grid size={12}>
+    <Paper sx={{
+      p: 5,
+      transition: 'all 0.3s ease-in-out',
+      '&:hover': { boxShadow: '0 8px 16px rgba(0, 0, 0, 0.12)' },
+    }}>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h5" fontWeight={700} sx={{ mb: 3 }}>
+          Chart Title
+        </Typography>
+      </Box>
+
+      {loading ? (
+        <Skeleton variant="rectangular" height={600} />
+      ) : (
+        <LineChart
+          xAxis={[{
+            data: data.map((_, idx) => idx),
+            scaleType: 'point',
+            valueFormatter: (value) => data[value]?.label || '',
+          }]}
+          series={[{
+            data: data.map((d) => d.value),
+            label: 'Data Series',
+            color: '#2dd881',
+            curve: 'catmullRom',
+          }]}
+          height={600}
+        />
+      )}
+    </Paper>
+  </Grid>
+
+
+
+
+
+⏺ Complete Specifications for Horizontal Bar Graph
+
+  Based on the Top Rankings - Top Tracks implementation:
+
+  1. Container Structure
+
+  <Grid size={12}>  // Full width
+    <Paper sx={{
+      p: 5,  // 40px padding
+      transition: 'all 0.3s ease-in-out',
+      '&:hover': {
+        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.12)',
+      },
+    }}>
+
+  2. Header Section with Conditional Export
+
+  <Box sx={{ mb: 4 }}>
+    {/* Header with Title and Controls */}
+    <Box sx={{
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      mb: 3
+    }}>
+      <Typography variant="h5" fontWeight={700}>
+        Section Title
+      </Typography>
+
+      {/* Conditional Export Button */}
+      {tabValue !== 'excludedTab' && (
+        <Button
+          variant="outlined"
+          size="small"
+          startIcon={<Download />}
+          onClick={() => handleExportCSV(url, 'filename.csv')}
+        >
+          Export Top 50 CSV
+        </Button>
+      )}
+    </Box>
+  </Box>
+
+  3. Tabs Configuration
+
+  <Tabs
+    value={tabValue}
+    onChange={(_, newValue) => setTabValue(newValue)}
+    sx={{
+      mb: 3,  // 24px bottom margin
+      borderBottom: 1,
+      borderColor: 'divider',
+    }}
+  >
+    <Tab
+      label="Option 1"
+      value="option1"
+      sx={{
+        textTransform: 'none',  // Preserve case
+        fontWeight: 600,
+        fontSize: '1rem',
+      }}
+    />
+    <Tab
+      label="Option 2"
+      value="option2"
+      sx={{
+        textTransform: 'none',
+        fontWeight: 600,
+        fontSize: '1rem',
+      }}
+    />
+  </Tabs>
+
+  4. Loading Skeleton with Dynamic Height
+
+  {loading ? (
+    <Skeleton 
+      variant="rectangular" 
+      height={tabValue === 'specialTab' ? 600 : 550}  // Dynamic height
+    />
+  ) : (
+    // Chart content
+  )}
+
+  5. Overflow Wrapper (Important!)
+
+  <Box sx={{ width: '100%', overflowX: 'auto' }}>
+    {/* BarChart goes here */}
+  </Box>
+  Purpose: Allows horizontal scrolling if labels are too long
+
+  6. BarChart Configuration - Top Tracks Example
+
+  <BarChart
+    yAxis={[
+      {
+        data: topTracks.map((t) => `${t.track} - ${t.artist}`),
+        scaleType: 'band',
+      },
+    ]}
+    series={[
+      {
+        data: topTracks.map((t) => t.streams),
+        label: 'Streams',
+        color: '#6fedb7',  // Use brand colors
+      },
+    ]}
+    layout="horizontal"  // KEY: Makes bars horizontal
+    height={550}  // Height determines how many bars fit
+    margin={{
+      left: 300,   // Adjust based on label length
+      right: 40,
+      top: 40,
+      bottom: 60
+    }}
+    sx={{
+      '.MuiChartsAxis-left .MuiChartsAxis-tickLabel': {
+        fontSize: '0.875rem',  // 14px font size for labels
+      },
+    }}
+  />
+
+  7. Margin Guidelines by Label Type
+
+  Short labels (Artist names only):
+  margin={{ left: 250, right: 40, top: 40, bottom: 60 }}
+  height={550}  // For 10 items
+
+  Long labels (Track - Artist):
+  margin={{ left: 300, right: 40, top: 40, bottom: 60 }}
+  height={550}  // For 10 items
+
+  Many items (20+ items):
+  margin={{ left: 250, right: 40, top: 40, bottom: 60 }}
+  height={600}  // Increase height for more items
+
+  8. Height Calculation Formula
+
+  height = (number_of_items × 55) + 100
+  - 10 items: 550px
+  - 15 items: 925px → round to 600px
+  - 20 items: 1100px → round to 600px
+
+  9. Brand Colors for Different Categories
+
+  '#2dd881'  // Emerald - Primary data (Top Artists, main metrics)
+  '#6fedb7'  // Aquamarine - Secondary data (Top Tracks)
+  '#4ea699'  // Keppel - Tertiary data (Skip Behavior, percentages)
+
+  10. Value Formatters (Optional)
+
+  series={[
+    {
+      data: data.map((d) => d.value),
+      label: 'Label',
+      color: '#4ea699',
+      valueFormatter: (value) => `${value?.toFixed(1)}%`,  // For percentages
+    },
+  ]}
+
+  11. Complete State Management
+
+  // State
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<DataType[]>([]);
+  const [tabValue, setTabValue] = useState<'option1' | 'option2'>('option1');
+
+  // Export handler
+  const handleExportCSV = (url: string, filename: string) => {
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  12. TypeScript Interface Example
+
+  interface TopTrack {
+    track: string;
+    artist: string;
+    streams: number;
+  }
+
+  13. Accessibility Features
+
+  // Add aria-label to BarChart wrapper
+  <Box
+    sx={{ width: '100%', overflowX: 'auto' }}
+    role="region"
+    aria-label="Top tracks bar chart"
+  >
+    <BarChart ... />
+  </Box>
+
+  Complete Template
+
+  <Grid size={12}>
+    <Paper sx={{
+      p: 5,
+      transition: 'all 0.3s ease-in-out',
+      '&:hover': { boxShadow: '0 8px 16px rgba(0, 0, 0, 0.12)' },
+    }}>
+      <Box sx={{ mb: 4 }}>
+        {/* Header */}
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Typography variant="h5" fontWeight={700}>
+            Section Title
+          </Typography>
+          <Button
+            variant="outlined"
+            size="small"
+            startIcon={<Download />}
+            onClick={() => handleExportCSV(url, 'data.csv')}
+          >
+            Export CSV
+          </Button>
+        </Box>
+
+        {/* Tabs */}
+        <Tabs
+          value={tabValue}
+          onChange={(_, newValue) => setTabValue(newValue)}
+          sx={{ mb: 3, borderBottom: 1, borderColor: 'divider' }}
+        >
+          <Tab label="Option 1" value="option1" sx={{ textTransform: 'none', fontWeight: 600, fontSize: '1rem' }} />
+          <Tab label="Option 2" value="option2" sx={{ textTransform: 'none', fontWeight: 600, fontSize: '1rem' }} />
+        </Tabs>
+      </Box>
+
+      {loading ? (
+        <Skeleton variant="rectangular" height={550} />
+      ) : (
+        <Box sx={{ width: '100%', overflowX: 'auto' }}>
+          <BarChart
+            yAxis={[{
+              data: data.map((d) => d.label),
+              scaleType: 'band',
+            }]}
+            series={[{
+              data: data.map((d) => d.value),
+              label: 'Data Label',
+              color: '#2dd881',
+            }]}
+            layout="horizontal"
+            height={550}
+            margin={{ left: 250, right: 40, top: 40, bottom: 60 }}
+            sx={{
+              '.MuiChartsAxis-left .MuiChartsAxis-tickLabel': {
+                fontSize: '0.875rem',
+              },
+            }}
+          />
+        </Box>
+      )}
+    </Paper>
+  </Grid>
+
+  Key Differences from Vertical Bar Charts
+
+  | Feature     | Horizontal             | Vertical              |
+  |-------------|------------------------|-----------------------|
+  | Layout prop | layout="horizontal"    | No layout prop needed |
+  | Data axis   | yAxis                  | xAxis                 |
+  | Left margin | 250-300px (for labels) | 60px                  |
+  | Height      | Based on item count    | Fixed (400-600px)     |
+  | Overflow    | overflowX: 'auto'      | Usually not needed    |
+
+
 ---
 
 # Phase 0 — Project Skeleton & Doc Tooling (Foundations)
