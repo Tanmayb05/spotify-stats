@@ -426,6 +426,391 @@ class SpotifyDataLoader:
 
         return result
 
+    def get_discovery_timeline(self) -> List[Dict[str, Any]]:
+        """
+        Get artist discovery timeline - when artists were first discovered
+
+        Returns:
+            List of {month, new_artists_count}
+        """
+        if not self._loaded:
+            self.load_data()
+
+        # Track first appearance of each artist
+        artist_first_seen = {}
+
+        for record in self._data:
+            ts = record.get('ts')
+            artist = record.get('master_metadata_album_artist_name')
+
+            if not ts or not artist:
+                continue
+
+            dt = datetime.fromisoformat(ts.replace('Z', '+00:00'))
+
+            # Track first time we saw this artist
+            if artist not in artist_first_seen:
+                artist_first_seen[artist] = dt
+
+        # Count discoveries by month
+        monthly_discoveries = defaultdict(int)
+        for artist, first_date in artist_first_seen.items():
+            month_key = first_date.strftime('%Y-%m')
+            monthly_discoveries[month_key] += 1
+
+        # Convert to sorted list
+        result = [
+            {
+                'month': month,
+                'new_artists_count': count
+            }
+            for month, count in sorted(monthly_discoveries.items())
+        ]
+
+        return result
+
+    def get_artist_loyalty(self, limit: int = 20) -> List[Dict[str, Any]]:
+        """
+        Calculate artist loyalty metrics based on return probability and half-life
+
+        Args:
+            limit: Number of top artists to analyze
+
+        Returns:
+            List of {artist, return_prob, half_life_days, total_streams}
+        """
+        if not self._loaded:
+            self.load_data()
+
+        # Get top artists first
+        top_artists_data = self.get_top_artists(limit=limit * 2)  # Get more to filter
+        top_artists = {a['artist'] for a in top_artists_data[:limit]}
+
+        # Track listening sessions per artist
+        artist_sessions = defaultdict(list)
+
+        for record in self._data:
+            artist = record.get('master_metadata_album_artist_name')
+            ts = record.get('ts')
+
+            if not artist or not ts or artist not in top_artists:
+                continue
+
+            dt = datetime.fromisoformat(ts.replace('Z', '+00:00'))
+            artist_sessions[artist].append(dt)
+
+        # Calculate loyalty metrics
+        results = []
+        for artist in top_artists:
+            if artist not in artist_sessions:
+                continue
+
+            sessions = sorted(artist_sessions[artist])
+            if len(sessions) < 5:  # Need minimum sessions to calculate
+                continue
+
+            # Calculate gaps between listens
+            gaps = []
+            for i in range(1, len(sessions)):
+                gap = (sessions[i] - sessions[i-1]).days
+                if gap > 0:  # Only count positive gaps
+                    gaps.append(gap)
+
+            if not gaps:
+                continue
+
+            # Return probability: inverse of average gap
+            # Smaller gaps = higher return probability
+            avg_gap = statistics.mean(gaps)
+            return_prob = min(100.0, 100.0 / (1 + avg_gap))
+
+            # Half-life: median gap (time until 50% likely to return)
+            half_life = statistics.median(gaps)
+
+            results.append({
+                'artist': artist,
+                'return_prob': round(return_prob, 1),
+                'half_life_days': round(half_life, 1),
+                'total_streams': len(sessions)
+            })
+
+        # Sort by return probability
+        results.sort(key=lambda x: x['return_prob'], reverse=True)
+
+        return results[:limit]
+
+    def get_artist_obsessions(self, limit: int = 15) -> List[Dict[str, Any]]:
+        """
+        Identify obsession periods - when an artist dominated listening
+
+        Args:
+            limit: Number of top obsessions to return
+
+        Returns:
+            List of {artist, period_start, period_end, period_share, streams_in_period}
+        """
+        if not self._loaded:
+            self.load_data()
+
+        # Group streams by 7-day windows
+        window_days = 7
+        artist_by_window = defaultdict(lambda: defaultdict(int))
+        window_totals = defaultdict(int)
+
+        for record in self._data:
+            ts = record.get('ts')
+            artist = record.get('master_metadata_album_artist_name')
+
+            if not ts or not artist:
+                continue
+
+            dt = datetime.fromisoformat(ts.replace('Z', '+00:00'))
+            # Create window key (week starting Monday)
+            week_start = dt - timedelta(days=dt.weekday())
+            window_key = week_start.strftime('%Y-%m-%d')
+
+            artist_by_window[window_key][artist] += 1
+            window_totals[window_key] += 1
+
+        # Find periods where artist dominated (>30% share)
+        obsessions = []
+        for window, artists in artist_by_window.items():
+            total = window_totals[window]
+            if total < 10:  # Skip windows with very few streams
+                continue
+
+            for artist, count in artists.items():
+                share = (count / total) * 100
+                if share >= 30.0:  # Obsession threshold
+                    window_date = datetime.strptime(window, '%Y-%m-%d')
+                    obsessions.append({
+                        'artist': artist,
+                        'period_start': window,
+                        'period_end': (window_date + timedelta(days=6)).strftime('%Y-%m-%d'),
+                        'period_share': round(share, 1),
+                        'streams_in_period': count
+                    })
+
+        # Sort by period share
+        obsessions.sort(key=lambda x: x['period_share'], reverse=True)
+
+        return obsessions[:limit]
+
+    def get_reflective_insights(self) -> Dict[str, Any]:
+        """
+        Generate reflective insights about listening patterns
+
+        Returns:
+            Dictionary with various insights and statistics
+        """
+        if not self._loaded:
+            self.load_data()
+
+        # Calculate various insights
+        total_streams = len(self._data)
+
+        # Time-based insights
+        hour_distribution = defaultdict(int)
+        weekday_distribution = defaultdict(int)
+
+        # Streak calculations
+        daily_streams = defaultdict(int)
+
+        for record in self._data:
+            ts = record.get('ts')
+            if not ts:
+                continue
+
+            dt = datetime.fromisoformat(ts.replace('Z', '+00:00'))
+            hour_distribution[dt.hour] += 1
+            weekday_distribution[dt.weekday()] += 1
+            daily_streams[dt.date()] += 1
+
+        # Find longest streak
+        if daily_streams:
+            sorted_dates = sorted(daily_streams.keys())
+            current_streak = 1
+            longest_streak = 1
+
+            for i in range(1, len(sorted_dates)):
+                if (sorted_dates[i] - sorted_dates[i-1]).days == 1:
+                    current_streak += 1
+                    longest_streak = max(longest_streak, current_streak)
+                else:
+                    current_streak = 1
+        else:
+            longest_streak = 0
+
+        # Most active hour
+        most_active_hour = max(hour_distribution.items(), key=lambda x: x[1])[0] if hour_distribution else 0
+
+        # Most active day
+        day_names = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+        most_active_day_idx = max(weekday_distribution.items(), key=lambda x: x[1])[0] if weekday_distribution else 0
+        most_active_day = day_names[most_active_day_idx]
+
+        # Top artist
+        top_artist = self.get_top_artists(limit=1)[0]['artist'] if self._data else 'Unknown'
+
+        # Calculate average streams per day
+        if daily_streams:
+            date_range = (max(daily_streams.keys()) - min(daily_streams.keys())).days + 1
+            avg_streams_per_day = total_streams / date_range if date_range > 0 else 0
+        else:
+            avg_streams_per_day = 0
+
+        return {
+            'total_streams': total_streams,
+            'longest_streak_days': longest_streak,
+            'most_active_hour': most_active_hour,
+            'most_active_day': most_active_day,
+            'top_artist': top_artist,
+            'avg_streams_per_day': round(avg_streams_per_day, 1),
+            'insights': [
+                f"You've maintained a {longest_streak}-day listening streak!",
+                f"Your peak listening hour is {most_active_hour}:00",
+                f"{most_active_day}s are your most active listening days",
+                f"{top_artist} is your most-played artist"
+            ]
+        }
+
+    def get_hourly_distribution(self) -> List[Dict[str, Any]]:
+        """
+        Get listening distribution by hour of day (0-23)
+
+        Returns:
+            List of {hour, streams}
+        """
+        if not self._loaded:
+            self.load_data()
+
+        hour_distribution = defaultdict(int)
+
+        for record in self._data:
+            ts = record.get('ts')
+            if not ts:
+                continue
+
+            dt = datetime.fromisoformat(ts.replace('Z', '+00:00'))
+            hour_distribution[dt.hour] += 1
+
+        # Create list for all 24 hours (fill missing with 0)
+        result = [
+            {'hour': hour, 'streams': hour_distribution.get(hour, 0)}
+            for hour in range(24)
+        ]
+
+        return result
+
+    def get_daily_distribution(self) -> List[Dict[str, Any]]:
+        """
+        Get listening distribution by day of week
+
+        Returns:
+            List of {day, streams} - ordered Mon-Sun
+        """
+        if not self._loaded:
+            self.load_data()
+
+        day_distribution = defaultdict(int)
+
+        for record in self._data:
+            ts = record.get('ts')
+            if not ts:
+                continue
+
+            dt = datetime.fromisoformat(ts.replace('Z', '+00:00'))
+            day_distribution[dt.weekday()] += 1
+
+        # Map to day names
+        day_names = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+        result = [
+            {'day': day_names[day_idx], 'streams': day_distribution.get(day_idx, 0)}
+            for day_idx in range(7)
+        ]
+
+        return result
+
+    def get_skip_behavior(self, limit: int = 20) -> List[Dict[str, Any]]:
+        """
+        Analyze skip behavior by artist
+
+        Args:
+            limit: Number of top artists to analyze
+
+        Returns:
+            List of {artist, total_streams, skipped_count, skip_rate}
+        """
+        if not self._loaded:
+            self.load_data()
+
+        # Track streams and skips per artist
+        artist_stats = defaultdict(lambda: {'total': 0, 'skipped': 0})
+
+        for record in self._data:
+            artist = record.get('master_metadata_album_artist_name')
+            if not artist:
+                continue
+
+            skipped = record.get('skipped', False)
+            artist_stats[artist]['total'] += 1
+            if skipped:
+                artist_stats[artist]['skipped'] += 1
+
+        # Calculate skip rates
+        results = []
+        for artist, stats in artist_stats.items():
+            if stats['total'] < 5:  # Need minimum streams for meaningful rate
+                continue
+
+            skip_rate = (stats['skipped'] / stats['total']) * 100 if stats['total'] > 0 else 0
+            results.append({
+                'artist': artist,
+                'total_streams': stats['total'],
+                'skipped_count': stats['skipped'],
+                'skip_rate': round(skip_rate, 2)
+            })
+
+        # Get top artists by total streams, then show their skip rates
+        results.sort(key=lambda x: x['total_streams'], reverse=True)
+
+        return results[:limit]
+
+    def get_yearly_comparison(self) -> List[Dict[str, Any]]:
+        """
+        Get year-over-year listening comparison
+
+        Returns:
+            List of {year, streams, hours}
+        """
+        if not self._loaded:
+            self.load_data()
+
+        yearly_stats = defaultdict(lambda: {'streams': 0, 'hours': 0})
+
+        for record in self._data:
+            ts = record.get('ts')
+            if not ts:
+                continue
+
+            dt = datetime.fromisoformat(ts.replace('Z', '+00:00'))
+            year = dt.year
+
+            yearly_stats[year]['streams'] += 1
+            yearly_stats[year]['hours'] += record.get('ms_played', 0) / 3_600_000
+
+        # Convert to sorted list
+        result = [
+            {
+                'year': year,
+                'streams': data['streams'],
+                'hours': round(data['hours'], 2)
+            }
+            for year, data in sorted(yearly_stats.items())
+        ]
+
+        return result
+
 
 # Global instance
 spotify_data = SpotifyDataLoader()

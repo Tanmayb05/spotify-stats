@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes import health, stats, mood
+from app.routes import health, stats, mood, discovery
 
 # Create FastAPI app
 app = FastAPI(
@@ -27,6 +27,7 @@ app.add_middleware(
 app.include_router(health.router)
 app.include_router(stats.router)
 app.include_router(mood.router)
+app.include_router(discovery.router)
 
 @app.get("/")
 async def root():
