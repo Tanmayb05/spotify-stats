@@ -459,7 +459,8 @@ export default function ListeningPatterns() {
                         curve: 'catmullRom',
                       },
                     ]}
-                    height={400}
+                    height={600}
+                    margin={{ left: 60, right: 40, top: 40, bottom: 60 }}
                   />
                 )}
               </Box>
