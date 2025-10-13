@@ -46,6 +46,14 @@ import type {
   MoodSummary,
   MoodContexts,
   MonthlyMood,
+  DiscoveryTimeline,
+  ArtistLoyalty,
+  ArtistObsession,
+  ReflectiveInsights,
+  HourlyDistribution,
+  DailyDistribution,
+  SkipBehavior,
+  YearlyComparison,
 } from '../types/api';
 
 // API functions
@@ -95,8 +103,62 @@ export const api = {
     return response.data;
   },
 
-  // Placeholder for future phases
   // Phase 3 - Discovery
+  getDiscoveryTimeline: async (): Promise<DiscoveryTimeline[]> => {
+    const response = await apiClient.get<DiscoveryTimeline[]>('/api/discovery/timeline');
+    return response.data;
+  },
+
+  getArtistLoyalty: async (limit = 20): Promise<ArtistLoyalty[]> => {
+    const response = await apiClient.get<ArtistLoyalty[]>(`/api/discovery/loyalty?limit=${limit}`);
+    return response.data;
+  },
+
+  getArtistObsessions: async (limit = 15): Promise<ArtistObsession[]> => {
+    const response = await apiClient.get<ArtistObsession[]>(`/api/discovery/obsessions?limit=${limit}`);
+    return response.data;
+  },
+
+  getReflectiveInsights: async (): Promise<ReflectiveInsights> => {
+    const response = await apiClient.get<ReflectiveInsights>('/api/discovery/reflect');
+    return response.data;
+  },
+
+  // Additional Overview Stats
+  getHourlyDistribution: async (): Promise<HourlyDistribution[]> => {
+    const response = await apiClient.get<HourlyDistribution[]>('/api/stats/hourly');
+    return response.data;
+  },
+
+  getDailyDistribution: async (): Promise<DailyDistribution[]> => {
+    const response = await apiClient.get<DailyDistribution[]>('/api/stats/daily');
+    return response.data;
+  },
+
+  getSkipBehavior: async (limit = 20): Promise<SkipBehavior[]> => {
+    const response = await apiClient.get<SkipBehavior[]>(`/api/stats/skip-behavior?limit=${limit}`);
+    return response.data;
+  },
+
+  getYearlyComparison: async (): Promise<YearlyComparison[]> => {
+    const response = await apiClient.get<YearlyComparison[]>('/api/stats/yearly');
+    return response.data;
+  },
+
+  // CSV Export functions
+  exportTopArtists: (limit = 50): string => {
+    return `${API_BASE_URL}/api/export/top-artists?limit=${limit}`;
+  },
+
+  exportTopTracks: (limit = 50): string => {
+    return `${API_BASE_URL}/api/export/top-tracks?limit=${limit}`;
+  },
+
+  exportMonthlySummary: (): string => {
+    return `${API_BASE_URL}/api/export/monthly-summary`;
+  },
+
+  // Placeholder for future phases
   // Phase 4 - Milestones
   // Phase 5 - Sessions
   // Phase 6 - Recommendations
