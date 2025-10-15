@@ -1,0 +1,124 @@
+{
+  "topArtists": {
+    "numUniqueArtists": 900,
+    "topArtists": [
+      {
+        "artistUri": "spotify:artist:5ZsFI1h6hIdQRw2ti0hz81"
+      },
+      {
+        "artistUri": "spotify:artist:5GnnSrwNCGyfAU4zuIytiS"
+      },
+      {
+        "artistUri": "spotify:artist:1QAJqy2dA3ihHBFIHRphZj"
+      },
+      {
+        "artistUri": "spotify:artist:246dkjvS1zLTtiykXe5h60"
+      },
+      {
+        "artistUri": "spotify:artist:2cjQTf2J5yCaNY8qHpW855"
+      }
+    ],
+    "topArtistMilliseconds": 141517313,
+    "topArtistFanPercentage": 3.3093404E-4
+  },
+  "topTracks": {
+    "topTracks": [
+      "spotify:track:7qZuRt0v6zox5gMAMCls5M",
+      "spotify:track:7K6RLbkpqZI4OaoSnLcBiU",
+      "spotify:track:3P9pRL7V9yM9DhY6NGZjzA",
+      "spotify:track:0TL0LFcwIBF5eX7arDIKxY",
+      "spotify:track:383EQ8PDAlqzSe4ayyn2Ct"
+    ],
+    "topTrackPlayCount": 129,
+    "topTrackFirstPlayedDate": "2024-03-15",
+    "distinctTracksPlayed": 1362
+  },
+  "yearlyMetrics": {
+    "totalMsListened": 971211538,
+    "mostListenedDay": "2024-11-02",
+    "mostListenedDayMinutes": 231.73944,
+    "percentGreaterThanWorldwideUsers": 77.69169
+  },
+  "musicEvolution": {
+    "eras": [
+      {
+        "key": "0",
+        "peakMonth": 3,
+        "color": "green-blue",
+        "genre": "uk pop",
+        "mood": "rainy day",
+        "pivotalArtists": [
+          "spotify:artist:5ZsFI1h6hIdQRw2ti0hz81"
+        ],
+        "tracks": [
+          {
+            "trackName": "Outside",
+            "trackUri": "spotify:track:6f8cT6qJ1KqqVXjx0xRJBt"
+          },
+          {
+            "trackName": "Calamity",
+            "trackUri": "spotify:track:1hGHHKR7KFF2Wl78LBgKBz"
+          },
+          {
+            "trackName": "Unfuckwitable",
+            "trackUri": "spotify:track:0PuQItGL0eIngxLh2um4QE"
+          }
+        ]
+      },
+      {
+        "key": "1",
+        "peakMonth": 4,
+        "color": "red",
+        "genre": "pop",
+        "mood": "pink pilates princess",
+        "descriptor": "hollywood",
+        "pivotalArtists": [
+          "spotify:artist:5ZsFI1h6hIdQRw2ti0hz81",
+          "spotify:artist:06HL4z0CvFAxyc27GXpf02",
+          "spotify:artist:4AK6F7OLvEQ5QYCBNiQWHq"
+        ],
+        "tracks": [
+          {
+            "trackName": "What I Am",
+            "trackUri": "spotify:track:7qZuRt0v6zox5gMAMCls5M"
+          },
+          {
+            "trackName": "Love Like This",
+            "trackUri": "spotify:track:3P9pRL7V9yM9DhY6NGZjzA"
+          },
+          {
+            "trackName": "Trampoline (with ZAYN)",
+            "trackUri": "spotify:track:1iQDltZqI7BXnHrFy4Qo1k"
+          }
+        ]
+      },
+      {
+        "key": "2",
+        "peakMonth": 5,
+        "color": "red",
+        "genre": "bollywood",
+        "mood": "romantic",
+        "descriptor": "humming",
+        "pivotalArtists": [
+          "spotify:artist:5GnnSrwNCGyfAU4zuIytiS",
+          "spotify:artist:1wRPtKGflJrBx9BmLsSwlU",
+          "spotify:artist:1mYsTxnqsietFxj1OgoGbG"
+        ],
+        "tracks": [
+          {
+            "trackName": "Phir Se Ud Chala",
+            "trackUri": "spotify:track:1kcV2LJxt5v0s2cEGtEJ5i"
+          },
+          {
+            "trackName": "Kun Faya Kun",
+            "trackUri": "spotify:track:7F8RNvTQlvbeBLeenycvN6"
+          },
+          {
+            "trackName": "Haawa Haawa",
+            "trackUri": "spotify:track:7gUhBUzFbGRYGgtDubhTSG"
+          }
+        ]
+      }
+    ]
+  }
+}

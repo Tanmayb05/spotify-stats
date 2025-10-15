@@ -1,0 +1,1926 @@
+{
+  "tracks": [
+    {
+      "artist": "The Who",
+      "album": "Who's Next",
+      "track": "Baba O'Riley",
+      "uri": "spotify:track:2KmEgiY8fQs0G6WNxtzQKr"
+    },
+    {
+      "artist": "Leanna Crawford",
+      "album": "Crazy Beautiful You (Deluxe)",
+      "track": "Fragile Heart",
+      "uri": "spotify:track:5HZ8jhiNijcSGaVb5DGEpC"
+    },
+    {
+      "artist": "Tears For Fears",
+      "album": "Rule The World: The Greatest Hits",
+      "track": "Head Over Heels",
+      "uri": "spotify:track:748yv6bb3l3CcKS45a6SZ8"
+    },
+    {
+      "artist": "Harry Styles",
+      "album": "Fine Line",
+      "track": "Falling",
+      "uri": "spotify:track:1ZMiCix7XSAbfAJlEZWMCp"
+    },
+    {
+      "artist": "Solomon Burke",
+      "album": "The Very Best of Solomon Burke",
+      "track": "You're Good for Me",
+      "uri": "spotify:track:1kVbOR5Ko42OolRrTgqhai"
+    },
+    {
+      "artist": "Bruno Major",
+      "album": "To Let A Good Thing Die",
+      "track": "The Most Beautiful Thing",
+      "uri": "spotify:track:5unXHHcSQLGO19RuVqZB6d"
+    },
+    {
+      "artist": "Lewis Capaldi",
+      "album": "Divinely Uninspired To A Hellish Extent",
+      "track": "Someone You Loved",
+      "uri": "spotify:track:7qEHsqek33rTcFNT9PFqLf"
+    },
+    {
+      "artist": "Juice WRLD",
+      "album": "Goodbye & Good Riddance",
+      "track": "Lucid Dreams",
+      "uri": "spotify:track:285pBltuF7vW8TeWk8hdRR"
+    },
+    {
+      "artist": "Niall Horan",
+      "album": "Heartbreak Weather",
+      "track": "Nice To Meet Ya",
+      "uri": "spotify:track:0DrFTaAX2srXPkuag35djb"
+    },
+    {
+      "artist": "Fenne Lily",
+      "album": "Top to Toe",
+      "track": "Top to Toe",
+      "uri": "spotify:track:1I6hI9D2b1UXZUGoP8ixM0"
+    },
+    {
+      "artist": "Logic",
+      "album": "Homicide",
+      "track": "Homicide",
+      "uri": "spotify:track:0Lw6aQcBFWTQ9m4MSwwwes"
+    },
+    {
+      "artist": "Survivor",
+      "album": "Rocky IV",
+      "track": "Eye of the Tiger",
+      "uri": "spotify:track:2KH16WveTQWT6KOG9Rg6e2"
+    },
+    {
+      "artist": "Mason Ramsey",
+      "album": "Something You Can Hold",
+      "track": "Something You Can Hold",
+      "uri": "spotify:track:3qqlyGEO02ZoW8OwYhuMq8"
+    },
+    {
+      "artist": "Nilotpal Bora",
+      "album": "Tripling: Season 2 (Music from TVF Original Series)",
+      "track": "Ishq Ka Haafiz",
+      "uri": "spotify:track:02j4mnF3g6FOVtRZWF9OkE"
+    },
+    {
+      "artist": "Arijit Singh",
+      "album": "Pachtaoge (From \"Jaani Ve\")",
+      "track": "Pachtaoge (From \"Jaani Ve\")",
+      "uri": "spotify:track:5QVHNa0ppJUOoqSd36ovQS"
+    },
+    {
+      "artist": "KAI",
+      "album": "KAI - The 1st Mini Album",
+      "track": "Mmmh",
+      "uri": "spotify:track:5dntGTbUtmUO239wQ0k3yM"
+    },
+    {
+      "artist": "ZAYN",
+      "album": "Icarus Falls",
+      "track": "There You Are",
+      "uri": "spotify:track:155EsNGoXo7XSVF84oTPam"
+    },
+    {
+      "artist": "Linkin Park",
+      "album": "Meteora",
+      "track": "Don't Stay",
+      "uri": "spotify:track:2yss0n7KmvmSr4EHvjfFpn"
+    },
+    {
+      "artist": "jung jaeil",
+      "album": "Parasite",
+      "track": "Ghost",
+      "uri": "spotify:track:0cxpAz0VuL9zXLxNcH6ozx"
+    },
+    {
+      "artist": "Bob Seger",
+      "album": "Stranger In Town",
+      "track": "Still The Same",
+      "uri": "spotify:track:1Ryxsiacu8pUXIMCVnIQ8J"
+    },
+    {
+      "artist": "ZAYN",
+      "album": "Love Like This",
+      "track": "Love Like This",
+      "uri": "spotify:track:3P9pRL7V9yM9DhY6NGZjzA"
+    },
+    {
+      "artist": "The Elegants",
+      "album": "Little Star: The Best Of The Elegants",
+      "track": "Little Star",
+      "uri": "spotify:track:3c7KT5CN8uYRaK3xThhdYt"
+    },
+    {
+      "artist": "Alex Warren",
+      "album": "Ordinary",
+      "track": "Ordinary",
+      "uri": "spotify:track:6qqrTXSdwiJaq8SO0X2lSe"
+    },
+    {
+      "artist": "Post Malone",
+      "album": "F-1 Trillion",
+      "track": "Right About You",
+      "uri": "spotify:track:7k2nR2eTRVuzAMCXUj3HMv"
+    },
+    {
+      "artist": "Joey Stamper",
+      "album": "Reimagined",
+      "track": "Fly Me to the Moon / Come Fly With Me",
+      "uri": "spotify:track:5YTCEo0AwVVHPccUI4ltYj"
+    },
+    {
+      "artist": "May The Muse",
+      "album": "Gold",
+      "track": "Bad Kingdom",
+      "uri": "spotify:track:7vCuaxRIKElwgjSAo5REkw"
+    },
+    {
+      "artist": "Billie Eilish",
+      "album": "WHEN WE ALL FALL ASLEEP, WHERE DO WE GO?",
+      "track": "when the party's over",
+      "uri": "spotify:track:43zdsphuZLzwA9k4DJhU0I"
+    },
+    {
+      "artist": "Radiohead",
+      "album": "OK Computer",
+      "track": "Climbing Up the Walls",
+      "uri": "spotify:track:0R332cdlS9LyE0Ge2PSlVC"
+    },
+    {
+      "artist": "Nieman",
+      "album": "Why Do I Still? [feat. May Angeles]",
+      "track": "Why Do I Still? [feat. May Angeles] - Unplugged",
+      "uri": "spotify:track:34p3Kw1fR2POzyLDZkLT62"
+    },
+    {
+      "artist": "The Shins",
+      "album": "Oh, Inverted World",
+      "track": "New Slang - 2021 Remaster",
+      "uri": "spotify:track:0NslHuacjxQYfUTOW3HCIV"
+    },
+    {
+      "artist": "Bonobo",
+      "album": "Tides",
+      "track": "Tides",
+      "uri": "spotify:track:7rRYiBxeudiHMNmgptnne9"
+    },
+    {
+      "artist": "Meghan Trainor",
+      "album": "Valentine's Day - R&B Love",
+      "track": "Like I'm Gonna Lose You (feat. John Legend)",
+      "uri": "spotify:track:3aD8cLO0ZZTLoHwF4pTu8d"
+    },
+    {
+      "artist": "Sam Smith",
+      "album": "How Do You Sleep?",
+      "track": "How Do You Sleep?",
+      "uri": "spotify:track:6b2RcmUt1g9N9mQ3CbjX2Y"
+    },
+    {
+      "artist": "Juice WRLD",
+      "album": "Legends Never Die",
+      "track": "Life's A Mess (feat. Halsey)",
+      "uri": "spotify:track:5wWAwzGp2OaaoIkwcz6wZs"
+    },
+    {
+      "artist": "The Tads",
+      "album": "Cult Hits of the 1950's, Vol. 2",
+      "track": "She Is My Dream",
+      "uri": "spotify:track:1UrZqBZyp5qjEY6wpiuJWN"
+    },
+    {
+      "artist": "GUNNAR",
+      "album": "Outta My Mind",
+      "track": "Outta My Mind",
+      "uri": "spotify:track:3xW5uV2klWNz7VQ3DCEvPs"
+    },
+    {
+      "artist": "Fly By Midnight",
+      "album": "Silver Crane (Deluxe)",
+      "track": "Borrow Your Time",
+      "uri": "spotify:track:4cGUA0C1jj9j74aG3qyc3K"
+    },
+    {
+      "artist": "Tirth",
+      "album": "Free",
+      "track": "Free",
+      "uri": "spotify:track:1TvUwoDxsYvdwE4fsdqFYh"
+    },
+    {
+      "artist": "Neon Trees",
+      "album": "Picture Show",
+      "track": "Everybody Talks",
+      "uri": "spotify:track:2iUmqdfGZcHIhS3b9E9EWq"
+    },
+    {
+      "artist": "Pink Floyd",
+      "album": "The Dark Side of the Moon",
+      "track": "Breathe (In the Air)",
+      "uri": "spotify:track:2ctvdKmETyOzPb2GiJJT53"
+    },
+    {
+      "artist": "Mugdha Vaishampain",
+      "album": "Ubuntu",
+      "track": "Hich Amuchi Praarthana",
+      "uri": "spotify:track:0nk9m1Oc8UVJ07WDoCnNYY"
+    },
+    {
+      "artist": "Joji",
+      "album": "Glimpse of Us",
+      "track": "Glimpse of Us",
+      "uri": "spotify:track:6xGruZOHLs39ZbVccQTuPZ"
+    },
+    {
+      "artist": "The Ascots",
+      "album": "The Hits Of Harlem Volume Two",
+      "track": "What Love Can Do",
+      "uri": "spotify:track:2GoqEqB1ARpBxcgEcZOilN"
+    },
+    {
+      "artist": "Eminem",
+      "album": "Killshot",
+      "track": "Killshot",
+      "uri": "spotify:track:1jo3TwNGCXfNdB5uba3ZVv"
+    },
+    {
+      "artist": "ZAYN",
+      "album": "Mind Of Mine (Deluxe Edition)",
+      "track": "iT's YoU",
+      "uri": "spotify:track:6dtWKqqdveI3YvdYJQKWWn"
+    },
+    {
+      "artist": "Anuv Jain",
+      "album": "Riha",
+      "track": "Riha",
+      "uri": "spotify:track:6Ln89sczgIcAJXGAIdS94R"
+    },
+    {
+      "artist": "Guns N' Roses",
+      "album": "Appetite For Destruction",
+      "track": "Paradise City",
+      "uri": "spotify:track:3YBZIN3rekqsKxbJc9FZko"
+    },
+    {
+      "artist": "Vishal Mishra",
+      "album": "ANIMAL",
+      "track": "Pehle Bhi Main",
+      "uri": "spotify:track:7yDHHVKLbvDmVw1XXhDDIO"
+    },
+    {
+      "artist": "Travis Atreo",
+      "album": "All I Ask",
+      "track": "All I Ask",
+      "uri": "spotify:track:76ot1lv2vgV2Tx2aEH3a6U"
+    },
+    {
+      "artist": "Aerosmith",
+      "album": "Toys In The Attic",
+      "track": "Sweet Emotion",
+      "uri": "spotify:track:24NwBd5vZ2CK8VOQVnqdxr"
+    },
+    {
+      "artist": "Miley Cyrus",
+      "album": "SHE IS COMING",
+      "track": "Unholy",
+      "uri": "spotify:track:6vjymPak0JRQC2P84XlI9t"
+    },
+    {
+      "artist": "New Beat Order",
+      "album": "Higher",
+      "track": "Higher",
+      "uri": "spotify:track:1XoF3AeUbSzADC1Au0vMCA"
+    },
+    {
+      "artist": "Weezer",
+      "album": "Weezer",
+      "track": "Island In The Sun",
+      "uri": "spotify:track:2MLHyLy5z5l5YRp7momlgw"
+    },
+    {
+      "artist": "Foreign Air",
+      "album": "Turning",
+      "track": "Turning",
+      "uri": "spotify:track:7eYlX2Ju50SmeQcRK5SC45"
+    },
+    {
+      "artist": "The Police",
+      "album": "Synchronicity",
+      "track": "Every Breath You Take - Remastered 2003",
+      "uri": "spotify:track:2sXp9Qmvc7mRaDBjBgcGGi"
+    },
+    {
+      "artist": "Paul McCartney",
+      "album": "Back In The U.S.",
+      "track": "Live And Let Die - Live",
+      "uri": "spotify:track:2p5YsiLsdmFlBtJOmFXDDj"
+    },
+    {
+      "artist": "The Royal Concept",
+      "album": "Royal",
+      "track": "On Our Way",
+      "uri": "spotify:track:3GTXok0dIm0mMqBiVklBYS"
+    },
+    {
+      "artist": "Kat Cunning",
+      "album": "Eve",
+      "track": "Eve",
+      "uri": "spotify:track:0mzKoRT6e9Ic4DX0hbH3Tw"
+    },
+    {
+      "artist": "Shawn Mendes",
+      "album": "If I Can't Have You",
+      "track": "If I Can't Have You",
+      "uri": "spotify:track:6LsAAHotRLMOHfCsSfYCsz"
+    },
+    {
+      "artist": "Rhys Lewis",
+      "album": "Hold On To Happiness",
+      "track": "Hold On To Happiness",
+      "uri": "spotify:track:2GpHwqp9mNHyma8C3HliD8"
+    },
+    {
+      "artist": "Bon Jovi",
+      "album": "Slippery When Wet",
+      "track": "Livin' On A Prayer",
+      "uri": "spotify:track:0J6mQxEZnlRt9ymzFntA6z"
+    },
+    {
+      "artist": "Empire Of The Sun",
+      "album": "Alive",
+      "track": "Alive",
+      "uri": "spotify:track:7tqG3RAo8h9pHxCJFn7bZb"
+    },
+    {
+      "artist": "Taylor Swift",
+      "album": "Lover",
+      "track": "Lover",
+      "uri": "spotify:track:0bzbvANY6oETSJLc0wlVGY"
+    },
+    {
+      "artist": "Eminem",
+      "album": "The Marshall Mathers LP2",
+      "track": "Asshole",
+      "uri": "spotify:track:0OOv1XGVVzUgTIzomIHfR0"
+    },
+    {
+      "artist": "Youth Group",
+      "album": "Casino Twilight Dogs",
+      "track": "Forever Young",
+      "uri": "spotify:track:3tFECpGckFpp0HpQje78gi"
+    },
+    {
+      "artist": "The Lone Bellow",
+      "album": "The Lone Bellow",
+      "track": "You Never Need Nobody",
+      "uri": "spotify:track:7bdsD2f0LtNJjRo3JNM850"
+    },
+    {
+      "artist": "Westlife",
+      "album": "Coast To Coast",
+      "track": "My Love",
+      "uri": "spotify:track:5p0ietGkLNEqx1Z7ijkw5g"
+    },
+    {
+      "artist": "James Blake",
+      "album": "Overgrown",
+      "track": "Overgrown",
+      "uri": "spotify:track:7rHIRFNCDu6o9LWtGMevK1"
+    },
+    {
+      "artist": "John Mayer",
+      "album": "Continuum",
+      "track": "Stop This Train",
+      "uri": "spotify:track:3E6iea9uEmB7gRru4lyP6h"
+    },
+    {
+      "artist": "mxmtoon",
+      "album": "don't play your card",
+      "track": "don't play your card",
+      "uri": "spotify:track:2zxxQs5zgOes6lyIy8hNxM"
+    },
+    {
+      "artist": "Eminem",
+      "album": "Recovery",
+      "track": "No Love",
+      "uri": "spotify:track:7bHT9osSq1rwT2yaImzqCi"
+    },
+    {
+      "artist": "Midival Punditz",
+      "album": "Gully Boy",
+      "track": "Train Song",
+      "uri": "spotify:track:6SQDhaDMwLeRGHfyLb00d4"
+    },
+    {
+      "artist": "Calum Scott",
+      "album": "Only Human",
+      "track": "You Are The Reason",
+      "uri": "spotify:track:69vToJ9BMbbLlFZo7k7A7B"
+    },
+    {
+      "artist": "Dominic Fike",
+      "album": "Mona Lisa (Spider-Man: Across the Spider-Verse)",
+      "track": "Mona Lisa (Spider-Man: Across the Spider-Verse)",
+      "uri": "spotify:track:37CoOXIsgF3NzbK1zHZetk"
+    },
+    {
+      "artist": "U2",
+      "album": "The Joshua Tree",
+      "track": "With Or Without You",
+      "uri": "spotify:track:6ADSaE87h8Y3lccZlBJdXH"
+    },
+    {
+      "artist": "Glen Hansard",
+      "album": "Once (Music From The Motion Picture)",
+      "track": "Falling Slowly",
+      "uri": "spotify:track:6EIVLz5xM1xE29r0OmIkWt"
+    },
+    {
+      "artist": "Jimi Hendrix",
+      "album": "Electric Ladyland",
+      "track": "All Along the Watchtower",
+      "uri": "spotify:track:2aoo2jlRnM3A0NyLQqMN2f"
+    },
+    {
+      "artist": "Lana Chacra",
+      "album": "Card XVIII - The Moon",
+      "track": "Card XVIII - The Moon",
+      "uri": "spotify:track:7F7MNIKNqu7bHmky76P0Ra"
+    },
+    {
+      "artist": "Cardi B",
+      "album": "Please Me",
+      "track": "Please Me",
+      "uri": "spotify:track:0PG9fbaaHFHfre2gUVo7AN"
+    },
+    {
+      "artist": "Eminem",
+      "album": "When I'm Gone",
+      "track": "When I'm Gone",
+      "uri": "spotify:track:2lRI7n5b9jlPYsEpRuots6"
+    },
+    {
+      "artist": "Hazlett",
+      "album": "Bloom Mountain",
+      "track": "Please Don't Be",
+      "uri": "spotify:track:1SuNH8rKUtcjWJYvZ3bBGo"
+    },
+    {
+      "artist": "ZAYN",
+      "album": "A Whole New World (End Title)",
+      "track": "A Whole New World (End Title) - From \"Aladdin\"",
+      "uri": "spotify:track:1iWHabUgUuuKLBa0TzTHfk"
+    },
+    {
+      "artist": "Noah Kahan",
+      "album": "Mess",
+      "track": "Mess",
+      "uri": "spotify:track:3qhOjLeh6HePtsDhtxGpuR"
+    },
+    {
+      "artist": "Metro Boomin",
+      "album": "METRO BOOMIN PRESENTS SPIDER-MAN: ACROSS THE SPIDER-VERSE",
+      "track": "Calling (Spider-Man: Across the Spider-Verse) (Metro Boomin & Swae Lee, NAV, feat. A Boogie Wit da Hoodie)",
+      "uri": "spotify:track:5rurggqwwudn9clMdcchxT"
+    },
+    {
+      "artist": "Apparat",
+      "album": "The Devil's Walk",
+      "track": "Goodbye",
+      "uri": "spotify:track:7M0fsXo6rpXOKkveYooBob"
+    },
+    {
+      "artist": "Passenger",
+      "album": "Sometimes It's Something, Sometimes It's Nothing at All",
+      "track": "Rosie",
+      "uri": "spotify:track:09t8F6vwElB6scMtsGpyaP"
+    },
+    {
+      "artist": "Shankar Mahadevan",
+      "album": "Aga Bai Arechya",
+      "track": "Man Udhan Varyache",
+      "uri": "spotify:track:3fe5pPn4xRD2qjFGnBOyJi"
+    },
+    {
+      "artist": "Oscar Anton",
+      "album": "nuits d'été",
+      "track": "nuits d'été",
+      "uri": "spotify:track:2dxyTLxvO1xzHSD6fDafwZ"
+    },
+    {
+      "artist": "Bastille",
+      "album": "Joy",
+      "track": "Joy",
+      "uri": "spotify:track:3QpkbrYXtlU3LRJu3sTK6V"
+    },
+    {
+      "artist": "Olivia O'Brien",
+      "album": "Complicated",
+      "track": "Complicated",
+      "uri": "spotify:track:0jllH0usRFD4LJkJnGK9Lf"
+    },
+    {
+      "artist": "All Types Of Kinds",
+      "album": "Keep In Touch",
+      "track": "Keep In Touch",
+      "uri": "spotify:track:35CBCV3nlb5SvRGZjDwZm8"
+    },
+    {
+      "artist": "New West",
+      "album": "Those Eyes",
+      "track": "Those Eyes",
+      "uri": "spotify:track:2GThBgzZoZfz0lx1JjBwfe"
+    },
+    {
+      "artist": "jung jaeil",
+      "album": "Parasite",
+      "track": "Moon Gwang Left",
+      "uri": "spotify:track:7DyVi7CausS9XJrLnDhw81"
+    },
+    {
+      "artist": "Kurt Hugo Schneider",
+      "album": "Just A Dream",
+      "track": "Just A Dream",
+      "uri": "spotify:track:0QfmQhr5npxuWQ4zzUDUhB"
+    },
+    {
+      "artist": "GIANNI TAYLOR",
+      "album": "She Don't Want Your Love",
+      "track": "She Don't Want Your Love",
+      "uri": "spotify:track:4kVr5IKVbZWj7S90DcNKTu"
+    },
+    {
+      "artist": "Frankie Valli & The Four Seasons",
+      "album": "December, 1963 (Oh, What a Night) / Slip Away",
+      "track": "December, 1963 (Oh, What a Night)",
+      "uri": "spotify:track:4nuPrKithHbRJXuA9spwu4"
+    },
+    {
+      "artist": "Eminem",
+      "album": "The Eminem Show",
+      "track": "Till I Collapse",
+      "uri": "spotify:track:4xkOaSrkexMciUUogZKVTS"
+    },
+    {
+      "artist": "Daniela Andrade",
+      "album": "La Vie En Rose",
+      "track": "La Vie En Rose",
+      "uri": "spotify:track:0VxocBntP1XTZRsR9ZURPS"
+    },
+    {
+      "artist": "Miley Cyrus",
+      "album": "SHE IS COMING",
+      "track": "Mother's Daughter",
+      "uri": "spotify:track:2WyRfGeHo97VC5mP1BBSzr"
+    },
+    {
+      "artist": "Snow Patrol",
+      "album": "Eyes Open",
+      "track": "Chasing Cars",
+      "uri": "spotify:track:11bD1JtSjlIgKgZG2134DZ"
+    },
+    {
+      "artist": "Rabbi Shergill",
+      "album": "Rabbi",
+      "track": "Tere Bin",
+      "uri": "spotify:track:5frmIBzZKMjU2PlWJJ8Ir3"
+    },
+    {
+      "artist": "Charlie Cunningham",
+      "album": "Heights EP",
+      "track": "Blindfold",
+      "uri": "spotify:track:6MKlZH8AYBXuMpfLWaKFMi"
+    },
+    {
+      "artist": "Bharat Chauhan",
+      "album": "Tu Hoti Toh",
+      "track": "Tu Hoti Toh",
+      "uri": "spotify:track:3JvPxVVx2tIMrddY5HCckh"
+    },
+    {
+      "artist": "Russ",
+      "album": "SHAKE THE SNOW GLOBE",
+      "track": "CIVIL WAR - Bonus",
+      "uri": "spotify:track:0IUgswE9wJaY4QIQZEDTKe"
+    },
+    {
+      "artist": "Eminem",
+      "album": "Kamikaze",
+      "track": "Not Alike (feat. Royce Da 5'9)",
+      "uri": "spotify:track:28FGV3ORH14MYORd7s5dlU"
+    },
+    {
+      "artist": "Akanksha Sethi",
+      "album": "Raaz Tera Mera",
+      "track": "Raaz Tera Mera",
+      "uri": "spotify:track:4hGHgXcTOD8BzJKMz062ZN"
+    },
+    {
+      "artist": "American Authors",
+      "album": "American Authors",
+      "track": "Hit It",
+      "uri": "spotify:track:1XSJhEiT3TdG7aoX6Gwf7j"
+    },
+    {
+      "artist": "Rising Appalachia",
+      "album": "Leylines",
+      "track": "Sassafras",
+      "uri": "spotify:track:43tEC7y76CZv0W395dRNc0"
+    },
+    {
+      "artist": "Sarah Barrios",
+      "album": "Have We Met Before (with Eric Nam)",
+      "track": "Have We Met Before (with Eric Nam)",
+      "uri": "spotify:track:7eCpXVlWnTVEE8twb3P8m5"
+    },
+    {
+      "artist": "KAVYA",
+      "album": "Golden",
+      "track": "Golden",
+      "uri": "spotify:track:5Q57K8b59QPtii8WPYotTY"
+    },
+    {
+      "artist": "Plain White T's",
+      "album": "All That We Needed",
+      "track": "Hey There Delilah",
+      "uri": "spotify:track:4RCWB3V8V0dignt99LZ8vH"
+    },
+    {
+      "artist": "U2",
+      "album": "The Joshua Tree",
+      "track": "I Still Haven't Found What I'm Looking For",
+      "uri": "spotify:track:6wpGqhRvJGNNXwWlPmkMyO"
+    },
+    {
+      "artist": "Eminem",
+      "album": "Relapse: Refill",
+      "track": "Crack A Bottle",
+      "uri": "spotify:track:4dK00wCxlqWEeN8BoM1BHT"
+    },
+    {
+      "artist": "Corey Kilgannon",
+      "album": "Soften, Continue (Another B-Sides)",
+      "track": "I Still See Ghosts / The Hollow II",
+      "uri": "spotify:track:49NMXHFVNxVshT8VlTE5CV"
+    },
+    {
+      "artist": "Nirvana",
+      "album": "MTV Unplugged In New York",
+      "track": "The Man Who Sold The World - Live",
+      "uri": "spotify:track:15VRO9CQwMpbqUYA7e6Hwg"
+    },
+    {
+      "artist": "John Newman",
+      "album": "Love Me Again",
+      "track": "Love Me Again",
+      "uri": "spotify:track:7v6EVHw0iUL8ww77IaoLCZ"
+    },
+    {
+      "artist": "Conan Gray",
+      "album": "Kid Krow",
+      "track": "Heather",
+      "uri": "spotify:track:4xqrdfXkTW4T0RauPLv3WA"
+    },
+    {
+      "artist": "Cigarettes After Sex",
+      "album": "Cigarettes After Sex",
+      "track": "K.",
+      "uri": "spotify:track:1FWsomP9StpCcXNWmJk8Cl"
+    },
+    {
+      "artist": "Arctic Monkeys",
+      "album": "AM",
+      "track": "Do I Wanna Know?",
+      "uri": "spotify:track:2UzMpPKPhbcC8RbsmuURAZ"
+    },
+    {
+      "artist": "Little Alice",
+      "album": "Going Back: A Collection Of Rhythm & Blues",
+      "track": "Why Oh Why",
+      "uri": "spotify:track:6OHp2rt0wrxh45g6tQBtzU"
+    },
+    {
+      "artist": "Peter Sivo Band",
+      "album": "Peter Sivo Band (1946-1961)",
+      "track": "Love of No Return",
+      "uri": "spotify:track:7GWY69atVdWuka2WjKIyd6"
+    },
+    {
+      "artist": "Gillian Hills",
+      "album": "Twistin'The Rock Vol 9",
+      "track": "Zou Bisou Bisou",
+      "uri": "spotify:track:0uXaqBGpEIYzu2HggSMJ4d"
+    },
+    {
+      "artist": "Stomper",
+      "album": "Wishing Well (feat. Lucy Tops)",
+      "track": "Wishing Well (feat. Lucy Tops)",
+      "uri": "spotify:track:0imM6cQ9NVfHT4aph5Y9Od"
+    },
+    {
+      "artist": "Catherine Feeny",
+      "album": "Hurricane Glass",
+      "track": "Mr Blue",
+      "uri": "spotify:track:6ta5yavnnEfCE4faU0jebM"
+    },
+    {
+      "artist": "jung jaeil",
+      "album": "Parasite",
+      "track": "The Belt of Faith",
+      "uri": "spotify:track:0xSHUM4HMiEDkBSlcSGMOV"
+    },
+    {
+      "artist": "Frank Ocean",
+      "album": "Blonde",
+      "track": "White Ferrari",
+      "uri": "spotify:track:2LMkwUfqC6S6s6qDVlEuzV"
+    },
+    {
+      "artist": "Janisht Joshi",
+      "album": "Nahi",
+      "track": "Nahi",
+      "uri": "spotify:track:0blM9YkjL82jrhF8sd9pup"
+    },
+    {
+      "artist": "Dhvani Bhanushali",
+      "album": "Vaaste",
+      "track": "Vaaste",
+      "uri": "spotify:track:0mJTAdmY8olbGQjopDYff3"
+    },
+    {
+      "artist": "Glass Animals",
+      "album": "ZABA",
+      "track": "Gooey",
+      "uri": "spotify:track:1gk3FhAV07q9Jg77UxnVjX"
+    }
+  ],
+  "albums": [
+    {
+      "artist": "Linkin Park",
+      "album": "Minutes to Midnight",
+      "uri": "spotify:album:4JtIVJRA342O0YoAchen5Q"
+    },
+    {
+      "artist": "ZAYN",
+      "album": "Icarus Falls",
+      "uri": "spotify:album:2mOMIwdn9E6a6ITn9t1Uoq"
+    },
+    {
+      "artist": "Shankar-Ehsaan-Loy",
+      "album": "Zindagi Na Milegi Dobara",
+      "uri": "spotify:album:6Baavsh6HfNka1IyvPrr24"
+    },
+    {
+      "artist": "Niall Horan",
+      "album": "Heartbreak Weather",
+      "uri": "spotify:album:5gdoRB1AUsGnScCuZ8gmPp"
+    },
+    {
+      "artist": "Linkin Park",
+      "album": "A Thousand Suns",
+      "uri": "spotify:album:6sifUWah3rpUMeQDrfmym0"
+    },
+    {
+      "artist": "Taylor Swift",
+      "album": "Lover",
+      "uri": "spotify:album:1NAmidJlEaVgA3MpcPFYGq"
+    },
+    {
+      "artist": "Foreign Air",
+      "album": "Turning",
+      "uri": "spotify:album:4S29vSzgU8bsW0NrHAPqy8"
+    },
+    {
+      "artist": "Lewis Capaldi",
+      "album": "Divinely Uninspired To A Hellish Extent",
+      "uri": "spotify:album:5658aM19fA3JVwTK6eQX70"
+    },
+    {
+      "artist": "Pritam",
+      "album": "Jab We Met",
+      "uri": "spotify:album:4OYdTHNgjhXzgVjbqsb0tO"
+    },
+    {
+      "artist": "Anuv Jain",
+      "album": "Mazaak",
+      "uri": "spotify:album:4Z5Z0qWzKvTgv7XRnodjNU"
+    },
+    {
+      "artist": "Juice WRLD",
+      "album": "Legends Never Die",
+      "uri": "spotify:album:1R6vbGGXSEZZmTGn7ewwRL"
+    },
+    {
+      "artist": "Juice WRLD",
+      "album": "Goodbye & Good Riddance",
+      "uri": "spotify:album:6tkjU4Umpo79wwkgPMV3nZ"
+    },
+    {
+      "artist": "Lady Gaga",
+      "album": "Top Gun: Maverick",
+      "uri": "spotify:album:3tjIKRAPBy5Qu4z8F5HmBz"
+    },
+    {
+      "artist": "Post Malone",
+      "album": "beerbongs & bentleys",
+      "uri": "spotify:album:6trNtQUgC8cgbWcqoMYkOR"
+    },
+    {
+      "artist": "Juice WRLD",
+      "album": "Legends Never Die",
+      "uri": "spotify:album:6n9DKpOxwifT5hOXtgLZSL"
+    },
+    {
+      "artist": "Pritam",
+      "album": "Ae Dil Hai Mushkil (Original Motion Picture Soundtrack) [Deluxe Edition]",
+      "uri": "spotify:album:5xjaz957o6YGSXmlfd2tex"
+    },
+    {
+      "artist": "Pritam",
+      "album": "Barfi! (Original Motion Picture Soundtrack)",
+      "uri": "spotify:album:2KZs4INik6X4KeZEsEWEm4"
+    },
+    {
+      "artist": "Harry Styles",
+      "album": "Harry's House",
+      "uri": "spotify:album:5r36AJ6VOJtp00oxSkBZ5h"
+    },
+    {
+      "artist": "Sachet-Parampara",
+      "album": "Kabir Singh",
+      "uri": "spotify:album:3uuu6u13U0KeVQsZ3CZKK4"
+    },
+    {
+      "artist": "Hans Zimmer",
+      "album": "Wonder Woman 1984 (Sketches from the Soundtrack)",
+      "uri": "spotify:album:40ytiSNyGYWHLgJJDMvxJc"
+    },
+    {
+      "artist": "Post Malone",
+      "album": "Twelve Carat Toothache",
+      "uri": "spotify:album:50MzJhO0pMjTsfpeOmZ1so"
+    },
+    {
+      "artist": "Linkin Park",
+      "album": "LIVING THINGS",
+      "uri": "spotify:album:4XHIjbhjRmqWlosjj5rqSI"
+    },
+    {
+      "artist": "Hans Zimmer",
+      "album": "Inception",
+      "uri": "spotify:album:2qvA7HmSg1iM6XMiFF76dp"
+    },
+    {
+      "artist": "ZAYN",
+      "album": "ROOM UNDER THE STAIRS",
+      "uri": "spotify:album:0PGluYePuY9INYN7SQheZ0"
+    },
+    {
+      "artist": "Justin Bieber",
+      "album": "SWAG",
+      "uri": "spotify:album:5vD5M5VW62LL78Ko8x0CVZ"
+    },
+    {
+      "artist": "ZAYN",
+      "album": "Icarus Falls",
+      "uri": "spotify:album:1DF9B2hfwX4EdgEFwGcRwh"
+    },
+    {
+      "artist": "A.R. Rahman",
+      "album": "Rockstar",
+      "uri": "spotify:album:3RZxrS2dDZlbsYtMRM89v8"
+    },
+    {
+      "artist": "Jeet Gannguli",
+      "album": "Khamoshiyan (Original Motion Picture Soundtrack)",
+      "uri": "spotify:album:6mJIpY6r2SzZbLN3ClYCbb"
+    },
+    {
+      "artist": "Linkin Park",
+      "album": "Meteora",
+      "uri": "spotify:album:0f7R0jf0pcTb6K6IVVPcMD"
+    },
+    {
+      "artist": "Mithoon",
+      "album": "Ek Villain",
+      "uri": "spotify:album:3EkmvTqyKrnMw1WiVpsSwF"
+    },
+    {
+      "artist": "Various Artists",
+      "album": "Gully Boy",
+      "uri": "spotify:album:3UhZwBv1QvSLG1OFQXx930"
+    },
+    {
+      "artist": "Rihanna",
+      "album": "Black Panther: Wakanda Forever - Music From and Inspired By",
+      "uri": "spotify:album:06RK0wX4GqHcxBtHlVoGH5"
+    },
+    {
+      "artist": "ZAYN",
+      "album": "Mind Of Mine (Deluxe Edition)",
+      "uri": "spotify:album:5amj9zNeZ3B2EdpBgXrOZ0"
+    },
+    {
+      "artist": "Pritam",
+      "album": "Yeh Jawaani Hai Deewani",
+      "uri": "spotify:album:2Lxoc72vRTGdQfMvj7Ovi1"
+    },
+    {
+      "artist": "Post Malone",
+      "album": "F-1 Trillion",
+      "uri": "spotify:album:3gHZ4w03gbuZtGTEwztrtw"
+    },
+    {
+      "artist": "Miley Cyrus",
+      "album": "SHE IS COMING",
+      "uri": "spotify:album:7M4YAXOOg1XbWx03jg7t62"
+    },
+    {
+      "artist": "ZAYN",
+      "album": "What I Am",
+      "uri": "spotify:album:3Q9nQTbbZovRJQfY62oXR0"
+    },
+    {
+      "artist": "ZAYN",
+      "album": "Nobody Is Listening",
+      "uri": "spotify:album:2yuQqhSklmfWgn8lmJNk5t"
+    },
+    {
+      "artist": "Post Malone",
+      "album": "Twelve Carat Toothache",
+      "uri": "spotify:album:3HHNR44YbP7XogMVwzbodx"
+    },
+    {
+      "artist": "Mithoon",
+      "album": "Aashiqui 2",
+      "uri": "spotify:album:0Rkv5iqjF2uenfL0OVB8hg"
+    },
+    {
+      "artist": "Westlife",
+      "album": "World of Our Own",
+      "uri": "spotify:album:5FECTGZ9UdITzeo7o0AhUZ"
+    },
+    {
+      "artist": "ZAYN",
+      "album": "A Whole New World (End Title)",
+      "uri": "spotify:album:1m8eXQqp3QCQyR56fgbm6o"
+    },
+    {
+      "artist": "Post Malone",
+      "album": "Hollywood's Bleeding",
+      "uri": "spotify:album:4g1ZRSobMefqF6nelkgibi"
+    },
+    {
+      "artist": "ZAYN",
+      "album": "Dusk Till Dawn (feat. Sia)",
+      "uri": "spotify:album:5l5gR4rh26QI3fijGFTDrp"
+    }
+  ],
+  "shows": [
+    {
+      "name": "Finshots Daily",
+      "publisher": "Finshots",
+      "uri": "spotify:show:12jUp5Aa63c5BYx3wVZeMA"
+    },
+    {
+      "name": "The Psychology of your 20s",
+      "publisher": "iHeartPodcasts",
+      "uri": "spotify:show:2HGcJRYrjGnpce6bRp8UXm"
+    }
+  ],
+  "episodes": [
+  ],
+  "bannedTracks": [
+  ],
+  "artists": [
+    {
+      "name": "2Pac",
+      "uri": "spotify:artist:1ZwdS5xdxEREPySFridCfh"
+    },
+    {
+      "name": "5 Seconds of Summer",
+      "uri": "spotify:artist:5Rl15oVamLq7FbSb0NNBNy"
+    },
+    {
+      "name": "A.R. Rahman",
+      "uri": "spotify:artist:1mYsTxnqsietFxj1OgoGbG"
+    },
+    {
+      "name": "AFROJACK",
+      "uri": "spotify:artist:4D75GcNG95ebPtNvoNVXhz"
+    },
+    {
+      "name": "Acid Ghost",
+      "uri": "spotify:artist:3DxAikzv8719U68yCVRELD"
+    },
+    {
+      "name": "Adam Levine",
+      "uri": "spotify:artist:4bYPcJP5jwMhSivRcqie2n"
+    },
+    {
+      "name": "Adele",
+      "uri": "spotify:artist:4dpARuHxo51G3z768sgnrY"
+    },
+    {
+      "name": "Aditya Bhardwaj",
+      "uri": "spotify:artist:4LZrB16vINsCHc28cE6oQo"
+    },
+    {
+      "name": "Aditya Rikhari",
+      "uri": "spotify:artist:3ozYqVCLohfpXIhalkhM8D"
+    },
+    {
+      "name": "Ajey Nagar (CarryMinati)",
+      "uri": "spotify:artist:1VwNP7mP5DmTsdJqQuW0nT"
+    },
+    {
+      "name": "Alan Walker",
+      "uri": "spotify:artist:7vk5e3vY1uw9plTHJAMwjN"
+    },
+    {
+      "name": "Alessia Cara",
+      "uri": "spotify:artist:2wUjUUtkb5lvLKcGKsKqsR"
+    },
+    {
+      "name": "Alesso",
+      "uri": "spotify:artist:4AVFqumd2ogHFlRbKIjp1t"
+    },
+    {
+      "name": "Alex Goot",
+      "uri": "spotify:artist:66Fb5gJ9SX2WGlqDLUpjux"
+    },
+    {
+      "name": "Amit Trivedi",
+      "uri": "spotify:artist:7HCqGPJcQTyGJ2yqntbuyr"
+    },
+    {
+      "name": "Anandi Joshi",
+      "uri": "spotify:artist:1ridYH2wSODrdMAwCRLRHY"
+    },
+    {
+      "name": "Ankit Tiwari",
+      "uri": "spotify:artist:0E02VcvA5p1ndkLdqWD5JB"
+    },
+    {
+      "name": "Ankur Tewari",
+      "uri": "spotify:artist:1ciT67XXpG2HOVsLQjKdv6"
+    },
+    {
+      "name": "Anne-Marie",
+      "uri": "spotify:artist:1zNqDE7qDGCsyzJwohVaoX"
+    },
+    {
+      "name": "Anuv Jain",
+      "uri": "spotify:artist:4gdMJYnopf2nEUcanAwstx"
+    },
+    {
+      "name": "Ariana Grande",
+      "uri": "spotify:artist:66CXWjxzNUsdJxJ2JdwvnR"
+    },
+    {
+      "name": "Arijit Singh",
+      "uri": "spotify:artist:4YRxDV8wJFPHPTeXepOstw"
+    },
+    {
+      "name": "Ashley Tisdale",
+      "uri": "spotify:artist:2ddxtfC0oS8LoktXUHE7YL"
+    },
+    {
+      "name": "Atif Aslam",
+      "uri": "spotify:artist:2oSONSC9zQ4UonDKnLqksx"
+    },
+    {
+      "name": "Aurangzaib Khan",
+      "uri": "spotify:artist:6nEM4ewadpyXbE4wV19wfd"
+    },
+    {
+      "name": "Avicii",
+      "uri": "spotify:artist:1vCWHaC5f2uS3yhpwWbIA6"
+    },
+    {
+      "name": "Avril Lavigne",
+      "uri": "spotify:artist:0p4nmQO2msCgU4IF37Wi3j"
+    },
+    {
+      "name": "Axwell /\\ Ingrosso",
+      "uri": "spotify:artist:2XnBwblw31dfGnspMIwgWz"
+    },
+    {
+      "name": "Backstreet Boys",
+      "uri": "spotify:artist:5rSXSAkZ67PYJSvpUpkOr7"
+    },
+    {
+      "name": "Bastille",
+      "uri": "spotify:artist:7EQ0qTo7fWT7DPxmxtSYEc"
+    },
+    {
+      "name": "Bazzi",
+      "uri": "spotify:artist:4GvEc3ANtPPjt1ZJllr5Zl"
+    },
+    {
+      "name": "Bella Thorne",
+      "uri": "spotify:artist:58AqJv0sDFPFnnBcLT8eeX"
+    },
+    {
+      "name": "Beyoncé",
+      "uri": "spotify:artist:6vWDO969PvNqNYHIOW5v0m"
+    },
+    {
+      "name": "Billie Eilish",
+      "uri": "spotify:artist:6qqNVTkY8uBg9cP3Jd7DAH"
+    },
+    {
+      "name": "Bob Marley & The Wailers",
+      "uri": "spotify:artist:2QsynagSdAqZj3U9HgDzjD"
+    },
+    {
+      "name": "Britney Spears",
+      "uri": "spotify:artist:26dSoYclwsYLMAKD3tpOr4"
+    },
+    {
+      "name": "Bruno Mars",
+      "uri": "spotify:artist:0du5cEVh5yTK9QJze8zA0C"
+    },
+    {
+      "name": "Calum Scott",
+      "uri": "spotify:artist:6ydoSd3N2mwgwBHtF6K7eX"
+    },
+    {
+      "name": "Calvin Harris",
+      "uri": "spotify:artist:7CajNmpbOovFoOoasH2HaY"
+    },
+    {
+      "name": "Camila Cabello",
+      "uri": "spotify:artist:4nDoRrQiYLoBzwC5BhVJzF"
+    },
+    {
+      "name": "Cardi B",
+      "uri": "spotify:artist:4kYSro6naA4h99UJvo89HB"
+    },
+    {
+      "name": "Carly Rae Jepsen",
+      "uri": "spotify:artist:6sFIWsNpZYqfjUpaCgueju"
+    },
+    {
+      "name": "Charlie Puth",
+      "uri": "spotify:artist:6VuMaDnrHyPL1p4EHjYLi7"
+    },
+    {
+      "name": "Chase Atlantic",
+      "uri": "spotify:artist:7cYEt1pqMgXJdq00hAwVpT"
+    },
+    {
+      "name": "Cigarettes After Sex",
+      "uri": "spotify:artist:1QAJqy2dA3ihHBFIHRphZj"
+    },
+    {
+      "name": "Clinton Cerejo",
+      "uri": "spotify:artist:2j9QVMZlqIj4Cb9UISBrXK"
+    },
+    {
+      "name": "Coldplay",
+      "uri": "spotify:artist:4gzpq5DPGxSnKTe4SA8HAU"
+    },
+    {
+      "name": "Conan Gray",
+      "uri": "spotify:artist:4Uc8Dsxct0oMqx0P6i60ea"
+    },
+    {
+      "name": "DIVINE",
+      "uri": "spotify:artist:4Ai0pGz6GhQavjzaRhPTvz"
+    },
+    {
+      "name": "DJ Snake",
+      "uri": "spotify:artist:540vIaP2JwjQb9dm3aArA4"
+    },
+    {
+      "name": "DNCE",
+      "uri": "spotify:artist:6T5tfhQCknKG4UnH90qGnz"
+    },
+    {
+      "name": "David Gilmour",
+      "uri": "spotify:artist:2FcC4sDMXme2ziI7tGKMK8"
+    },
+    {
+      "name": "David Guetta",
+      "uri": "spotify:artist:1Cs0zKBU1kc0i8ypK3B9ai"
+    },
+    {
+      "name": "Demi Lovato",
+      "uri": "spotify:artist:6S2OmqARrzebs0tKUEyXyp"
+    },
+    {
+      "name": "Dino James",
+      "uri": "spotify:artist:45PG2L6Fh2XvYL4ONzpdoW"
+    },
+    {
+      "name": "Diplo",
+      "uri": "spotify:artist:5fMUXHkw8R8eOP2RNVYEZX"
+    },
+    {
+      "name": "Drake",
+      "uri": "spotify:artist:3TVXtAsR1Inumwj472S9r4"
+    },
+    {
+      "name": "Dua Lipa",
+      "uri": "spotify:artist:6M2wZ9GZgrQXHCFfjv46we"
+    },
+    {
+      "name": "Ed Sheeran",
+      "uri": "spotify:artist:6eUKZXaKkcviH0Ku9w2n3V"
+    },
+    {
+      "name": "Ellie Goulding",
+      "uri": "spotify:artist:0X2BH1fck6amBIoJhDVmmJ"
+    },
+    {
+      "name": "Elliott Smith",
+      "uri": "spotify:artist:2ApaG60P4r0yhBoDCGD8YG"
+    },
+    {
+      "name": "Eminem",
+      "uri": "spotify:artist:7dGJo4pcD2V6oG8kP0tJRR"
+    },
+    {
+      "name": "Emiway Bantai",
+      "uri": "spotify:artist:008PpLcKUtVXle6JSwkq3I"
+    },
+    {
+      "name": "Emmrose",
+      "uri": "spotify:artist:1oBXXRTPzynCh1tLDOmlkI"
+    },
+    {
+      "name": "Farhan Akhtar",
+      "uri": "spotify:artist:0XL6ie7a0NY5FM05b9Rn5L"
+    },
+    {
+      "name": "Fifth Harmony",
+      "uri": "spotify:artist:1l8Fu6IkuTP0U5QetQJ5Xt"
+    },
+    {
+      "name": "Foo Fighters",
+      "uri": "spotify:artist:7jy3rLJdDQY21OgRLCZ9sD"
+    },
+    {
+      "name": "Forrest.",
+      "uri": "spotify:artist:6chWbUfdu6ibyaCXM1w8kQ"
+    },
+    {
+      "name": "French Montana",
+      "uri": "spotify:artist:6vXTefBL93Dj5IqAWq6OTv"
+    },
+    {
+      "name": "Gracie Abrams",
+      "uri": "spotify:artist:4tuJ0bMpJh08umKkEXKUI5"
+    },
+    {
+      "name": "Green Day",
+      "uri": "spotify:artist:7oPftvlwr6VrsViSDV7fJY"
+    },
+    {
+      "name": "Hailee Steinfeld",
+      "uri": "spotify:artist:5p7f24Rk5HkUZsaS3BLG5F"
+    },
+    {
+      "name": "Halsey",
+      "uri": "spotify:artist:26VFTg2z8YR0cCuwLzESi2"
+    },
+    {
+      "name": "Hannah Montana",
+      "uri": "spotify:artist:7nU4hB040gTmHm45YYMvqc"
+    },
+    {
+      "name": "Hans Zimmer",
+      "uri": "spotify:artist:0YC192cP3KPCRWx8zr8MfZ"
+    },
+    {
+      "name": "Harry Styles",
+      "uri": "spotify:artist:6KImCVD70vtIoJWnq6nGn3"
+    },
+    {
+      "name": "Hayd",
+      "uri": "spotify:artist:1adGvsK8A0XG2D18ufk7fZ"
+    },
+    {
+      "name": "Imaginary Future",
+      "uri": "spotify:artist:470WlqN9HSRDGNaMufeHHF"
+    },
+    {
+      "name": "Imagine Dragons",
+      "uri": "spotify:artist:53XhwfbYqKCa1cC15pYq2q"
+    },
+    {
+      "name": "Jack Ü",
+      "uri": "spotify:artist:1HxJeLhIuegM3KgvPn8sTa"
+    },
+    {
+      "name": "James Arthur",
+      "uri": "spotify:artist:4IWBUUAFIplrNtaOHcJPRM"
+    },
+    {
+      "name": "James Bay",
+      "uri": "spotify:artist:4EzkuveR9pLvDVFNx6foYD"
+    },
+    {
+      "name": "James Smith",
+      "uri": "spotify:artist:543ccHFPnZfJMD8tRGPtu7"
+    },
+    {
+      "name": "Janisht Joshi",
+      "uri": "spotify:artist:0lxFJDXOwwxbYpo0EnA51Z"
+    },
+    {
+      "name": "Jessie J",
+      "uri": "spotify:artist:2gsggkzM5R49q6jpPvazou"
+    },
+    {
+      "name": "Jimi Hendrix",
+      "uri": "spotify:artist:776Uo845nYHJpNaStv1Ds4"
+    },
+    {
+      "name": "Joe Jonas",
+      "uri": "spotify:artist:7gbmX8SsfjEjxDMzBi1ZOL"
+    },
+    {
+      "name": "John Lennon",
+      "uri": "spotify:artist:4x1nvY2FN8jxqAFA0DA02H"
+    },
+    {
+      "name": "John Mayer",
+      "uri": "spotify:artist:0hEurMDQu99nJRq8pTxO14"
+    },
+    {
+      "name": "Jonas Blue",
+      "uri": "spotify:artist:1HBjj22wzbscIZ9sEb5dyf"
+    },
+    {
+      "name": "Jonas Brothers",
+      "uri": "spotify:artist:7gOdHgIoIKoe4i9Tta6qdD"
+    },
+    {
+      "name": "Julia Michaels",
+      "uri": "spotify:artist:0ZED1XzwlLHW4ZaG4lOT6m"
+    },
+    {
+      "name": "Julien Baker",
+      "uri": "spotify:artist:12zbUHbPHL5DGuJtiUfsip"
+    },
+    {
+      "name": "Justin Bieber",
+      "uri": "spotify:artist:1uNFoZAHBGtllmzznpCI3s"
+    },
+    {
+      "name": "Justin Timberlake",
+      "uri": "spotify:artist:31TPClRtHm23RisEBtV3X7"
+    },
+    {
+      "name": "KK",
+      "uri": "spotify:artist:4fEkbug6kZzzJ8eYX6Kbbp"
+    },
+    {
+      "name": "KR$NA",
+      "uri": "spotify:artist:5C1S9XwxMuuCciutwMhp5t"
+    },
+    {
+      "name": "Kaam Bhaari",
+      "uri": "spotify:artist:5bTYVMQ6vmt4Bm12hM59N3"
+    },
+    {
+      "name": "Katy Perry",
+      "uri": "spotify:artist:6jJ0s89eD6GaHleKKya26X"
+    },
+    {
+      "name": "Kelly Clarkson",
+      "uri": "spotify:artist:3BmGtnKgCSGYIUhmivXKWX"
+    },
+    {
+      "name": "Kendrick Lamar",
+      "uri": "spotify:artist:2YZyLoL8N0Wb9xBt1NhZWg"
+    },
+    {
+      "name": "Kidshot",
+      "uri": "spotify:artist:0vZEDTIhGPOIRL0KjqMWTy"
+    },
+    {
+      "name": "Kina Grannis",
+      "uri": "spotify:artist:7h4j9YTJJuAHzLCc3KCvYu"
+    },
+    {
+      "name": "King",
+      "uri": "spotify:artist:5NHm4TU5Twz7owibYxJfFU"
+    },
+    {
+      "name": "Kodaline",
+      "uri": "spotify:artist:4BxCuXFJrSWGi1KHcVqaU4"
+    },
+    {
+      "name": "Krewella",
+      "uri": "spotify:artist:0Cd6nHYwecCNM1sVEXKlYr"
+    },
+    {
+      "name": "Kurt Hugo Schneider",
+      "uri": "spotify:artist:2BHswvFd8tMBizVWGcAMLm"
+    },
+    {
+      "name": "Kygo",
+      "uri": "spotify:artist:23fqKkggKUBHNkbKtXEls4"
+    },
+    {
+      "name": "Lady Gaga",
+      "uri": "spotify:artist:1HY2Jd0NmPuamShAr6KMms"
+    },
+    {
+      "name": "Lana Del Rey",
+      "uri": "spotify:artist:00FQb4jTyendYWaN8pK0wa"
+    },
+    {
+      "name": "Led Zeppelin",
+      "uri": "spotify:artist:36QJpDe2go2KgaRleHCDTp"
+    },
+    {
+      "name": "Leonard Cohen",
+      "uri": "spotify:artist:5l8VQNuIg0turYE1VtM9zV"
+    },
+    {
+      "name": "Lewis Capaldi",
+      "uri": "spotify:artist:4GNC7GD6oZMSxPGyXy4MNB"
+    },
+    {
+      "name": "Liam Payne",
+      "uri": "spotify:artist:5pUo3fmmHT8bhCyHE52hA6"
+    },
+    {
+      "name": "Little Mix",
+      "uri": "spotify:artist:3e7awlrlDSwF3iM0WBjGMp"
+    },
+    {
+      "name": "Lorde",
+      "uri": "spotify:artist:163tK9Wjr9P9DmM0AVK7lm"
+    },
+    {
+      "name": "Lucky Ali",
+      "uri": "spotify:artist:2L16nDKTxhFGaDriR2AHTB"
+    },
+    {
+      "name": "Major Lazer",
+      "uri": "spotify:artist:738wLrAtLtCtFOLvQBXOXp"
+    },
+    {
+      "name": "Manchester Orchestra",
+      "uri": "spotify:artist:5wFXmYsg3KFJ8BDsQudJ4f"
+    },
+    {
+      "name": "Mandy Moore",
+      "uri": "spotify:artist:2LJxr7Pt3JnP60eLxwbDOu"
+    },
+    {
+      "name": "Maroon 5",
+      "uri": "spotify:artist:04gDigrS5kc9YWfZHwBETP"
+    },
+    {
+      "name": "Marshmello",
+      "uri": "spotify:artist:64KEffDW9EtZ1y2vBYgq8T"
+    },
+    {
+      "name": "Martin Garrix",
+      "uri": "spotify:artist:60d24wfXkVzDSfLS6hyCjZ"
+    },
+    {
+      "name": "Meghan Trainor",
+      "uri": "spotify:artist:6JL8zeS1NmiOftqZTRgdTz"
+    },
+    {
+      "name": "Michael Bublé",
+      "uri": "spotify:artist:1GxkXlMwML1oSg5eLPiAz3"
+    },
+    {
+      "name": "Miley Cyrus",
+      "uri": "spotify:artist:5YGY8feqx7naU7z4HrwZM6"
+    },
+    {
+      "name": "Mithoon",
+      "uri": "spotify:artist:09UmIX92EUH9hAK4bxvHx6"
+    },
+    {
+      "name": "Mohit Chauhan",
+      "uri": "spotify:artist:5GnnSrwNCGyfAU4zuIytiS"
+    },
+    {
+      "name": "Momina Mustehsan",
+      "uri": "spotify:artist:7J2gs5q2wLq6lU4q4wkyuV"
+    },
+    {
+      "name": "Mutemath",
+      "uri": "spotify:artist:1J9Z9bhqkgyqseEi85cbyx"
+    },
+    {
+      "name": "Naezy",
+      "uri": "spotify:artist:2oeTqp8DgAmtnP2WGc1OS2"
+    },
+    {
+      "name": "Nelly Furtado",
+      "uri": "spotify:artist:2jw70GZXlAI8QzWeY2bgRc"
+    },
+    {
+      "name": "New West",
+      "uri": "spotify:artist:69bG9tC62d8oTFC9aTTosn"
+    },
+    {
+      "name": "Niall Horan",
+      "uri": "spotify:artist:1Hsdzj7Dlq2I7tHP7501T4"
+    },
+    {
+      "name": "Nick Jonas",
+      "uri": "spotify:artist:4Rxn7Im3LGfyRkY2FlHhWi"
+    },
+    {
+      "name": "Nicole Scherzinger",
+      "uri": "spotify:artist:40xbWSB4JPdOkRyuTDy1oP"
+    },
+    {
+      "name": "Nina Nesbitt",
+      "uri": "spotify:artist:7AzjETXRUKNRSJHMW9GIqd"
+    },
+    {
+      "name": "Nirvana",
+      "uri": "spotify:artist:6olE6TJLqED3rqDCT0FyPh"
+    },
+    {
+      "name": "Olivia O'Brien",
+      "uri": "spotify:artist:1QRj3hoop9Mv5VvHQkwPEp"
+    },
+    {
+      "name": "One Direction",
+      "uri": "spotify:artist:4AK6F7OLvEQ5QYCBNiQWHq"
+    },
+    {
+      "name": "OneRepublic",
+      "uri": "spotify:artist:5Pwc4xIPtQLFEnJriah9YJ"
+    },
+    {
+      "name": "P!nk",
+      "uri": "spotify:artist:1KCSPY1glIKqW2TotWuXOR"
+    },
+    {
+      "name": "Panic! At The Disco",
+      "uri": "spotify:artist:20JZFwl6HVl6yg8a4H3ZqK"
+    },
+    {
+      "name": "Parekh & Singh",
+      "uri": "spotify:artist:5HyacDSdBkCTDOBoX49ayp"
+    },
+    {
+      "name": "Pearl Jam",
+      "uri": "spotify:artist:1w5Kfo2jwwIPruYS2UWh56"
+    },
+    {
+      "name": "Penn Masala",
+      "uri": "spotify:artist:2MhJb1ljKttJewuYZTpXxr"
+    },
+    {
+      "name": "Phil Collins",
+      "uri": "spotify:artist:4lxfqrEsLX6N1N4OCSkILp"
+    },
+    {
+      "name": "Phillip Phillips",
+      "uri": "spotify:artist:6p5JxpTc7USNnBnLzctyd4"
+    },
+    {
+      "name": "Pink Floyd",
+      "uri": "spotify:artist:0k17h0D3J5VfsdmQ1iZtE9"
+    },
+    {
+      "name": "Pixie Lott",
+      "uri": "spotify:artist:3EBRANWwnViQuBrImN61Z1"
+    },
+    {
+      "name": "Poets of the Fall",
+      "uri": "spotify:artist:1AZ30JnvQU1pbX6sbRE0Yn"
+    },
+    {
+      "name": "Post Malone",
+      "uri": "spotify:artist:246dkjvS1zLTtiykXe5h60"
+    },
+    {
+      "name": "Prateek Kuhad",
+      "uri": "spotify:artist:0tC995Rfn9k2l7nqgCZsV7"
+    },
+    {
+      "name": "Pritam",
+      "uri": "spotify:artist:1wRPtKGflJrBx9BmLsSwlU"
+    },
+    {
+      "name": "Queen",
+      "uri": "spotify:artist:1dfeR4HaWDbWqFHLkxsg1d"
+    },
+    {
+      "name": "Radiohead",
+      "uri": "spotify:artist:4Z8W4fKeB5YxbusRsdQVPb"
+    },
+    {
+      "name": "Raftaar",
+      "uri": "spotify:artist:5UdFr0GeO7jKIaNIJgwB36"
+    },
+    {
+      "name": "Raga",
+      "uri": "spotify:artist:4MJZBb8KABfKw0gzfgacpO"
+    },
+    {
+      "name": "Raghav Meattle",
+      "uri": "spotify:artist:7lTlD9L3QhfOH13Z0n1ibN"
+    },
+    {
+      "name": "Rahat Fateh Ali Khan",
+      "uri": "spotify:artist:3OLGltG8UPIea8sA4w0yg0"
+    },
+    {
+      "name": "Raja Kumari",
+      "uri": "spotify:artist:5cBFMoMgcAt03YL2r0tS25"
+    },
+    {
+      "name": "Red Hot Chili Peppers",
+      "uri": "spotify:artist:0L8ExT028jH3ddEcZwqJJ5"
+    },
+    {
+      "name": "Rekha Bhardwaj",
+      "uri": "spotify:artist:3cqeO3muWIW5uSmUDNCmyT"
+    },
+    {
+      "name": "Rhys Lewis",
+      "uri": "spotify:artist:4T2k9bgIoC8bbqjqiEl9vZ"
+    },
+    {
+      "name": "Rihanna",
+      "uri": "spotify:artist:5pKCCKE2ajJHZ9KAiaK11H"
+    },
+    {
+      "name": "Rita Ora",
+      "uri": "spotify:artist:5CCwRZC6euC8Odo6y9X8jr"
+    },
+    {
+      "name": "Ritviz",
+      "uri": "spotify:artist:72beYOeW2sb2yfcS4JsRvb"
+    },
+    {
+      "name": "Ruth B.",
+      "uri": "spotify:artist:2WzaAvm2bBCf4pEhyuDgCY"
+    },
+    {
+      "name": "SUGR?",
+      "uri": "spotify:artist:2uPvD39GR2V7XlF5dvEZPI"
+    },
+    {
+      "name": "Sabrina Carpenter",
+      "uri": "spotify:artist:74KM79TiuVKeVCqs8QtB0B"
+    },
+    {
+      "name": "San Holo",
+      "uri": "spotify:artist:0jNDKefhfSbLR9sFvcPLHo"
+    },
+    {
+      "name": "Sandunes",
+      "uri": "spotify:artist:4exRwr38tW2DlCNGl2gIqn"
+    },
+    {
+      "name": "Seedhe Maut",
+      "uri": "spotify:artist:2oBG74gAocPMFv6Ij9ykdo"
+    },
+    {
+      "name": "Selena Gomez",
+      "uri": "spotify:artist:0C8ZW7ezQVs4URX5aX7Kqx"
+    },
+    {
+      "name": "Selena Gomez & The Scene",
+      "uri": "spotify:artist:6dJeKm76NjfXBNTpHmOhfO"
+    },
+    {
+      "name": "Shakira",
+      "uri": "spotify:artist:0EmeFodog0BfCgMzAIvKQp"
+    },
+    {
+      "name": "Shankar Mahadevan",
+      "uri": "spotify:artist:1SJOL9HJ08YOn92lFcYf8a"
+    },
+    {
+      "name": "Shankar-Ehsaan-Loy",
+      "uri": "spotify:artist:0L5GV6LN8SWWUWIdBbTLTZ"
+    },
+    {
+      "name": "Shawn Mendes",
+      "uri": "spotify:artist:7n2wHs1TKAczGzO7Dd2rGr"
+    },
+    {
+      "name": "Shreya Ghoshal",
+      "uri": "spotify:artist:0oOet2f43PA68X5RxKobEy"
+    },
+    {
+      "name": "Sia",
+      "uri": "spotify:artist:5WUlDfRSoLAfcVSX1WnrxN"
+    },
+    {
+      "name": "Siddhartha Khosla",
+      "uri": "spotify:artist:7o8qzsL7eTuGP4piR7XQiY"
+    },
+    {
+      "name": "Snow Patrol",
+      "uri": "spotify:artist:3rIZMv9rysU7JkLzEaC5Jp"
+    },
+    {
+      "name": "Sonu Nigam",
+      "uri": "spotify:artist:1dVygo6tRFXC8CSWURQJq2"
+    },
+    {
+      "name": "Steve Aoki",
+      "uri": "spotify:artist:77AiFEVeAVj2ORpC85QVJs"
+    },
+    {
+      "name": "Sunidhi Chauhan",
+      "uri": "spotify:artist:3eDT9fwXKuHWFvgZaaYC5v"
+    },
+    {
+      "name": "Survivor",
+      "uri": "spotify:artist:26bcq2nyj5GB7uRr558iQg"
+    },
+    {
+      "name": "Swadesi",
+      "uri": "spotify:artist:6Vc6T6HJ0jcTSTOzvUcjpU"
+    },
+    {
+      "name": "Tanmaya Bhatnagar",
+      "uri": "spotify:artist:1kzKlwoZunQPBWRLCZ7ZvS"
+    },
+    {
+      "name": "Taylor Swift",
+      "uri": "spotify:artist:06HL4z0CvFAxyc27GXpf02"
+    },
+    {
+      "name": "The Beatles",
+      "uri": "spotify:artist:3WrFJ7ztbogyGnTHbHJFl2"
+    },
+    {
+      "name": "The Byrds",
+      "uri": "spotify:artist:1PCZpxHJz7WAMF8EEq8bfc"
+    },
+    {
+      "name": "The Chainsmokers",
+      "uri": "spotify:artist:69GGBxA162lTqCwzJG5jLp"
+    },
+    {
+      "name": "The Local Train",
+      "uri": "spotify:artist:7b6Ui7JVaBDEfZB9k6nHL0"
+    },
+    {
+      "name": "The Neighbourhood",
+      "uri": "spotify:artist:77SW9BnxLY8rJ0RciFqkHh"
+    },
+    {
+      "name": "The Rolling Stones",
+      "uri": "spotify:artist:22bE4uQ6baNwSHPVcDxLCe"
+    },
+    {
+      "name": "The Script",
+      "uri": "spotify:artist:3AQRLZ9PuTAozP28Skbq8V"
+    },
+    {
+      "name": "The Shins",
+      "uri": "spotify:artist:4LG4Bs1Gadht7TCrMytQUO"
+    },
+    {
+      "name": "The Smiths",
+      "uri": "spotify:artist:3yY2gUcIsjMr8hjo51PoJ8"
+    },
+    {
+      "name": "The Vamps",
+      "uri": "spotify:artist:7gAppWoH7pcYmphCVTXkzs"
+    },
+    {
+      "name": "The Wanted",
+      "uri": "spotify:artist:2NhdGz9EDv2FeUw6udu2g1"
+    },
+    {
+      "name": "The Weeknd",
+      "uri": "spotify:artist:1Xyo4u8uXC1ZmMpatF05PJ"
+    },
+    {
+      "name": "The Who",
+      "uri": "spotify:artist:67ea9eGLXYMsO2eYQRui3w"
+    },
+    {
+      "name": "The Zombies",
+      "uri": "spotify:artist:2jgPkn6LuUazBoBk6vvjh5"
+    },
+    {
+      "name": "The xx",
+      "uri": "spotify:artist:3iOvXCl6edW5Um0fXEBRXy"
+    },
+    {
+      "name": "Thirty Seconds To Mars",
+      "uri": "spotify:artist:0RqtSIYZmd4fiBKVFqyIqD"
+    },
+    {
+      "name": "Tiësto",
+      "uri": "spotify:artist:2o5jDhtHVPhrJdv3cEQ99Z"
+    },
+    {
+      "name": "Travis Atreo",
+      "uri": "spotify:artist:58xmt13Xf7RsThzGOM1aKh"
+    },
+    {
+      "name": "Troye Sivan",
+      "uri": "spotify:artist:3WGpXCj9YhhfX11TToZcXP"
+    },
+    {
+      "name": "Twenty One Pilots",
+      "uri": "spotify:artist:3YQKmKGau1PzlVlkL1iodx"
+    },
+    {
+      "name": "Vanessa Hudgens",
+      "uri": "spotify:artist:6G9bygHlCyPgNGxK2l3YdE"
+    },
+    {
+      "name": "Vidya Vox",
+      "uri": "spotify:artist:4OFJbe1HHVcpnw480py1uN"
+    },
+    {
+      "name": "Vishal Dadlani",
+      "uri": "spotify:artist:6CXEwIaXYfVJ84biCxqc9k"
+    },
+    {
+      "name": "Vishal-Shekhar",
+      "uri": "spotify:artist:6Mv8GjQa7LKUGCAqa9qqdb"
+    },
+    {
+      "name": "WALK THE MOON",
+      "uri": "spotify:artist:6DIS6PRrLS3wbnZsf7vYic"
+    },
+    {
+      "name": "Wallows",
+      "uri": "spotify:artist:0NIPkIjTV8mB795yEIiPYL"
+    },
+    {
+      "name": "Westlife",
+      "uri": "spotify:artist:5Z1CCuBsyhEHngq3U5IraY"
+    },
+    {
+      "name": "When Chai Met Toast",
+      "uri": "spotify:artist:04hYGGSjYtLekuuJXEGrIl"
+    },
+    {
+      "name": "Wiz Khalifa",
+      "uri": "spotify:artist:137W8MRPWKqSmrBGDBFSop"
+    },
+    {
+      "name": "ZAYN",
+      "uri": "spotify:artist:5ZsFI1h6hIdQRw2ti0hz81"
+    },
+    {
+      "name": "Zara Larsson",
+      "uri": "spotify:artist:1Xylc3o4UrD53lo9CvFvVg"
+    },
+    {
+      "name": "Zedd",
+      "uri": "spotify:artist:2qxJFvFYMEDqd7ui6kSAcq"
+    },
+    {
+      "name": "alt-J",
+      "uri": "spotify:artist:3XHO7cRUPCLOr6jwp8vsx5"
+    },
+    {
+      "name": "gnash",
+      "uri": "spotify:artist:3iri9nBFs9e4wN7PLIetAw"
+    },
+    {
+      "name": "mxmtoon",
+      "uri": "spotify:artist:0HthCchcL0kVLHTr113Vk1"
+    },
+    {
+      "name": "yung kai",
+      "uri": "spotify:artist:6zO1dZ40fTZ5hY9NnnRJSk"
+    }
+  ],
+  "bannedArtists": [
+  ],
+  "other": [
+  ]
+}

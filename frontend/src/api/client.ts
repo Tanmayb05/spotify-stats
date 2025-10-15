@@ -62,6 +62,11 @@ import type {
   RepeatedTrack,
   MonthlyDiversity,
   HeatmapData,
+  Milestone,
+  FlashbackData,
+  SessionClustersResponse,
+  SessionCentroid,
+  SessionAssignment,
 } from '../types/api';
 
 // API functions
@@ -207,9 +212,34 @@ export const api = {
     return response.data;
   },
 
-  // Placeholder for future phases
   // Phase 4 - Milestones
-  // Phase 5 - Sessions
+  getMilestones: async (): Promise<Milestone[]> => {
+    const response = await apiClient.get<Milestone[]>('/api/milestones/list');
+    return response.data;
+  },
+
+  getFlashback: async (date: string): Promise<FlashbackData> => {
+    const response = await apiClient.get<FlashbackData>(`/api/milestones/flashback?date=${date}`);
+    return response.data;
+  },
+
+  // Phase 5 - Sessions & Clustering
+  getSessionClusters: async (): Promise<SessionClustersResponse> => {
+    const response = await apiClient.get<SessionClustersResponse>('/api/sessions/clusters');
+    return response.data;
+  },
+
+  getSessionCentroids: async (): Promise<SessionCentroid[]> => {
+    const response = await apiClient.get<SessionCentroid[]>('/api/sessions/centroids');
+    return response.data;
+  },
+
+  getSessionAssignments: async (limit = 100): Promise<SessionAssignment[]> => {
+    const response = await apiClient.get<SessionAssignment[]>(`/api/sessions/assignments?limit=${limit}`);
+    return response.data;
+  },
+
+  // Placeholder for future phases
   // Phase 6 - Recommendations
   // Phase 7 - Simulator
 };

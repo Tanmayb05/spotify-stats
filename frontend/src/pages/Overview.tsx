@@ -424,7 +424,7 @@ export default function Overview() {
             {loading ? (
               <Skeleton variant="rectangular" height={rankingTab === 'skip' ? 600 : 550} />
             ) : (
-              <Box sx={{ width: '100%', overflowX: 'auto' }}>
+              <Box sx={{ width: '100%' }}>
                 {rankingTab === 'artists' && (
                   <BarChart
                     yAxis={[
@@ -443,9 +443,17 @@ export default function Overview() {
                     layout="horizontal"
                     height={550}
                     margin={{ left: 250, right: 40, top: 40, bottom: 60 }}
+                    slotProps={{
+                      legend: { hidden: false },
+                    }}
                     sx={{
+                      width: '100%',
                       '.MuiChartsAxis-left .MuiChartsAxis-tickLabel': {
                         fontSize: '0.875rem',
+                        fill: 'currentColor',
+                      },
+                      '& text': {
+                        textOverflow: 'clip !important',
                       },
                     }}
                   />
@@ -467,10 +475,18 @@ export default function Overview() {
                     ]}
                     layout="horizontal"
                     height={550}
-                    margin={{ left: 300, right: 40, top: 40, bottom: 60 }}
+                    margin={{ left: 350, right: 40, top: 40, bottom: 60 }}
+                    slotProps={{
+                      legend: { hidden: false },
+                    }}
                     sx={{
+                      width: '100%',
                       '.MuiChartsAxis-left .MuiChartsAxis-tickLabel': {
                         fontSize: '0.875rem',
+                        fill: 'currentColor',
+                      },
+                      '& text': {
+                        textOverflow: 'clip !important',
                       },
                     }}
                   />
@@ -494,9 +510,17 @@ export default function Overview() {
                     layout="horizontal"
                     height={600}
                     margin={{ left: 250, right: 40, top: 40, bottom: 60 }}
+                    slotProps={{
+                      legend: { hidden: false },
+                    }}
                     sx={{
+                      width: '100%',
                       '.MuiChartsAxis-left .MuiChartsAxis-tickLabel': {
                         fontSize: '0.875rem',
+                        fill: 'currentColor',
+                      },
+                      '& text': {
+                        textOverflow: 'clip !important',
                       },
                     }}
                   />

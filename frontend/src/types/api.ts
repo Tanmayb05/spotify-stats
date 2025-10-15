@@ -180,3 +180,84 @@ export interface HeatmapData {
   hour: number;
   stream_count: number;
 }
+
+// Phase 4 - Milestones Types
+
+export interface Milestone {
+  date: string;
+  year: number;
+  type: 'streak' | 'top_day' | 'first_artist' | 'diversity';
+  title: string;
+  description: string;
+  value: number;
+  badge_color: string;
+}
+
+export interface FlashbackData {
+  date: string;
+  day_of_week: string;
+  streams: number;
+  hours: number;
+  unique_artists: number;
+  unique_tracks: number;
+  skipped: number;
+  skip_rate: number;
+  first_stream: string | null;
+  last_stream: string | null;
+  listening_duration: string | null;
+  top_artists: Array<{ artist: string; streams: number }>;
+  top_tracks: Array<{ track: string; artist: string; plays: number }>;
+  message?: string;
+  error?: string;
+}
+
+// Phase 5 - Sessions & Clustering Types
+
+export interface SessionClusterProfile {
+  cluster_id: number;
+  session_count: number;
+  avg_duration: number;
+  avg_tracks: number;
+  avg_skip_ratio: number;
+  avg_diversity: number;
+  common_hour: number;
+  weekend_ratio: number;
+}
+
+export interface SessionClustersResponse {
+  n_clusters: number;
+  total_sessions: number;
+  silhouette_score: number;
+  clusters: SessionClusterProfile[];
+  error?: string;
+}
+
+export interface SessionCentroid {
+  cluster_id: number;
+  features: {
+    duration_minutes: number;
+    track_count: number;
+    unique_artists_count: number;
+    skip_ratio: number;
+    avg_track_duration: number;
+    hour_of_day: number;
+    is_weekend: number;
+    diversity_score: number;
+  };
+}
+
+export interface SessionAssignment {
+  session_id: string;
+  start_time: string;
+  end_time: string;
+  duration_minutes: number;
+  track_count: number;
+  unique_artists_count: number;
+  skip_ratio: number;
+  avg_track_duration: number;
+  hour_of_day: number;
+  is_weekend: number;
+  diversity_score: number;
+  platform: string;
+  cluster_label: number;
+}
