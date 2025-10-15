@@ -4,6 +4,10 @@ from typing import List, Dict, Any, Optional
 from datetime import datetime, timedelta
 from collections import defaultdict
 import statistics
+import numpy as np
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import silhouette_score
 
 # Path to data directory
 DATA_DIR = Path(__file__).parent.parent.parent.parent / 'data'
@@ -1233,6 +1237,545 @@ class SpotifyDataLoader:
         ]
 
         return result
+
+    def _build_sessions(self) -> List[Dict[str, Any]]:
+        """
+        Build sessions from streaming data with 30-minute gap threshold
+
+        Returns:
+            List of sessions with features
+        """
+        if not self._loaded:
+            self.load_data()
+
+        # Sort records by timestamp
+        sorted_records = sorted(
+            [r for r in self._data if r.get('ts')],
+            key=lambda x: datetime.fromisoformat(x['ts'].replace('Z', '+00:00'))
+        )
+
+        if not sorted_records:
+            return []
+
+        sessions = []
+        current_session = {
+            'records': [],
+            'start_time': None,
+            'end_time': None
+        }
+
+        for record in sorted_records:
+            ts = record.get('ts')
+            if not ts:
+                continue
+
+            dt = datetime.fromisoformat(ts.replace('Z', '+00:00'))
+
+            if current_session['start_time'] is None:
+                # Start new session
+                current_session['start_time'] = dt
+                current_session['end_time'] = dt
+                current_session['records'] = [record]
+            else:
+                # Check if this record belongs to current session (30-min gap)
+                gap_minutes = (dt - current_session['end_time']).total_seconds() / 60
+
+                if gap_minutes <= 30:
+                    # Add to current session
+                    current_session['end_time'] = dt
+                    current_session['records'].append(record)
+                else:
+                    # Save current session and start new one
+                    if len(current_session['records']) >= 3:  # Only save sessions with 3+ tracks
+                        sessions.append(self._extract_session_features(current_session))
+
+                    current_session = {
+                        'start_time': dt,
+                        'end_time': dt,
+                        'records': [record]
+                    }
+
+        # Don't forget last session
+        if current_session['start_time'] and len(current_session['records']) >= 3:
+            sessions.append(self._extract_session_features(current_session))
+
+        return sessions
+
+    def _extract_session_features(self, session: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Extract features from a session for clustering
+
+        Features:
+        - duration_minutes: Total session duration
+        - track_count: Number of tracks played
+        - unique_artists_count: Number of unique artists
+        - skip_ratio: Percentage of tracks skipped
+        - avg_track_duration: Average track play duration
+        - hour_of_day: Hour when session started (0-23)
+        - is_weekend: Whether session was on weekend
+        - diversity_score: Unique artists / total tracks
+        """
+        records = session['records']
+        start_time = session['start_time']
+        end_time = session['end_time']
+
+        # Basic metrics
+        duration_minutes = (end_time - start_time).total_seconds() / 60
+        track_count = len(records)
+
+        # Artist diversity
+        artists = set()
+        for r in records:
+            artist = r.get('master_metadata_album_artist_name')
+            if artist:
+                artists.add(artist)
+        unique_artists_count = len(artists)
+
+        # Skip ratio
+        skipped_count = sum(1 for r in records if r.get('skipped', False))
+        skip_ratio = (skipped_count / track_count * 100) if track_count > 0 else 0
+
+        # Average track duration (in minutes)
+        track_durations = [r.get('ms_played', 0) / 60000 for r in records]
+        avg_track_duration = statistics.mean(track_durations) if track_durations else 0
+
+        # Time features
+        hour_of_day = start_time.hour
+        is_weekend = 1 if start_time.weekday() >= 5 else 0
+
+        # Diversity score
+        diversity_score = (unique_artists_count / track_count) if track_count > 0 else 0
+
+        # Platform
+        platforms = [r.get('platform', 'unknown') for r in records]
+        most_common_platform = max(set(platforms), key=platforms.count) if platforms else 'unknown'
+
+        return {
+            'session_id': f"{start_time.isoformat()}",
+            'start_time': start_time.isoformat(),
+            'end_time': end_time.isoformat(),
+            'duration_minutes': round(duration_minutes, 2),
+            'track_count': track_count,
+            'unique_artists_count': unique_artists_count,
+            'skip_ratio': round(skip_ratio, 2),
+            'avg_track_duration': round(avg_track_duration, 2),
+            'hour_of_day': hour_of_day,
+            'is_weekend': is_weekend,
+            'diversity_score': round(diversity_score, 3),
+            'platform': most_common_platform,
+            'records': records  # Keep for later analysis if needed
+        }
+
+    def _cluster_sessions(self) -> Dict[str, Any]:
+        """
+        Cluster sessions using k-means with optimal k selection via silhouette score
+
+        Returns:
+            Dictionary with sessions, cluster labels, centroids, and metadata
+        """
+        sessions = self._build_sessions()
+
+        if len(sessions) < 10:  # Need minimum sessions for clustering
+            return {
+                'sessions': sessions,
+                'labels': [0] * len(sessions),
+                'n_clusters': 1,
+                'centroids': [],
+                'feature_names': [],
+                'error': 'Not enough sessions for clustering'
+            }
+
+        # Extract features for clustering
+        feature_names = [
+            'duration_minutes',
+            'track_count',
+            'unique_artists_count',
+            'skip_ratio',
+            'avg_track_duration',
+            'hour_of_day',
+            'is_weekend',
+            'diversity_score'
+        ]
+
+        X = np.array([[s[f] for f in feature_names] for s in sessions])
+
+        # Normalize features
+        scaler = StandardScaler()
+        X_scaled = scaler.fit_transform(X)
+
+        # Find optimal k using silhouette score (test k=2 to k=min(8, n_sessions/10))
+        max_k = min(8, len(sessions) // 10)
+        if max_k < 2:
+            max_k = 2
+
+        best_k = 3  # Default
+        best_score = -1
+
+        for k in range(2, max_k + 1):
+            kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
+            labels = kmeans.fit_predict(X_scaled)
+            score = silhouette_score(X_scaled, labels)
+
+            if score > best_score:
+                best_score = score
+                best_k = k
+
+        # Perform final clustering with best k
+        kmeans = KMeans(n_clusters=best_k, random_state=42, n_init=10)
+        labels = kmeans.fit_predict(X_scaled)
+
+        # Transform centroids back to original scale
+        centroids_scaled = kmeans.cluster_centers_
+        centroids = scaler.inverse_transform(centroids_scaled)
+
+        # Add cluster labels to sessions
+        for i, session in enumerate(sessions):
+            session['cluster_label'] = int(labels[i])
+
+        return {
+            'sessions': sessions,
+            'labels': labels.tolist(),
+            'n_clusters': best_k,
+            'centroids': centroids.tolist(),
+            'feature_names': feature_names,
+            'silhouette_score': round(best_score, 3)
+        }
+
+    def get_session_clusters(self) -> Dict[str, Any]:
+        """
+        Get cluster statistics and profiles
+
+        Returns:
+            Cluster profiles with statistics
+        """
+        clustering_result = self._cluster_sessions()
+
+        if 'error' in clustering_result:
+            return clustering_result
+
+        sessions = clustering_result['sessions']
+        n_clusters = clustering_result['n_clusters']
+
+        # Calculate cluster statistics
+        clusters = []
+        for cluster_id in range(n_clusters):
+            cluster_sessions = [s for s in sessions if s['cluster_label'] == cluster_id]
+
+            if not cluster_sessions:
+                continue
+
+            # Aggregate statistics
+            clusters.append({
+                'cluster_id': cluster_id,
+                'session_count': len(cluster_sessions),
+                'avg_duration': round(statistics.mean([s['duration_minutes'] for s in cluster_sessions]), 1),
+                'avg_tracks': round(statistics.mean([s['track_count'] for s in cluster_sessions]), 1),
+                'avg_skip_ratio': round(statistics.mean([s['skip_ratio'] for s in cluster_sessions]), 1),
+                'avg_diversity': round(statistics.mean([s['diversity_score'] for s in cluster_sessions]), 2),
+                'common_hour': round(statistics.mean([s['hour_of_day'] for s in cluster_sessions])),
+                'weekend_ratio': round(sum([s['is_weekend'] for s in cluster_sessions]) / len(cluster_sessions) * 100, 1)
+            })
+
+        return {
+            'n_clusters': n_clusters,
+            'total_sessions': len(sessions),
+            'silhouette_score': clustering_result['silhouette_score'],
+            'clusters': clusters
+        }
+
+    def get_session_centroids(self) -> List[Dict[str, Any]]:
+        """
+        Get cluster centroids with feature values
+
+        Returns:
+            List of centroids with feature names and values
+        """
+        clustering_result = self._cluster_sessions()
+
+        if 'error' in clustering_result:
+            return []
+
+        centroids = clustering_result['centroids']
+        feature_names = clustering_result['feature_names']
+
+        result = []
+        for i, centroid in enumerate(centroids):
+            centroid_dict = {
+                'cluster_id': i,
+                'features': {}
+            }
+            for j, feature_name in enumerate(feature_names):
+                centroid_dict['features'][feature_name] = round(centroid[j], 2)
+            result.append(centroid_dict)
+
+        return result
+
+    def get_session_assignments(self, limit: int = 100) -> List[Dict[str, Any]]:
+        """
+        Get recent sessions with their cluster assignments
+
+        Args:
+            limit: Maximum number of sessions to return
+
+        Returns:
+            List of recent sessions with cluster labels
+        """
+        clustering_result = self._cluster_sessions()
+
+        if 'error' in clustering_result:
+            return []
+
+        sessions = clustering_result['sessions']
+
+        # Sort by start time (most recent first) and limit
+        sessions_sorted = sorted(sessions, key=lambda x: x['start_time'], reverse=True)[:limit]
+
+        # Remove 'records' field for cleaner response
+        result = []
+        for session in sessions_sorted:
+            session_copy = session.copy()
+            if 'records' in session_copy:
+                del session_copy['records']
+            result.append(session_copy)
+
+        return result
+
+    def get_milestones_list(self) -> List[Dict[str, Any]]:
+        """
+        Get all milestones - streaks, top days, firsts, and notable achievements
+
+        Returns:
+            List of {date, year, type, title, description, value, badge_color}
+        """
+        if not self._loaded:
+            self.load_data()
+
+        milestones = []
+
+        # Track daily streams and dates
+        daily_streams = defaultdict(int)
+        daily_hours = defaultdict(float)
+        daily_tracks = defaultdict(set)
+        daily_artists = defaultdict(set)
+        artist_first_seen = {}
+        track_first_seen = {}
+
+        for record in self._data:
+            ts = record.get('ts')
+            if not ts:
+                continue
+
+            dt = datetime.fromisoformat(ts.replace('Z', '+00:00'))
+            date_key = dt.date()
+
+            daily_streams[date_key] += 1
+            daily_hours[date_key] += record.get('ms_played', 0) / 3_600_000
+
+            track = record.get('master_metadata_track_name')
+            artist = record.get('master_metadata_album_artist_name')
+
+            if track and artist:
+                daily_tracks[date_key].add(f"{track}|||{artist}")
+                daily_artists[date_key].add(artist)
+
+                # Track firsts
+                if artist not in artist_first_seen:
+                    artist_first_seen[artist] = dt
+
+                if track not in track_first_seen:
+                    track_first_seen[track] = (dt, artist)
+
+        if not daily_streams:
+            return []
+
+        # 1. Find listening streaks (3+ consecutive days)
+        sorted_dates = sorted(daily_streams.keys())
+        current_streak_start = sorted_dates[0]
+        current_streak_end = sorted_dates[0]
+        streaks = []
+
+        for i in range(1, len(sorted_dates)):
+            if (sorted_dates[i] - sorted_dates[i-1]).days == 1:
+                current_streak_end = sorted_dates[i]
+            else:
+                # End streak
+                streak_length = (current_streak_end - current_streak_start).days + 1
+                if streak_length >= 3:  # Only save streaks of 3+ days
+                    streaks.append({
+                        'start': current_streak_start,
+                        'end': current_streak_end,
+                        'length': streak_length
+                    })
+                current_streak_start = sorted_dates[i]
+                current_streak_end = sorted_dates[i]
+
+        # Don't forget last streak
+        streak_length = (current_streak_end - current_streak_start).days + 1
+        if streak_length >= 3:
+            streaks.append({
+                'start': current_streak_start,
+                'end': current_streak_end,
+                'length': streak_length
+            })
+
+        # Add streak milestones
+        for streak in sorted(streaks, key=lambda x: x['length'], reverse=True)[:10]:
+            milestones.append({
+                'date': streak['start'].isoformat(),
+                'year': streak['start'].year,
+                'type': 'streak',
+                'title': f"{streak['length']}-Day Listening Streak",
+                'description': f"From {streak['start'].strftime('%b %d')} to {streak['end'].strftime('%b %d, %Y')}",
+                'value': streak['length'],
+                'badge_color': '#2dd881'
+            })
+
+        # 2. Top listening days
+        top_days = sorted(daily_streams.items(), key=lambda x: x[1], reverse=True)[:15]
+        for date, count in top_days:
+            if count >= 50:  # Only notable days
+                milestones.append({
+                    'date': date.isoformat(),
+                    'year': date.year,
+                    'type': 'top_day',
+                    'title': f"{count} Streams in One Day",
+                    'description': f"Peak listening day on {date.strftime('%b %d, %Y')} with {round(daily_hours[date], 1)} hours",
+                    'value': count,
+                    'badge_color': '#4ea699'
+                })
+
+        # 3. First discoveries (notable artists)
+        top_artists = self.get_top_artists(limit=20)
+        top_artist_names = {a['artist'] for a in top_artists}
+
+        for artist, first_date in sorted(artist_first_seen.items(), key=lambda x: x[1])[:20]:
+            if artist in top_artist_names:
+                milestones.append({
+                    'date': first_date.date().isoformat(),
+                    'year': first_date.year,
+                    'type': 'first_artist',
+                    'title': f"Discovered {artist}",
+                    'description': f"First listened to {artist} on {first_date.strftime('%b %d, %Y')}",
+                    'value': 0,
+                    'badge_color': '#6fedb7'
+                })
+
+        # 4. Diversity milestones (days with many unique artists)
+        diverse_days = sorted(daily_artists.items(), key=lambda x: len(x[1]), reverse=True)[:10]
+        for date, artists in diverse_days:
+            if len(artists) >= 20:  # Only notable diversity
+                milestones.append({
+                    'date': date.isoformat(),
+                    'year': date.year,
+                    'type': 'diversity',
+                    'title': f"{len(artists)} Different Artists",
+                    'description': f"Explored {len(artists)} artists on {date.strftime('%b %d, %Y')}",
+                    'value': len(artists),
+                    'badge_color': '#140d4f'
+                })
+
+        # Sort all milestones by date (most recent first)
+        milestones.sort(key=lambda x: x['date'], reverse=True)
+
+        return milestones
+
+    def get_flashback(self, date_str: str) -> Dict[str, Any]:
+        """
+        Get detailed flashback for a specific date
+
+        Args:
+            date_str: Date in YYYY-MM-DD format
+
+        Returns:
+            Detailed listening data for that date
+        """
+        if not self._loaded:
+            self.load_data()
+
+        try:
+            target_date = datetime.fromisoformat(date_str).date()
+        except ValueError:
+            return {
+                'error': 'Invalid date format. Use YYYY-MM-DD',
+                'date': date_str
+            }
+
+        # Collect all streams for this date
+        day_streams = []
+        artists_played = defaultdict(int)
+        tracks_played = defaultdict(lambda: {'count': 0, 'artist': None})
+        total_hours = 0
+        skipped_count = 0
+
+        for record in self._data:
+            ts = record.get('ts')
+            if not ts:
+                continue
+
+            dt = datetime.fromisoformat(ts.replace('Z', '+00:00'))
+            if dt.date() != target_date:
+                continue
+
+            day_streams.append(record)
+            total_hours += record.get('ms_played', 0) / 3_600_000
+
+            if record.get('skipped'):
+                skipped_count += 1
+
+            artist = record.get('master_metadata_album_artist_name')
+            track = record.get('master_metadata_track_name')
+
+            if artist:
+                artists_played[artist] += 1
+
+            if track and artist:
+                tracks_played[track]['count'] += 1
+                tracks_played[track]['artist'] = artist
+
+        if not day_streams:
+            return {
+                'date': date_str,
+                'streams': 0,
+                'message': 'No listening data found for this date'
+            }
+
+        # Get top artists and tracks for that day
+        top_artists_day = sorted(artists_played.items(), key=lambda x: x[1], reverse=True)[:5]
+        top_tracks_day = sorted(
+            [(track, data) for track, data in tracks_played.items()],
+            key=lambda x: x[1]['count'],
+            reverse=True
+        )[:5]
+
+        # Get first and last stream times
+        timestamps = [
+            datetime.fromisoformat(r.get('ts').replace('Z', '+00:00'))
+            for r in day_streams if r.get('ts')
+        ]
+        first_stream = min(timestamps) if timestamps else None
+        last_stream = max(timestamps) if timestamps else None
+
+        return {
+            'date': date_str,
+            'day_of_week': target_date.strftime('%A'),
+            'streams': len(day_streams),
+            'hours': round(total_hours, 2),
+            'unique_artists': len(artists_played),
+            'unique_tracks': len(tracks_played),
+            'skipped': skipped_count,
+            'skip_rate': round((skipped_count / len(day_streams)) * 100, 1) if day_streams else 0,
+            'first_stream': first_stream.strftime('%I:%M %p') if first_stream else None,
+            'last_stream': last_stream.strftime('%I:%M %p') if last_stream else None,
+            'listening_duration': f"{(last_stream - first_stream).total_seconds() / 3600:.1f} hours" if first_stream and last_stream else None,
+            'top_artists': [
+                {'artist': artist, 'streams': count}
+                for artist, count in top_artists_day
+            ],
+            'top_tracks': [
+                {'track': track, 'artist': data['artist'], 'plays': data['count']}
+                for track, data in top_tracks_day
+            ]
+        }
 
 
 # Global instance
