@@ -1,0 +1,110 @@
+{
+  "timestamp": "20251015_181421",
+  "total_processed": 10,
+  "successful": 6,
+  "failed": 4,
+  "tracks": [
+    {
+      "track_id": "4ojpLTbBmGFl1z3e0FPftY",
+      "track_uri": "spotify:track:4ojpLTbBmGFl1z3e0FPftY",
+      "name": "Headlights On Dark Roads",
+      "artist": "Snow Patrol",
+      "album": "Eyes Open",
+      "isrc": "GBUM70600351",
+      "lyrics": {
+        "track_id": 162716261,
+        "lyrics_body": "For once I want to be the car crash\nNot always just the traffic jam\nHit me hard enough to wake me\nAnd lead me wild to your dark roads\n\nHeadlights before me\nSo beautiful, so clear\nReach out and take it\n'Cause I'm so tired of all this fear\n\nMy tongue is lost, oh, I can't tell you\nPlease just see it in my eyes\nI pull up thorns from our ripped bodies\nAnd let the blood fall in my mouth\n\nHeadlights before me\nSo beautiful, so clear\nReach out and take it\n'Cause I'm so tired of all this fear\n\nHeadlights before me\nSo beautiful, so clear\nReach out and take it\n'Cause I'm so tired of all this fear",
+        "lyrics_language": "en",
+        "script_tracking_url": "https://tracking.musixmatch.com/t1.0/m_js/e_0/sn_0/l_7065271/su_0/rs_0/tr_3vUCAOtEI_yOFfsSd1x9A_HHdn6Wh5aR_XWx1_hqGfS8pWQIALEWylwSEpmY1xmbf6X1DMqu36cVTCkn66cRX8JqCKLddIsvKCtZhVT3duVjOdaEFTu_vtjhJ8Uu806fHRcHlMI6sfm_wAFe-f-ILdGKcvRRhgV3yVY6hb8GWC0oWfIhefRtdtHPNEV7mU7eFmo87mgGT7c31KgiJAWTWI8eMU6N-uaG09g5q8sBeK_xbEJbkkSwy8Y_dYPjkHfrXoq7L2SKmotfufcNRdidQKIBnaVim1sooIEca8GW0ktG1WQ1YDrQvt9qMhJv_j9i_XWwTTpR3a6PjsTPEpcq00riOGLw2m33C6XCUGC96-B3I1XnmA_XGhFL_gaxbmx_VapzsBZ6Do8GjRueUS7d5k7Xgrc5e0oOYfIXN3A2WgiqNtGvvMr33QPrnOMZKTFOV8OX7k9Ol-7ZfI5gB0NK3Dy1lu7N98QkC3Wm2X7vg-ImYXAsrlXCYEOalRwNOmc_HHbJIx4WfeW8aRZ6_zI/",
+        "pixel_tracking_url": "https://tracking.musixmatch.com/t1.0/m_img/e_0/sn_0/l_7065271/su_0/rs_0/tr_3vUCAGliM2piGQ629jyH8M5b8Qwcm0KDHit8VRwiFrIUHveFAT29vsGZCKGsWQ5gVSEVSZ-0l10WPuYpJtJ7LHMuz_5TEC2RoFoqgtncWv7Wj_v1xKXFeNYm_6zwbmX9cY0FKAmPwUETUO4iNQEsFWChx7E3MCKfkrXLFeOycWKp_koHkkg5UAcA1ai0NMX6LXQnffx7pq5n0L46kk_2KzyO4Fis16bywIHyz22rxS-eGnzkH5YsQquNFcJUn_9Lzn0GvaVAfQGn95pQAwiXRkcghj3d022m1ihjP5EhwXR7B4wegWjY7JB2a27TKO8bZ0urGnSOXCRV2Te_0cmvTFRAZwIUPfTMZWlzTMee1JpluIdlUVgN1BjD5g0GPw3Dbtb6BfGEl0v6N9tI7mWtR_7BJg03X4HI_UppPeKHn9nEsVpMhWXXdnd2JHEde1fGM1NTFSHFWQslXQTIfWN7y-cDbX__aEDxjalGBZ90tIrHlLEg52zCZikg3Ju4Vx4NSb_s-y1S31tuwygWm7c/",
+        "lyrics_copyright": "Writer(s): Jonathan Graham Quinn, Tom Simpson, Nathan Connolly, Paul Wilson, Gary Lightbody\nCopyright: Universal Music Publishing Bl Ltd., Big Life Music\n",
+        "updated_time": "2023-12-16T14:02:33Z"
+      }
+    },
+    {
+      "track_id": "7dbI4g3m8A0isJVvYk2xdD",
+      "track_uri": "spotify:track:7dbI4g3m8A0isJVvYk2xdD",
+      "name": "I'd Like To Walk Around In Your Mind",
+      "artist": "Vashti Bunyan",
+      "album": "Just Another Diamond Day",
+      "isrc": "GBMZV0600066",
+      "lyrics": {
+        "track_id": 49879328,
+        "lyrics_body": "I'd like to walk around in your mind someday\nI'd like to walk all over the things you say to me\nI'd like to run and jump on your solitude\nI'd like to rearrange your attitude to me\n\nYou say you just want peace and you'd never hurt anyone\nYou see the end before the beginning has ever begun\n\nI would disturb your easy tranquility\nI'd turn away the sad impossibility of your smile\n\nI'd sit there in the sun of the things I like about you\nI'd sing my songs and find out just what they mean to you\n\nBut most of all I'd like you to be unaware\nAnd I'd just wander away\nTrailing palm leaves behind me\nSo you don't even know that I've been there",
+        "lyrics_language": "en",
+        "script_tracking_url": "https://tracking.musixmatch.com/t1.0/m_js/e_0/sn_0/l_30576928/su_0/rs_0/tr_3vUCAMPnOOwpNIOvxsc9DdoigGcT_o6p7XIAchyn8x4JdyCS4e1bZ0uOXgJBmfCQOraQOgUmJhCGNfASX7a4qW6p4f6GNgs8xV7-eAQZ2bRhEjKT1rxVl2YsLCk6-tbU4etYDlZekd8LMWwe80Ly4WjrYWmoeBjk-3pDwfjx8IJaKgha-Kmon6F-bazArVBCLvAuSUwUcGLcF8QWGdEMna7HtxfgRz25cdVk2PBH934tAt1TciPxN7yjzTwIEN9OguHLm7tbPV0j_ikxwgfN-obfCqfjPO7GfEpHkyqFwhf8PNm38xuKH2wpdCD39Y_txv5pcfi7dQPnO3eOKm7NmHbjvAW8xQyzCiF9YsjgT23C06Ln0fuQ94Gm7t67orG4OfyEmboCMdndScxgjgZx3VeUH7RhOk0UfVv2_mZYQnenG94r3Gmicnsn6I6lipVqXptWRxJ9uG8gYbt3FmpYe1bOZzaaSyYGUMAzrXRDEQ_GakwVNHHL0ex5aaIOVwAeZQXNBfTEbCC4RDjepUhYLyyNqHChNWMQlzKr/",
+        "pixel_tracking_url": "https://tracking.musixmatch.com/t1.0/m_img/e_0/sn_0/l_30576928/su_0/rs_0/tr_3vUCAH37xuICgkeSznKLALsqUyo_kATPoGXZ0HEqgfDnuYXxEEyLcyJtEFKdGR7dxUk9qobIBJWKFJMOaYInq_ZZaGeLZIQO-d4ETmLiFLfob1F_1WQx1xxeSmjLOTk6e3P7OjnMITeU088riiLA9Cf47J-XgrsfmS5re701V212nX2-9VHGk4VGlpG9kTIcRZY9pT3-wm8oFLmEuRMPh4eSYW3laBzhmR875I9yCoQHTOX1k78WbfC8ZNF0tcidXPAnfXcYQoUWZFotXyLmLExWMl2HITiGgeQp0L4u1GKct7Krx-h1prZL83957fikM5wZPWaikKB9BUgC95tV-zaqeR5LvfJVQMBJ9SqLotBDB5XnQKaTpWEqiBi_kaYGdYMfMn2SKRohTaO0S4NNPqgEcqGd5-2IPja2Vdt6XQSoWL4FZOLGMJlLHnzd0JTgIAHu4g0hz3djEjS-_tzZl0qoXpwMNB4eUDG_ZtTGuzGmj04zIlHWYGbAuzefy9bK31UGBQdijy1XwT8pfZ93u-HTJr45YwoBZsTy/",
+        "lyrics_copyright": "Writer(s): Jennifer Vashti Bunyan\nCopyright: Spinneysongs\n",
+        "updated_time": "2024-01-04T19:52:52Z"
+      }
+    },
+    {
+      "track_id": "6LzOEMWZPX3AuKZuaNePpr",
+      "track_uri": "spotify:track:6LzOEMWZPX3AuKZuaNePpr",
+      "name": "Unmasked",
+      "artist": "Adelisé",
+      "album": "Unmasked",
+      "isrc": "SE5IB1801140",
+      "lyrics": {
+        "track_id": 162339967,
+        "lyrics_body": "",
+        "lyrics_language": "",
+        "script_tracking_url": "",
+        "pixel_tracking_url": "",
+        "lyrics_copyright": "",
+        "updated_time": "2019-05-26T15:21:31Z"
+      }
+    },
+    {
+      "track_id": "3DKpA54hrFIdPN6AtL9HXa",
+      "track_uri": "spotify:track:3DKpA54hrFIdPN6AtL9HXa",
+      "name": "I'll Never Love Again - Film Version - Radio Edit",
+      "artist": "Lady Gaga, Bradley Cooper",
+      "album": "A Star Is Born Soundtrack (Without Dialogue)",
+      "isrc": "USUM71815946",
+      "lyrics": {
+        "track_id": 158987406,
+        "lyrics_body": "Wish I could, I could've said goodbye\nI would've said what I wanted to\nMaybe even cried for you\nIf I knew it would be the last time\nI would've broke my heart in two\nTryin' to save a part of you\n\nDon't wanna feel another touch\nDon't wanna start another fire\nDon't wanna know another kiss\nNo other name falling off my lips\nDon't wanna give my heart away\nTo another stranger\nOr let another day begin\nWon't even let the sunlight in\nNo, I'll never love again\nI'll never love again, oh, oh, oh, oh\n\nWhen we first met\nI never thought that I would fall\nI never thought that I'd find myself\nLying in your arms\nAnd I want to pretend that it's not true\nOh baby, that you're gone\n'Cause my world keeps turning, and turning, and turning\nAnd I'm not moving on\n\nDon't wanna feel another touch\nDon't wanna start another fire\nDon't wanna know another kiss\nNo other name falling off my lips\nDon't wanna give my heart away\nTo another stranger\nOr let another day begin\nWon't even let the sunlight in\nNo, I'll never love\n\nI don't wanna know this feeling\nUnless it's you and me\nI don't wanna waste a moment, ooh\n\nAnd I don't wanna give somebody else the better part of me\nI would rather wait for you, ooh\n\nDon't wanna feel another touch\nDon't wanna start another fire\nDon't wanna know another kiss\nBaby, I'll stay on your lips\n\nDon't wanna give my heart away\nTo another stranger\nDon't let another day begin\nWon't let the sunlight in\nOh, I'll never love again\nNever love again\nNever love again\nOh, I'll never love again",
+        "lyrics_language": "en",
+        "script_tracking_url": "https://tracking.musixmatch.com/t1.0/m_js/e_0/sn_0/l_20207128/su_0/rs_0/tr_3vUCALWSIIQTc1ldH3wb8JqxdaTOQiOgM5gnhkzXNs3FmllRmrjVWR2C_DXExtOpUeJED_mPqSoQWK-g-Dtu9HbyTevgmUEg-ZzuAUfnkve_6P_KjBkvTLOTTkKyPQB-0Dc3p4OhziX7IQzDgHdjeiLFhgBkrjjFk_1G2F90MoibRtm3NDlT_yszFhPK5hcY1msGoEF0yuyv5M-WbZC40TpCqg8lulT8u5Ghn1FVy9Q3-IvRYGg-3GIen1WB6TYQVwcvnWpR3M6k9VfarL8mM4se35emskXCsPBz0zvnxNQrDbN8BZrEE_zqSWJNN61Uy8d4c2GKHvpfOzcrF5iBJEDDpfd9Yg_I_qHL3WVPL8YayH2S1fIOuPEWtcZL7snBobyC4Iw9ZJoA7OTEoxW8aQTBInrUsmKV1-mLRBIRrT_z74zm3mDePBZpAksXfRQyc50ABkkl_dE3_CnFgm5iBjhpb-B86pc_yNRxo0dEvr_kkKvW0mS7DZEsD8HPHendiD3pQASeDZq6UyATeCCk8bgadVbZAVdUDrw7JhOkeqwsAIBkP0JAaHXlB82SiMLRG9JUWnJh/",
+        "pixel_tracking_url": "https://tracking.musixmatch.com/t1.0/m_img/e_0/sn_0/l_20207128/su_0/rs_0/tr_3vUCAGGpFkH_s-UQ3Dd64tgVhcEhshPLEArq8BqqN4Ug4CBLbdrecEoDZrGvG2OF4E_l4CI1xfZlVQ8nUx10uNaZCSoJg9E6uV0Wii8HpVGrdoV1SWF08a743mZ4ScFC7-j9-mkutl9LvXUqvva8O9I6kd3HY2gui6sB7xITjMrV1hD8IzI_oV_m_3oT-miY9dHSzIhAKLB84A_re8GEj6ZYT2ObZJcu7G-ZvQCn6agRaBfUX9viLSSrRAdtr-kIvwqfIYd-E2YmhXqTbRiezt1EJbMzLqZItM27-f8SuPOvsf6FB1mPqClR_HfhRMHCsVLJWbNcWh8vLb6KiHNhjlRpESAcv1wyYijRDxM_ht6HOd2O92XlsQmUxYFQ13DIAWUgw912KF46K3oGHyeijAD8OHq3qTijWbtYqyz8X-J3xuKM-LzHBbxu4MpCuZq-wDQ8q9OIadImW5vq4VQgTFy73QcsSrEQ8-MZSOMPDKrVPuYg5kP_itbue4V_5BHGUeAtQU50DbhXt7giXobGVmTZHloSkZZ4j38_jqCHwSMXs-gPB3034u75w6A4_5BZIHa5FO2p/",
+        "lyrics_copyright": "Writer(s): Stefani J. Germanotta, Hillary Lee Lindsey, Natalie Nicole Hemby, Aaron Raitiere\nCopyright: Warner-barham Music Llc., Warner Olive Music Llc., Super Lcs Publishing, Bmg Gold Songs, Sony/atv Songs Llc, Sg Songs Worldwide, Happygowrucke, Creative Pulse Music, These Are Pulse Songs, Creative Nation Anthem Music Publishing I, Concord Sounds\n",
+        "updated_time": "2023-12-30T21:02:19Z"
+      }
+    },
+    {
+      "track_id": "7kNE8w94zkTb6DZECjCwuT",
+      "track_uri": "spotify:track:7kNE8w94zkTb6DZECjCwuT",
+      "name": "Man Of The Match",
+      "artist": "Bali",
+      "album": "Man Of The Match",
+      "isrc": "QZTAU2246590",
+      "lyrics": {
+        "track_id": 249999689,
+        "lyrics_body": "",
+        "lyrics_language": "tt",
+        "script_tracking_url": "https://tracking.musixmatch.com/t1.0/m_js/e_0/sn_0/l_36150119/su_0/rs_0/tr_3vUCAOO96PT5kcxWzGniePDVBqW5EzqFLmr3AwppmX4E_M6kY90AUdSzJ3yU97bi53c3JMTPpBz0pMgmY39D5SIEhkMMqSxYqSHaDZ6Ynh3esrfYAyOTb-aZqGbLyRP3i1yU0jq4OJQPV6XQLbYwpcCTqT_N6_HCFsmIy9lCoZO-kL6_KyyA-SjJklex5bxJVf0Le68AwvT53436pOTK7mPp_DqOkEEEWw85-jgF7PMGOkDk708JY7Ftlte-ny6EnzcKg1j0J8OV53iyeAS6fpt9CGoTGBCXuHcDH7_MDfrBl8dRRLipep3xBT3EKnsvvNAhQqm4s6QCcdRxovJeSD0wNZVxqLTFsMRJObuPH63y3Ijt99kAe2_FTQtv3dYGBJCH44FSJGfd5o9JITeEANooObSf1dirnRPKhxWwA2xVr_g5VWPDoew2rIs90UQH6__ekFwHbHA-ziUKGZeSyuO4b1u8sxQD9bZxkLkNrXwGwo2a2THf53Ne_IpoFujpZ8D49_s/",
+        "pixel_tracking_url": "https://tracking.musixmatch.com/t1.0/m_img/e_0/sn_0/l_36150119/su_0/rs_0/tr_3vUCAAgauvQ4cAxVDqhwz-XwcqNKx3rVyEO57n73jHmqXk5wO_IShT4vAjDx68dCrYgGHcWoXFNVb2mphqjQtF5ZJrikY0vaLIiKvjOByZ8HICsiIb9Lo0ln2911ydbOBt-nz-T2fT2-iE-0pJD_v9gE9jbYHLiXmbVwisuqerbhMdQwjb6yS-6cF0T5cbAL5WYq-i3DMfMN-qV9iHYh68pNuHecgy0nj1cdOjX-swy1Ee5NP4u4Pc7JGbikQ_RkBCAYCivQPL6_GFOQTpk2SLyb1C84pmfkPUV-sO3a5gMDzFZ6gH5wPT56RL35QiZEAq_iltgf_e2tjW1MQHhs7VnVuNCgRqdqtgKkS-UjOMeMvVhx6HX7nbN8BsRP7PVCS06GCdnyDyWaitxeui6vnzgtCQm_QMBBtDDNO2TMOT9g8Urg0_B_LKj0awTchlzt4XIBoYXcXhiynPdOY9QIgiNaqiHE-k9Cao206K91zuP6tjsoHtMl2QFnkW9tMbN5ENg-jXA/",
+        "lyrics_copyright": "Unfortunately we're not authorized to show these lyrics.",
+        "updated_time": "2024-08-24T04:37:27Z"
+      }
+    },
+    {
+      "track_id": "5p0ietGkLNEqx1Z7ijkw5g",
+      "track_uri": "spotify:track:5p0ietGkLNEqx1Z7ijkw5g",
+      "name": "My Love",
+      "artist": "Westlife",
+      "album": "Coast To Coast (Expanded Edition)",
+      "isrc": "GBARL0000212",
+      "lyrics": {
+        "track_id": null,
+        "lyrics_body": "An empty street, an empty house\nA hole inside my heart\nI'm all alone, the rooms are getting smaller\nI wonder how, I wonder why\nI wonder where they are\nThe days we had, the songs we sang together, oh, yeah\n\nAnd oh my love, I'm holding on forever\nReaching for the love that seems so far\n\nSo, I say a little prayer\nAnd hope my dreams will take me there\nWhere the skies are blue\nTo see you once again, my love\nOverseas, from coast to coast\nTo find a place I love the most\nWhere the fields are green\nTo see you once again, my love\n\nI try to read, I go to work\nI'm laughing with my friends\nBut I can't stop to keep myself from thinking, oh, no\nI wonder how, I wonder why\nI wonder where they are\nThe days we had, the songs we sang together, oh, yeah\n\nAnd oh my love, I'm holding on forever\nReaching for the love that seems so far\n\nSo, I say a little prayer\nAnd hope my dreams will take me there\nWhere the skies are blue\nTo see you once again, my love\nOverseas, from coast to coast\nTo find a place I love the most\nWhere the fields are green\nTo see you once again\n\nTo hold you in my arms\nTo promise you my love\nTo tell you from the heart\nYou're all I'm thinkin' of\nI'm reaching for the love that seems so far\n\n(So) so, I say a little prayer\nAnd hope my dreams will take me there\nWhere the skies are blue\nTo see you once again, my love\nOverseas, from coast to coast (overseas)\nTo find the place I love the most (love the most)\nWhere the fields are green\nTo see you once again, my love\n\nSay a little prayer (my sweet love)\nDreams will take me there\nWhere the skies are blue (whoa, yeah)\nTo see you once again (oh my love)\nOverseas, from coast to coast\nTo find the place I love the most\nWhere the fields are green\nTo see you once again, my love",
+        "lyrics_language": "en",
+        "script_tracking_url": "https://tracking.musixmatch.com/t1.0/m_js/e_0/sn_0/l_35550889/su_0/rs_0/tr_3vUCAJmq3YqQ_RLQ_ZHullpAq32kTgPodGkQ8jbjP8U8YouPLBjbXxYULhNPr-G8f4GJzTLdlwxYIig22p_Fh1IXKgkGHl8YoA0XulvggwsS-i0zquLBm1Q0O-TPlxbOsqYwtVq29_DgCtnooJyrbMdXhMDmH1kHX6SAFEi3jhcUe4MfrHPzq35qjD6LGnp4SdAVDoXQCIQrJKMOawGhDLSrQLqG53nHudCEF-nvdssxJiKt7xTpdhYy1URMtcs3HMr_lfzke6D7LPYLwVv9jaVh9x6KZ-I9mPLUaiDracd75sbkpA9is1ohEEEevrgVwhT4pq1QHXUTpz30ek0TBlys-ie9iNU1Xx3_gxcCkDoD6JwGrQjisDawgMHaRIDul2aCXjB8YOjW3v3zy2cLJ0nYLXXg72AyRuOhDIOoB-LmLSmn0DyOdNkHb5SLYnXlLXnAWYK_eG7K_OQ-pzOPHiBnT3fSw-VyNpP29PR_B45PZBdyuKsgSqfP0w/",
+        "pixel_tracking_url": "https://tracking.musixmatch.com/t1.0/m_img/e_0/sn_0/l_35550889/su_0/rs_0/tr_3vUCAEY5cUTsxMVtPVU62vspHYYm0aVUSwr-iR_M7kcdi14w1O17FYmeG1eweniwviraEl9WN2wFwGH12Icc1zgFJ01RinxhR82SOrwybzcePv8QKL6gKSmoqQf7oSkrT-rJKIgW6CpmJoyZ6cENNHNQ9sH7jf4PZvWYFIc94bNSk8kivxy34cbugcZNedfIzksaYXkiMZEW1Qks_P9-rRTFXlmEDe030L2BrdoaoRxyliTUJ9uSDiqkMAnirv6j0t5zuTTRPkSE9jT6kVfnAGRJfkZDjz8zuTvT-U7yRJYgnDD8KWAprjWMk4q149HalcL8mha80JkqgEH_v2ysbEdf9vhqQIWYVOCsNswbkEPtxKXwPSE2qoo9IFlDhp7FLXu43y3rfziAONI2VVOMf_jzYDI41Sk5Wz-A5xaiPcRHoaiv1O_ObgjCRyG-I_Q1iWFeCypVDRwKr0OudbSNIe0P6_E9cNRbMfSXZ7l1mK1qY8uX0_-nZ0NCmg/",
+        "lyrics_copyright": "Writer(s): Jorgen Kjell Elofsson, David Bengt Kreuger, Per Olof Magnusson, Per Harry Nylen\nCopyright: Universal Music Publishing Mgb Scandinav, Warner Chappell Music Scandinavia Ab, Gv Maratone\n",
+        "updated_time": "2024-05-28T15:37:37Z"
+      }
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "timestamp": "20251015_224717",
+  "started_at": "2025-10-15 22:46:59",
+  "completed_at": "2025-10-15 22:47:17",
+  "total_processed": 10,
+  "successful": 0,
+  "failed": 10,
+  "execution_time": {
+    "initialization": 0.44,
+    "step1_extraction": 0.36,
+    "step2_selection": 0.0,
+    "step3_processing": 17.38,
+    "total": 18.18
+  },
+  "tracks": [],
+  "failed_tracks": [
+    {
+      "track_id": "3JOFzyvmoHd6OBxF7fiPQX",
+      "track_uri": "spotify:track:3JOFzyvmoHd6OBxF7fiPQX",
+      "name": "Natural",
+      "artist": "ZAYN",
+      "album": "Icarus Falls",
+      "isrc": "USRC11803745",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "2nD9CUfMMUVxL0UyFs8fGG",
+      "track_uri": "spotify:track:2nD9CUfMMUVxL0UyFs8fGG",
+      "name": "Pistol",
+      "artist": "Cigarettes After Sex",
+      "album": "Pistol",
+      "isrc": "USBQU2200331",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "15ocCvf4JiWCna8AGCrdyH",
+      "track_uri": "spotify:track:15ocCvf4JiWCna8AGCrdyH",
+      "name": "Hichkiyaa",
+      "artist": "Osho Jain",
+      "album": "Wahaan",
+      "isrc": "FR10S2043655",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "0Oj0TT23GBH2XuHAaSsloH",
+      "track_uri": "spotify:track:0Oj0TT23GBH2XuHAaSsloH",
+      "name": "My Love - 2018 Remaster",
+      "artist": "Wings",
+      "album": "Red Rose Speedway",
+      "isrc": "GBCCS1800076",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "6g0Orsxv6glTJCt4cHsRsQ",
+      "track_uri": "spotify:track:6g0Orsxv6glTJCt4cHsRsQ",
+      "name": "Formation",
+      "artist": "Beyoncé",
+      "album": "Lemonade",
+      "isrc": "USSM11603186",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "3cGMTR0B5zA3zQsVJjddtQ",
+      "track_uri": "spotify:track:3cGMTR0B5zA3zQsVJjddtQ",
+      "name": "Love Me Thoda Aur",
+      "artist": "Pritam, Arijit Singh, Irshad Kamil",
+      "album": "Yaariyan",
+      "isrc": "INS181306569",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "1H33wNKihn8zcTexnwUoJ6",
+      "track_uri": "spotify:track:1H33wNKihn8zcTexnwUoJ6",
+      "name": "Hide and Seek",
+      "artist": "Kodaline",
+      "album": "Politics of Living",
+      "isrc": "GBARL1800303",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "5y0t6OQy8nVGoeIoNcQZ7g",
+      "track_uri": "spotify:track:5y0t6OQy8nVGoeIoNcQZ7g",
+      "name": "Kahin Aag Lage Lag Jaaye",
+      "artist": "Asha Bhosle, Richa Sharma, Aditya Narayan",
+      "album": "Taal (Original Motion Picture Soundtrack)",
+      "isrc": "INT109900004",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "4OSBTYWVwsQhGLF9NHvIbR",
+      "track_uri": "spotify:track:4OSBTYWVwsQhGLF9NHvIbR",
+      "name": "Rolling in the Deep",
+      "artist": "Adele",
+      "album": "21",
+      "isrc": "GBBKS1000335",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "6VbmeIWTbNHM5uqoW7GTE4",
+      "track_uri": "spotify:track:6VbmeIWTbNHM5uqoW7GTE4",
+      "name": "Sheila Ki Jawani",
+      "artist": "Vishal-Shekhar, Sunidhi Chauhan, Vishal Dadlani",
+      "album": "Tees Maar Khan",
+      "isrc": "INS181009096",
+      "reason": "No lyrics found"
+    }
+  ]
+}

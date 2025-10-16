@@ -1,0 +1,108 @@
+{
+  "timestamp": "20251015_230535",
+  "started_at": "2025-10-15 23:05:15",
+  "completed_at": "2025-10-15 23:05:35",
+  "total_processed": 10,
+  "successful": 0,
+  "failed": 10,
+  "execution_time": {
+    "initialization": 0.33,
+    "step1_extraction": 0.37,
+    "step2_selection": 0.0,
+    "step3_processing": 19.31,
+    "total": 20.01
+  },
+  "tracks": [],
+  "failed_tracks": [
+    {
+      "track_id": "2gqWRRCXnma9L8xQ1RdemQ",
+      "track_uri": "spotify:track:2gqWRRCXnma9L8xQ1RdemQ",
+      "name": "SO DONE",
+      "artist": "The Kid LAROI",
+      "album": "F*CK LOVE (SAVAGE)",
+      "isrc": "USSM12005922",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "68UJW1jJ3cK0FjWKaMGDBk",
+      "track_uri": "spotify:track:68UJW1jJ3cK0FjWKaMGDBk",
+      "name": "Baar Baar Din Ye Aaye-Happy Birthday To You - Jhankar Beats",
+      "artist": "Mohammed Rafi, DJ Harshit Shah, AjaxxCadel",
+      "album": "Jhankar Beats - Jeetendra",
+      "isrc": "INH102216192",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "1OqkHhYOcqfwYx7LqlAE8Y",
+      "track_uri": "spotify:track:1OqkHhYOcqfwYx7LqlAE8Y",
+      "name": "Make It Right",
+      "artist": "BTS",
+      "album": "MAP OF THE SOUL : 7",
+      "isrc": "QM6MZ1917910",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "0pxgXjiNwxX7nO96ywdGZe",
+      "track_uri": "spotify:track:0pxgXjiNwxX7nO96ywdGZe",
+      "name": "Sahib Teri Bandi - Maki Madni",
+      "artist": "The Derek Trucks Band",
+      "album": "Songlines",
+      "isrc": "USSM10507184",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "1SN1vSPsr4V4tIUTR3s8YW",
+      "track_uri": "spotify:track:1SN1vSPsr4V4tIUTR3s8YW",
+      "name": "Fast Car",
+      "artist": "Jonas Blue, Dakota",
+      "album": "Blue",
+      "isrc": "GBUM71507621",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "77vDHmiANW3JS2gNN5q7pI",
+      "track_uri": "spotify:track:77vDHmiANW3JS2gNN5q7pI",
+      "name": "Fall Away",
+      "artist": "Twenty One Pilots",
+      "album": "Twenty One Pilots",
+      "isrc": "USX9P0965501",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "6lFUdRItQEsEuD7dSINL47",
+      "track_uri": "spotify:track:6lFUdRItQEsEuD7dSINL47",
+      "name": "Follow You",
+      "artist": "Bring Me The Horizon",
+      "album": "That's The Spirit",
+      "isrc": "GBARL1500772",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "5rgy6ghBq1eRApCkeUdJXf",
+      "track_uri": "spotify:track:5rgy6ghBq1eRApCkeUdJXf",
+      "name": "We Are Young (feat. Janelle Monáe)",
+      "artist": "fun., Janelle Monáe",
+      "album": "Some Nights",
+      "isrc": "USAT21101399",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "4OhGDdV4fN6Mvk1KqZF0YP",
+      "track_uri": "spotify:track:4OhGDdV4fN6Mvk1KqZF0YP",
+      "name": "Monument - Kasbo Remix",
+      "artist": "Mutemath",
+      "album": "Changes",
+      "isrc": "QM2X31600138",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "75IN3CtuZwTHTnZvYM4qnJ",
+      "track_uri": "spotify:track:75IN3CtuZwTHTnZvYM4qnJ",
+      "name": "My Name Is",
+      "artist": "Eminem",
+      "album": "The Slim Shady LP",
+      "isrc": "USIR19902059",
+      "reason": "No lyrics found"
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "timestamp": "20251015_224913",
+  "started_at": "2025-10-15 22:48:54",
+  "completed_at": "2025-10-15 22:49:13",
+  "total_processed": 10,
+  "successful": 0,
+  "failed": 10,
+  "execution_time": {
+    "initialization": 0.36,
+    "step1_extraction": 0.35,
+    "step2_selection": 0.0,
+    "step3_processing": 17.66,
+    "total": 18.36
+  },
+  "tracks": [],
+  "failed_tracks": [
+    {
+      "track_id": "5afuKIBOHvfwaIxRdjEIGJ",
+      "track_uri": "spotify:track:5afuKIBOHvfwaIxRdjEIGJ",
+      "name": "Hrudayat Vaje Something",
+      "artist": "Vidhit Patankar",
+      "album": "Ti Saddhya Kay Karte (Original Motion Picture Soundtrack)",
+      "isrc": "INZ031401934",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "0GMs3jq70wmCo12pavj4st",
+      "track_uri": "spotify:track:0GMs3jq70wmCo12pavj4st",
+      "name": "Little Bit Better",
+      "artist": "Caleb Hearn, ROSIE",
+      "album": "Little Bit Better",
+      "isrc": "CAN112400401",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "5gZsEYaYvyi1sAVyuiXbDm",
+      "track_uri": "spotify:track:5gZsEYaYvyi1sAVyuiXbDm",
+      "name": "Work",
+      "artist": "Rihanna, Drake",
+      "album": "ANTI",
+      "isrc": "QM5FT1600116",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "5wvtHXLPdNrLBNIta50PeV",
+      "track_uri": "spotify:track:5wvtHXLPdNrLBNIta50PeV",
+      "name": "Need Somebody (Acoustic)",
+      "artist": "Xuitcasecity",
+      "album": "Need Somebody (Acoustic)",
+      "isrc": "USKO11701724",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "4CCe846xVRd9p31gc6dMza",
+      "track_uri": "spotify:track:4CCe846xVRd9p31gc6dMza",
+      "name": "Postcard (feat. Gordi)",
+      "artist": "Troye Sivan, Gordi",
+      "album": "Bloom",
+      "isrc": "AUUM71800522",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "3M9Apu4OZfylLTFKvgEtKa",
+      "track_uri": "spotify:track:3M9Apu4OZfylLTFKvgEtKa",
+      "name": "Ritual",
+      "artist": "Tiësto, Jonas Blue, Rita Ora",
+      "album": "Ritual",
+      "isrc": "CYA111900146",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "32vE1nuG8T9c8bhmZdRY6d",
+      "track_uri": "spotify:track:32vE1nuG8T9c8bhmZdRY6d",
+      "name": "Cooped Up (with Roddy Ricch)",
+      "artist": "Post Malone, Roddy Ricch",
+      "album": "Twelve Carat Toothache",
+      "isrc": "USUM72208020",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "7nDFTHHwfe32a8qdp9XqPy",
+      "track_uri": "spotify:track:7nDFTHHwfe32a8qdp9XqPy",
+      "name": "False Confidence",
+      "artist": "Noah Kahan",
+      "album": "Busyhead",
+      "isrc": "USUM71814497",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "62IihiyUNMZ52oSnX55Bi4",
+      "track_uri": "spotify:track:62IihiyUNMZ52oSnX55Bi4",
+      "name": "Gully Gang Cypher, Vol. 2",
+      "artist": "Gully Gang, Aavrutti, DIVINE, D'Evil, MC Altaf, Shah Rule",
+      "album": "Gully Gang Cypher, Vol. 2",
+      "isrc": "FRX281965751",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "7IQXrDjTS72dtcpk8A64YS",
+      "track_uri": "spotify:track:7IQXrDjTS72dtcpk8A64YS",
+      "name": "Every Breath You Take - Acoustic",
+      "artist": "Veil",
+      "album": "Every Breath You Take (Acoustic)",
+      "isrc": "UK6KW2000398",
+      "reason": "No lyrics found"
+    }
+  ]
+}

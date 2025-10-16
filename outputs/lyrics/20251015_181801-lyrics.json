@@ -1,0 +1,99 @@
+{
+  "timestamp": "20251015_181801",
+  "total_processed": 10,
+  "successful": 0,
+  "failed": 10,
+  "tracks": [],
+  "failed_tracks": [
+    {
+      "track_id": "2WOg6FT27iLtN8wetk69nP",
+      "track_uri": "spotify:track:2WOg6FT27iLtN8wetk69nP",
+      "name": "Dirty Dancer",
+      "artist": "Enrique Iglesias, USHER",
+      "album": "Euphoria",
+      "isrc": "GBUM71010012",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "5H8QUv9JXsi9aPEFxt3NBZ",
+      "track_uri": "spotify:track:5H8QUv9JXsi9aPEFxt3NBZ",
+      "name": "In Here.",
+      "artist": "yeyts.",
+      "album": "In Here.",
+      "isrc": "FR9Z61900276",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "12o5NY41wFKVswbWKWdrfj",
+      "track_uri": "spotify:track:12o5NY41wFKVswbWKWdrfj",
+      "name": "Jee Ve Sohaneya",
+      "artist": "Pritam, Nooran Sisters",
+      "album": "Jab Harry Met Sejal (Original Motion Picture Soundtrack)",
+      "isrc": "INS171702162",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "5QtEFRYavs5S3GHtFEq7A4",
+      "track_uri": "spotify:track:5QtEFRYavs5S3GHtFEq7A4",
+      "name": "Tujhe Kitna Chahne Lage",
+      "artist": "Arijit Singh, Mithoon",
+      "album": "Kabir Singh",
+      "isrc": "INS181902088",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "2sp5BRWoPsQsJeDX72M2tu",
+      "track_uri": "spotify:track:2sp5BRWoPsQsJeDX72M2tu",
+      "name": "Moonlight",
+      "artist": "XXXTENTACION",
+      "album": "? (Deluxe)",
+      "isrc": "USUG11800209",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "1YsGOq2txgbvzKBWjvxNf2",
+      "track_uri": "spotify:track:1YsGOq2txgbvzKBWjvxNf2",
+      "name": "Blindfold",
+      "artist": "Charlie Cunningham",
+      "album": "EPs 2014 - 2016",
+      "isrc": "GBR8R1600006",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "4ajZSQCn0cjUvUNCqKGTeD",
+      "track_uri": "spotify:track:4ajZSQCn0cjUvUNCqKGTeD",
+      "name": "The Green, Green Grass of Home",
+      "artist": "Dean Martin",
+      "album": "Welcome to My World",
+      "isrc": "USQX91400063",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "1ArLnG0bHaHPXqf08sEKM0",
+      "track_uri": "spotify:track:1ArLnG0bHaHPXqf08sEKM0",
+      "name": "Consequences - orchestra",
+      "artist": "Camila Cabello",
+      "album": "Consequences (orchestra)",
+      "isrc": "USSM11807751",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "76MSB9fAR5jXVcBXdK5xMy",
+      "track_uri": "spotify:track:76MSB9fAR5jXVcBXdK5xMy",
+      "name": "It Had to Be You",
+      "artist": "Ray Charles",
+      "album": "The Genius Of Ray Charles",
+      "isrc": "USAT20003615",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "3WefHNGtjexZvi66ZEx9u4",
+      "track_uri": "spotify:track:3WefHNGtjexZvi66ZEx9u4",
+      "name": "Hurts Like Hell (feat. Offset)",
+      "artist": "Madison Beer, Offset",
+      "album": "Hurts Like Hell (feat. Offset)",
+      "isrc": "UKELY1800123",
+      "reason": "No lyrics found"
+    }
+  ]
+}

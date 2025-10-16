@@ -1,0 +1,108 @@
+{
+  "timestamp": "20251015_230424",
+  "started_at": "2025-10-15 23:04:05",
+  "completed_at": "2025-10-15 23:04:24",
+  "total_processed": 10,
+  "successful": 0,
+  "failed": 10,
+  "execution_time": {
+    "initialization": 0.45,
+    "step1_extraction": 0.36,
+    "step2_selection": 0.0,
+    "step3_processing": 17.63,
+    "total": 18.45
+  },
+  "tracks": [],
+  "failed_tracks": [
+    {
+      "track_id": "4ng2s1kEXDwJAYCfDh3Q82",
+      "track_uri": "spotify:track:4ng2s1kEXDwJAYCfDh3Q82",
+      "name": "Nuvvena",
+      "artist": "Mohana Bhogaraju",
+      "album": "Nuvvena",
+      "isrc": "INK542000847",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "4yugZvBYaoREkJKtbG08Qr",
+      "track_uri": "spotify:track:4yugZvBYaoREkJKtbG08Qr",
+      "name": "Take It Easy - 2013 Remaster",
+      "artist": "Eagles",
+      "album": "Eagles (2013 Remaster)",
+      "isrc": "USEE11300314",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "1VZ04sZSpTet7wVMyZphA8",
+      "track_uri": "spotify:track:1VZ04sZSpTet7wVMyZphA8",
+      "name": "Joy To The World",
+      "artist": "Three Dog Night",
+      "album": "The Collection",
+      "isrc": "USMC17047804",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "20h5SXbpPifAJ7mRG9HY56",
+      "track_uri": "spotify:track:20h5SXbpPifAJ7mRG9HY56",
+      "name": "Find You",
+      "artist": "Martin Garrix, Justin Mylo, Dewain Whitmore",
+      "album": "Find You",
+      "isrc": "NLM5S2201671",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "78qd8dvwea0Gosb6Fe6j3k",
+      "track_uri": "spotify:track:78qd8dvwea0Gosb6Fe6j3k",
+      "name": "Boss Bitch",
+      "artist": "Doja Cat",
+      "album": "Boss Bitch",
+      "isrc": "USAT21907355",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "4jNQkWhuzqrbqQuqanFFJ6",
+      "track_uri": "spotify:track:4jNQkWhuzqrbqQuqanFFJ6",
+      "name": "Where Is My Mind",
+      "artist": "Maxence Cyrin",
+      "album": "Novö Piano",
+      "isrc": "FR13Z0900040",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "3nkdVXnH4xC6f3YZS0C8pC",
+      "track_uri": "spotify:track:3nkdVXnH4xC6f3YZS0C8pC",
+      "name": "Everything Reminds Me Of Her",
+      "artist": "Elliott Smith",
+      "album": "Figure 8",
+      "isrc": "USDW10021698",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "61uyGDPJ06MkxJtHgPmuyO",
+      "track_uri": "spotify:track:61uyGDPJ06MkxJtHgPmuyO",
+      "name": "Company",
+      "artist": "Justin Bieber",
+      "album": "Purpose (Deluxe)",
+      "isrc": "USUM71516762",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "5X6b1ySSqzJm4qLw0fqs5n",
+      "track_uri": "spotify:track:5X6b1ySSqzJm4qLw0fqs5n",
+      "name": "Captain Jefferson",
+      "artist": "James Newton Howard",
+      "album": "News Of The World (Original Motion Picture Soundtrack)",
+      "isrc": "USQ4E2006097",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "4IQkfUsrwXol38VV3U7t7T",
+      "track_uri": "spotify:track:4IQkfUsrwXol38VV3U7t7T",
+      "name": "Run (feat. Ed Sheeran) (Taylor’s Version) (From The Vault)",
+      "artist": "Taylor Swift, Ed Sheeran",
+      "album": "Red (Taylor's Version)",
+      "isrc": "USUG12103688",
+      "reason": "No lyrics found"
+    }
+  ]
+}

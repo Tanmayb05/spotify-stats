@@ -1,0 +1,157 @@
+{
+  "timestamp": "20251015_225038",
+  "started_at": "2025-10-15 22:50:02",
+  "completed_at": "2025-10-15 22:50:38",
+  "total_processed": 10,
+  "successful": 6,
+  "failed": 4,
+  "execution_time": {
+    "initialization": 0.33,
+    "step1_extraction": 0.34,
+    "step2_selection": 0.0,
+    "step3_processing": 34.62,
+    "total": 35.29
+  },
+  "tracks": [
+    {
+      "track_id": "0hwlEWBrraTWI9PTNzG0RJ",
+      "track_uri": "spotify:track:0hwlEWBrraTWI9PTNzG0RJ",
+      "name": "Cheliya",
+      "artist": "Srinivas, Harini",
+      "album": "Kushi",
+      "isrc": "INA090209202",
+      "lyrics": {
+        "track_id": 78953866,
+        "lyrics_body": "చెలియ చెలియా చిరుకోపమా\nచాలయ్యా చాలయ్యా పరిహాసము\n\nకోపాలు తాపాలు మనకేల\nసరదాగా కాలాన్ని గడపాల\nసలహాలు కలహాలు మనకేల\nప్రేమంటే పదిలంగా ఉండాల\n\nచెలియ చెలియా చిరుకోపమా\nచాలయ్యా చాలయ్యా పరిహాసము\n\nరెమ్మల్లో మొగ్గ నే పూయను పొమ్మంటే\nగాలి తాకంగ పూచెనులే\nఅయితే గాలే గెలిచిందననా\nలేక పువ్వే ఓడిందననా\n\nరాళ్ళల్లో శిల్పం లోలోపల దాగున్నా\nఉలి తాకంగ వెలిసెనులే\nఅయితే ఉలియే గెలిచిందననా\nలేక శిల్పం ఓడిందననా\n\nఈ వివరం తెలిపేది ఎవరంట\nవ్యవహారం తీర్చేది ఎవరంట\nకళ్ళల్లో కదిలేటి కలలంట\nఊహల్లో ఊగేటి ఊసంట\n\nచెలియ చెలియా చిరుకోపమా\n\nనీలిమేఘాలు చిరుగాలిని ఢీకొంటే\nమబ్బు వానల్లే మారునులే\nదీన్ని గొడవే అనుకోమననా\nలేక నైజం అనుకోనా\n\nమౌనరాగాలు రెండుకళ్ళను ఢీకొంటే\nప్రేమ వాగల్లే పొంగునులే\nదీన్ని ప్రళయం అనుకోమననా\nలేక ప్రణయం అనుకోనా\n\nఈ వివరం తెలిపేది ఎవరంట\nవ్యవహారం తీర్చేది ఎవరంట\nఅధరాలు చెప్పేటి కథలంట\nహృదయంలో మెదిలేటి వలపంట\n\nచెలియ చెలియా చిరుకోపమా\nచాలయ్యా చాలయ్యా పరిహాసము",
+        "lyrics_language": "te",
+        "script_tracking_url": "https://tracking.musixmatch.com/t1.0/m_js/e_0/sn_0/l_38009002/su_0/rs_0/tr_3vUCAOWgnVG4OyFhvOGESdcw8ZB2kgg-LjZMrRt7yCDRg6T9ePbpZgN9HDsxQduSQDsTh4HspinvpL5QlXLNGL1kpGY5Xsj958sKNrx9Q8WoY8UNYTvQeFRnGR6UDmIHrDRcCF2TLTUdDpiu9nKY70WJ9lXV9J8GGvniSFPwIxTHB_IUqw1oDJc0k4NUrQ-INS32Tc0wrNuNSXj8wD80rXIOuAejd15J1vmTUIJlNTlxOBG5pddyELQ0yl4KQfbi-lJFZvHqS1dErJEYNnDxQXwjqL774GdWAaW2TmjecrLt64g2JRDexrWlb8cENAROMpP0GFzAAN-DDstCilGAtzD3H9y00Q_m2aQ_l2ChzIiOKlmIoSAk13KOG8gZJBizBLI5b2L3dwgGn8vpMaFYG1mzAmLgBQQCb87QyVRMwER7s5VPrH_Gr_pQ7GdPbz9JzCaWUjM6i-5lKY7rbYyQjS7WAg3BEmjr_Ehq2wAc9hhavQMd5z5YYOXccE2nDzK4QTq-A_yyBlcvTcA/",
+        "pixel_tracking_url": "https://tracking.musixmatch.com/t1.0/m_img/e_0/sn_0/l_38009002/su_0/rs_0/tr_3vUCAC9LvbQWxYITk-Ol9wTJdQ3ElRg4xiSZr9zuXRm-cvt1fCH7ifMS-zW0RLf2g3zaNjb6wmwzu__v282tCX2KwIVjZ1marbTk0ZdUKa98ktEZNOudSarMH-AKiv01_q3roME_yZZPfRDxl1AQZ2E0To6YqVu8Va-Em23YXaNmi2sSswzRrPlVfkz0pFzLS6yu42gX2XcoiHdkkp5FIG_1pDxxEXQjeMcpD9aZZlv7VmqF0WtY8jfzvnrBnIhpF_llLOdCVVRGF52G0xjygb4UXpP9OtLmxHtlb81SkRfwdROGbhIxBWV7AZP191icxzovXb4jAkk5PPmBMoDZNzvzH0BVHQI9NtfodyUs1Eez07HhyI7LJcfnOSJjCFoAba7f7rz7rA7O25vPIultVq33IjyccGsNAmMWVKkaP4AuBnCqhMsAcmgKi-vJfk0xJ-MHMpAozoqXJJLZwD9Y_WXYJvf3oY6eHYCzf4eHHlQCe0aPXMTbQg6V2MUO7VAn_6LFtww6YtuB9kU/",
+        "lyrics_copyright": "Copyright: Aditya Music (india) Pvt Ltd\n",
+        "updated_time": "2025-06-24T15:00:38Z"
+      }
+    },
+    {
+      "track_id": "3W7KHojYGgYaoX9ogKO9hU",
+      "track_uri": "spotify:track:3W7KHojYGgYaoX9ogKO9hU",
+      "name": "Nothing's Gonna Hurt You Baby",
+      "artist": "Cigarettes After Sex",
+      "album": "I.",
+      "isrc": "TCACJ1593857",
+      "lyrics": {
+        "track_id": 88816590,
+        "lyrics_body": "Whispered something in your ear\nIt was a perverted thing to say\nBut I said it anyway\nMade you smile and look away\n\nNothing's gonna hurt you baby\nAs long as you're with me you'll be just fine\nNothing's gonna hurt you baby\nNothing's gonna take you from my side\n\nWhen we dance in my living room\nTo that silly 90's R&B\nWhen we have a drink or three\nAlways ends in a hazy shower scene\n\nNothing's gonna hurt you baby\nAs long as you're with me you'll be just fine\nNothing's gonna hurt you baby\nNothing's gonna take you from my side\n\nWhen we're laughing in the microphone and singing\nWith our sunglasses on to our favorite songs\nAnd we're laughing in the microphone and singing\nWith our sunglasses on to our favorite songs\n\nNothing's gonna hurt you baby\nNothing's gonna take you from my side",
+        "lyrics_language": "en",
+        "script_tracking_url": "https://tracking.musixmatch.com/t1.0/m_js/e_0/sn_0/l_27637942/su_0/rs_0/tr_3vUCAAYyGihmz1jYMn6it5fKJus8rfdh-VG74PFdo4JR-CT-Q8hUPChYEfub20EJ7rC4CN3m5R7ECZfyrSp9W0yhwlMMs1ZV0USV6w6azXADfCgWtoiAX4uIr7w7HKf3hWbg5L7BH8h8o9D67PF0qe9norA-dlKiFFtyI4q-Vm60q1C_36QQ_csdvaZBfFoJewAbDl4Q-wEpQ80kMvQ_8-fus0ap7XHk1NHLNrWflPGjONvZkLxvxU-bbBXJ9TdkfBBgDK6uckchJcYzBFgeKUzGGH6BIXnN2G-kOVccci7wg3lDKGRPvObZNOdQVih8f9FkiX1RpML1F20evG4cIpvfqZAzZceHmhdWClrtgeneJBYJcIxzAuUOCFaUxWh6crjxbBo5gGwhKNN3642CAbz-RKzTLVzaduv8QdaP2YwA5u7GolBCMua8-jNT70W4haCGK1a_RFtbvAX4iTb0sIU-a9lXmCMVkKpC89S4A8yrPM8sbBSccVa7sYWavwE4Yiw0mWmhc1epMRnUx_NrhCHEgxlaqBJ0HjbxWyI/",
+        "pixel_tracking_url": "https://tracking.musixmatch.com/t1.0/m_img/e_0/sn_0/l_27637942/su_0/rs_0/tr_3vUCAA4gDXM4tj7Ou84BBuWFLQPgBJJPAMl44dVsvFgix5EL8xiB25iGRBTMfeYXXqGuM6Edz9ZMJWhTSQUy_erlQfFJbC0wFsm1vYyhcOeglEalMbKIuhyUO7vQTdScSHZ12PeB_nXNJjCgCEqjK3Pjv0HkJPsJRj4_bJchcEtfxKBbxdV8j1thx0OphEIB-BN75uNVNQvhqjRJ1JZ63Kv7eZKzJLkClXD_iKlIbIkaMYpEjmBqWe8daSAxq6IiK7P5mmynAdiV1htf32ymwfaXrphGS3UiGe1gbYUqZy62P0gILD913308vLkT-EQcfFM7R4ybLkx3cLLw-skcLTkXMjAM7vRdwkcCiTA5tZesPgqEMWMz8Y09xUF941H-JmxE63O_DNvhnB-P3WAOOkzWBEzJadryaaTbo-Lg8IPFK37nuBCw7tFXpp7xYYVnmB03KZ5x3fTVul_amWNu2as_i6E2DLCp9hLF-Sjx_yk5C9VsiItorbi6-AoPF36sq288V0fFBd2x0FR9ulhqXWvmfqxEEaeJnX8L72k/",
+        "lyrics_copyright": "Writer(s): Gregory Gonzalez\nCopyright: Sleepy Bow Publishing, Peermusic Iii Ltd, Big Deal Jams\n",
+        "updated_time": "2024-07-22T18:11:18Z"
+      }
+    },
+    {
+      "track_id": "2ekn2ttSfGqwhhate0LSR0",
+      "track_uri": "spotify:track:2ekn2ttSfGqwhhate0LSR0",
+      "name": "New Rules",
+      "artist": "Dua Lipa",
+      "album": "Dua Lipa (Deluxe)",
+      "isrc": "GBAHT1600310",
+      "lyrics": {
+        "track_id": 128787236,
+        "lyrics_body": "One\n\nTalkin' in my sleep at night, makin' myself crazy\n(Out of my mind, out of my mind)\nWrote it down and read it out, hopin' it would save me\n(Too many times, too many times)\n\nMy love\nHe makes me feel like nobody else, nobody else\nBut my love\nHe doesn't love me, so I tell myself, I tell myself\n\nOne, don't pick up the phone\nYou know he's only calling 'cause he's drunk and alone\nTwo, don't let him in\nYou'll have to kick him out again\nThree, don't be his friend\nYou know you're gonna wake up in his bed in the mornin'\nAnd if you're under him\nYou ain't gettin' over him\n\nI got new rules, I count 'em\nI got new rules, I count 'em\nI gotta tell them to myself\nI got new rules, I count 'em\nI gotta tell them to myself\n\nI keep pushin' forwards, but he keeps pullin' me backwards\n(Nowhere to turn) no way (nowhere to turn), no\nNow I'm standin' back from it, I finally see the pattern\n(I never learn, I never learn) oh\n\nBut my love (my love)\nHe doesn't love me, so I tell myself, I tell myself\nI do, I do, I do\n\nOne, don't pick up the phone\nYou know he's only calling 'cause he's drunk and alone\nTwo, don't let him in\nYou'll have to kick him out again\nThree, don't be his friend\nYou know you're gonna wake up in his bed in the mornin'\nAnd if you're under him\nYou ain't gettin' over him\n\nI got new rules, I count 'em\nI got new rules, I count 'em\nI gotta tell them to myself\nI got new rules, I count 'em\nI gotta tell them to myself\n\nPractice makes perfect\nI'm still tryna learn it by heart (I got new rules, I count 'em)\nEat, sleep, and breathe it\nRehearse and repeat it, 'cause I (I got new)\n\nOne, don't pick up the phone (yeah)\nYou know he's only calling 'cause he's drunk and alone (and alone)\nTwo, don't let him in (no)\nYou'll have to kick him out again (again)\nThree, don't be his friend\nYou know you're gonna wake up in his bed in the mornin'\nAnd if you're under him\nYou ain't gettin' over him\n\nI got new rules, I count 'em\nI gotta tell them to myself (whoa, oh)\nI gotta tell them to myself\nI got new rules, I count 'em (baby, you know I count 'em)\nI gotta tell them to myself\n\nDon't let him in, don't let him in\nDon't, don't, don't, don't\nDon't be his friend, don't be his friend\nDon't, don't, don't, don't\nDon't let him in, don't let him in\nDon't, don't, don't, don't\nDon't be his friend, don't be his friend\nDon't, don't, don't, don't\nYou gettin' over him",
+        "lyrics_language": "en",
+        "script_tracking_url": "https://tracking.musixmatch.com/t1.0/m_js/e_0/sn_0/l_35688641/su_0/rs_0/tr_3vUCAMi7ide5AQk3jDa5oQO10K4WF5EaJHximmRdKcIvuNYW_HtF3AGhiMfboJEh6KN_1AVAsy4Q3UMQ5NZVbPsUAPJKoHvna7LFoREQQlEO69OAnnWbfs3t5tfOtcnRXlgEt7dTOy8JLD5kGajYDH_6VqHkHI_IpHJlveRelphyAK7pqDz_NF1Cn5zQOUuGa2lt8_KThg2dwuCvtbAOhQYDDSv-VOksMEnisDkyyN343jv5cmLldTLFESUSW9zS5aniFQ2YJY276adCvHjfNI-D-mQXyXoGoQzYJHkjKyDsyuHdwwf-y7RSslwNvkuduBOrxUjpNysFq7xKSFOfsCASgGTq1np0j_ZDPjfTIR7AG-N9om61iSEiJ7KOBl3o2A-0ydXGKgZNrzdASUMe2I0IagBQT-3R2bhWswMI4noMyJeK01ox8R8096m8d5eepNPscm5d2cu1YEsKEJBsGDMiwiKlBsSsMrwQT4sxR9qAKi91Qi2UPQluuX4W0oePnmA/",
+        "pixel_tracking_url": "https://tracking.musixmatch.com/t1.0/m_img/e_0/sn_0/l_35688641/su_0/rs_0/tr_3vUCAEW3ywgcg4x9_dcOXNkqxTdW03EIeaXZWQjhZ-stQpVfI9iozD89lQgrTFE3yA-Sp3Pyk62SX8rM6vSQyVkwUojc_YSeRkygdT0o52blabNAHyRdCRKk5PVHoWKK-LbmXNWuwqlG-dxG-Eq_M8AoWN1_WgBhErfalIleQUO-IanCyOGFj2_70wPdf-3Wu99ZsxFTwo_fMXLu4pYjKFTRKT_GUNSApoa5R-rHX9FBGxjpC21Js6FdZu0wtzUns4v1-gO24q9jfF0YKIM5JO5wpgxMl0snCnLdqxsufAUzSvbINOiHAzQtrk-kB8boDzLjhSEyzrQ6H5r9V7F8fiUwMnaAfQZH847Yv9RXOQTkFviETD7szOD6WCftva-ol3tUvewVYqfFNv3sMOxQDs6XLOqEMzos_OXMpEDf8uR5LMW92Zv2QDxfXZ9huAvTEbJMSGD0A5h3ekQs4WEIp2zHxhMBgyxV-zTfDV1hNMWRGNI4_46cSFl2MCk_HFyVY9k/",
+        "lyrics_copyright": "Writer(s): Ian Eric Kirkpatrick, Emily Warren Schwartz, Ailin Caroline\nCopyright: Hifi Asset Acquisition Co Lp, Buckley Tenenbaum Publishing, Waterfall Music As\n",
+        "updated_time": "2024-06-30T17:34:21Z"
+      }
+    },
+    {
+      "track_id": "2FArWjBAnAmh4IpxWQGCpq",
+      "track_uri": "spotify:track:2FArWjBAnAmh4IpxWQGCpq",
+      "name": "Tu Mere Samne",
+      "artist": "Lata Mangeshkar, Udit Narayan",
+      "album": "Darr",
+      "isrc": "INH109338560",
+      "lyrics": {
+        "track_id": 148078869,
+        "lyrics_body": "तू मेरे सामने, मैं तेरे सामने\nतुझको देखूँ कि प्यार करूँ?\nये कैसे हो गया? तू मेरी हो गई\nकैसे मैं ऐतबार करूँ?\n\nतू मेरे सामने, मैं तेरे सामने\nतुझको देखूँ कि प्यार करूँ?\nये कैसे हो गया? तू मेरी हो गई\nकैसे मैं ऐतबार करूँ?\nतू मेरे सामने, मैं तेरे सामने\n\nटूट गई, टूट के मैं चूर हो गई\nतेरी ज़िद से मजबूर हो गई\nटूट गई, टूट के मैं चूर हो गई\nतेरी ज़िद से मजबूर हो गई\n\nतेरा जादू चल गया, ओ, जादूगर\nटूट गई, टूट के मैं चूर हो गई\nतेरी ज़िद से मजबूर हो गई\n\nतू मेरे सामने, मैं तेरे सामने\nतुझको देखूँ कि प्यार करूँ?\nये कैसे हो गया? तू मेरी हो गई\nकैसे मैं ऐतबार करूँ?\n\nतेरी ज़ुल्फ़ों से खेलूँगा मैं\nतुझको बाँहों में ले लूँगा मैं\n\nतेरी ज़ुल्फ़ों से खेलूँगा मैं\nतुझको बाँहों में ले लूँगा मैं\nदिल तो देते हैं आशिक़ सभी\nजान भी तुझको दे दूँगा मैं\n\nमेरे होंठों के गुलाब माँग ले\nमेरी आँखों से शराब माँग ले\nमेरे होंठों के गुलाब माँग ले\nमेरी आँखों से शराब माँग ले\n\nतेरा जादू चल गया, ओ, जादूगर\nटूट गई, टूट के मैं चूर हो गई\nतेरी ज़िद से मजबूर हो गई\n\nतू मेरे सामने, मैं तेरे सामने\nतुझको देखूँ कि प्यार करूँ?\nये कैसे हो गया? तू मेरी हो गई\nकैसे मैं ऐतबार करूँ?\n\nइस कहानी के १०० साल हैं\nइस जवानी के १०० साल हैं\n\nइस कहानी के १०० साल हैं\nइस जवानी के १०० साल हैं\nये तेरे प्यार के चार पल\nज़िंदगानी के १०० साल हैं\n\nएक बार नहीं, १०० बार कर ले\nजी-भर के तू मुझे प्यार कर ले\nएक बार नहीं, १०० बार कर ले\nजी-भर के तू मुझे प्यार कर ले\n\nतेरा जादू चल गया, ओ, जादूगर\nटूट गई, टूट के मैं चूर हो गई\nतेरी ज़िद से मजबूर हो गई\n\nतू मेरे सामने, मैं तेरे सामने\nतुझको देखूँ कि प्यार करूँ?\nये कैसे हो गया? तू मेरी हो गई\nकैसे मैं ऐतबार करूँ?",
+        "lyrics_language": "hi",
+        "script_tracking_url": "https://tracking.musixmatch.com/t1.0/m_js/e_0/sn_0/l_38038537/su_0/rs_0/tr_3vUCAOJtu8IDEpwUPzqLACgfnWvDC1EsAjpI1jV9bAj903e-lYPlPdYii2Fsx7k0nVItp8PVnFUQwv4b07phnccco0JfftG6sHOiisvgKOcb__4gtxZdD14zHsiT7JQfWC3cccaiA_Mpmsmt5VmZBVdd14FABJTm4mjp7VJCFxXtnOXC1VavPRh047abbQPSfJVq2uOT2eWES95ORbpahJwdP6QmrzN4dJoZ2LdQ6ZUV8GEYh3mcXIQM8jHf98bHKMDIU7pvjAJ1UZpYCfkTirqjiuLBmgyYlstB8XYc6yv24SyTRZK5LU61fkpN5vQtXD6HNjcB-y_q45Tz80wszDTk3MxXv6raH5w7d_m7e8Fx73k_bR_84Wz_GFcaUYFBgV_zWOYceXDIBb7xfthxM_wtohtzsTDj5dv1zCp4WwtUiZyHu21kI796lVnUi_Mr5q1HBDdqdM3B_KqaSUe1Co6YnRIlPiAoHeGr5jITIPWjNFuNGYAJ8-dwCj0jCDAF8s0WJBXflKjvTqYFgo3Dhs2SzxW3jpRMa9c/",
+        "pixel_tracking_url": "https://tracking.musixmatch.com/t1.0/m_img/e_0/sn_0/l_38038537/su_0/rs_0/tr_3vUCAFMrLTUnfJLm-82ahMFvpV_MfKeiUM31P2U_YSO_2P9RUSh0lhz9HA6T218UNNKdfDKh4LwDudMW0T3gaRPMpIUhw6ItUKlmr7tKlNi-HLnFmQbnmj6fsA7UWLgVPpFOP8zbVQLfzQ_bDoaIpVHpAsu3Ns62AbU7ZAueBXGH1M--QQfKK-c3JT4ueaRPC0ISIe7x1pwUWsgpNdrWzgqdWn1UVLQZdoCKPQ5ylQ0CAAAquQMqiiJmIe1GQxiTxI8LZw65uHsR3v9yjkYw0yZkeg3ArE8V46wwiwSuQJfoAZDAOBgxjvnJIiXd_dDAa6ozynRsKk2MiOQqutl8K7ldZrEcKHW8Liqrfk0k-dl6loVU0L1kQNE_ysrSbYnIZsDsMUGDP3kGZPDyiOHcvE8Fd-D_0f_u3qRSCbygdRgcldONrQOCdliSMu2xTJyH3qXnj7JdlrYYGMn9WhNfvpdKz8A7I97FM3wHBCzeY8CyKW4HG9B4U37FbvKgfHd9m_664b6QcQqNIvZM43W_K_9WyIx_jGnEA-o/",
+        "lyrics_copyright": "Writer(s): Anand Bakshi, Sajid Wajid\nCopyright: Music India Ltd., Saregama Music United States, Saregama India Ltd, Saregama India Limited\n",
+        "updated_time": "2025-06-25T11:45:50Z"
+      }
+    },
+    {
+      "track_id": "5IcXh98omBBGyRwssnnHMO",
+      "track_uri": "spotify:track:5IcXh98omBBGyRwssnnHMO",
+      "name": "Brain Boost",
+      "artist": "Brainy, Feed Your Soul",
+      "album": "Theta Waves",
+      "isrc": "CAQOI2410384",
+      "lyrics": {
+        "track_id": 294731101,
+        "lyrics_body": "",
+        "lyrics_language": "",
+        "script_tracking_url": "",
+        "pixel_tracking_url": "",
+        "lyrics_copyright": "",
+        "updated_time": "2025-09-22T17:53:03Z"
+      }
+    },
+    {
+      "track_id": "1dGaFOpHvz5fm45rQSYeKC",
+      "track_uri": "spotify:track:1dGaFOpHvz5fm45rQSYeKC",
+      "name": "The Red Army Is the Strongest",
+      "artist": "The Red Army Choir",
+      "album": "The Red Army Choir",
+      "isrc": "FRX080090362",
+      "lyrics": {
+        "track_id": 196156350,
+        "lyrics_body": "Белая армия, чёрный барон\nСнова готовят нам царский трон\nНо от тайги до британских морей\nКрасная Армия всех сильней\n\nТак пусть же Красная (так пусть же Красная) сжимает властно (сжимает властно)\nСвой штык мозолистой рукой\nИ все должны мы (и все должны мы) неудержимо (неудержимо)\nИдти в последний смертный бой\n\nТак пусть же Красная (так пусть же Красная) сжимает властно (сжимает властно)\nСвой штык мозолистой рукой\nИ все должны мы (и все должны мы) неудержимо (неудержимо)\nИдти в последний смертный бой\n\nКрасная Армия, марш, марш вперёд\nРевввоенсовет нас в бой зовёт\nВедь от тайги до британских морей\nКрасная Армия всех сильней\n\nТак пусть же Красная (так пусть же Красная) сжимает властно (сжимает властно)\nСвой штык мозолистой рукой\nИ все должны мы (и все должны мы) неудержимо (неудержимо)\nИдти в последний смертный бой\n\nТак пусть же Красная (так пусть же Красная) сжимает властно (сжимает властно)\nСвой штык мозолистой рукой\nИ все должны мы (и все должны мы) неудержимо (неудержимо)\nИдти в последний смертный бой\n\nБелая армия, чёрный барон\nСнова готовят нам царский трон\nНо от тайги до британских морей\nКрасная Армия всех сильней\n\nТак пусть же Красная (так пусть же Красная) сжимает властно (сжимает властно)\nСвой штык мозолистой рукой\nИ все должны мы (и все должны мы) неудержимо (неудержимо)\nИдти в последний смертный бой\n\nТак пусть же Красная (так пусть же Красная) сжимает властно (сжимает властно)\nСвой штык мозолистой рукой\nИ все должны мы (и все должны мы) неудержимо (неудержимо)\nИдти в последний смертный бой",
+        "lyrics_language": "ru",
+        "script_tracking_url": "https://tracking.musixmatch.com/t1.0/m_js/e_0/sn_0/l_38258881/su_0/rs_0/tr_3vUCALt-FJedsn4cCxF0gKQoZ8_60jWaQs9PTrl4xSOkkO1Ooy4KD6sfPrK8kbejCh6PqsMnQgq8lq9cDsGGRCxFcoHl1ixXuFwcFz8dZtYFqM4IDdwPs7Mih6rciZNUvL10-91zX_3M_rBZ2-DoBpuYHCpbWr1mNBuDS_uu9SPaV-CkK_j4ym4oeNrExXp5H7hKFxHOYBdc4J2yM1trvo_XicrhntnizFHwzLGDxLVKdIVXSi0c4odr0vw43yvhwix_KrFAcJU6ZNVB7F1210DErZBFu899s9lPcWiXJ1MBEB-lhqxvq3LsGJyiiswMwSUfieUlWHhTAr6imtrdv-kGhenKKcbPNbzlaUeiSt74__DZss6RvdU9KAq986pmXEeBJgHlPMx6WvbEWHL2YVq-03tb8Rmnzc5y75nmT49DnJiJl9NJQax3-d2HFLoLWDq-gVeE_1OX0vmFoA1gCtK2G1bAazWJlLV8UtqhPAw-oRgHDXHLby5-7G75-WwouY7YOravPrOqmsiSejmedr4ES3UYI4Qxjg/",
+        "pixel_tracking_url": "https://tracking.musixmatch.com/t1.0/m_img/e_0/sn_0/l_38258881/su_0/rs_0/tr_3vUCAHNaQMx9YL-j16fjCLRUfrhYvvQkRHSMQSB8RII2p5EvRhxpQpLbUCkcNbVPYGxX7dTUGFBGfoQ9F7t9Tbx96DJfFHIMU6udvAqKQw-w0AbEm4V8nQzJtmdIXTCfeHTYho_xOhGTx98v725HFds80aimocPMcxVXvriZkfHO9v99SVtPIAm5auraQMshwmdUG-Tq6yxPONumytLRYUqINhUtu40EAXP1W-3HbAOplwcJjhJWNJbm0r1xL5TZxaN8J15Iyq6fqH1NAB27dchNHEwfMpkKfQJBLbQ0Wj0P5qcj7iqBycdMIyQG49ptrPmCAvWt4DK3zivxwImN-CcAFF9HrWQBsBwHWKOZKBzT1l7LPC5UfHwLojnBM-gAVIjUJHIdVlP1CqIPxmlDXkNSQCXph7uvS-UHNwfdzcIjFQqeN5ToUZXeApUSb9cpC-sUNtglADqZtfWOwoINYEorupHGVeqxZHv0G7cBjp-nomzCggrN2rhR9XUPlhwzAfDafoxicSw_oveMaXeyndiRVJ6MRzd6hw/",
+        "lyrics_copyright": "Writer(s): Dimitri Oleg Yachinov, Otto Govnov, Zhack Perebrosov\n",
+        "updated_time": "2025-07-14T19:05:09Z"
+      }
+    }
+  ],
+  "failed_tracks": [
+    {
+      "track_id": "5v4sZRuvWDcisoOk1PFv6T",
+      "track_uri": "spotify:track:5v4sZRuvWDcisoOk1PFv6T",
+      "name": "Bloodstream",
+      "artist": "Ed Sheeran",
+      "album": "x (Deluxe Edition)",
+      "isrc": "GBAHS1400095",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "1bxEymHzVbGrbjR99QjS0l",
+      "track_uri": "spotify:track:1bxEymHzVbGrbjR99QjS0l",
+      "name": "slow down",
+      "artist": "Forrest., Forrest Frank",
+      "album": "slow down",
+      "isrc": "QZK6L2269812",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "61Emqg95O9zo1GNOcyxq4Y",
+      "track_uri": "spotify:track:61Emqg95O9zo1GNOcyxq4Y",
+      "name": "For Tonight",
+      "artist": "GIVĒON",
+      "album": "For Tonight",
+      "isrc": "USSM12106837",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "3ZPBZH2k9p306C1bu7bkhC",
+      "track_uri": "spotify:track:3ZPBZH2k9p306C1bu7bkhC",
+      "name": "Never Not",
+      "artist": "Lauv",
+      "album": "I met you when I was 18. (the playlist)",
+      "isrc": "GBKPL1809577",
+      "reason": "No lyrics found"
+    }
+  ]
+}

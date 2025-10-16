@@ -1,0 +1,108 @@
+{
+  "timestamp": "20251015_225139",
+  "started_at": "2025-10-15 22:51:18",
+  "completed_at": "2025-10-15 22:51:39",
+  "total_processed": 10,
+  "successful": 0,
+  "failed": 10,
+  "execution_time": {
+    "initialization": 0.35,
+    "step1_extraction": 0.35,
+    "step2_selection": 0.0,
+    "step3_processing": 21.14,
+    "total": 21.84
+  },
+  "tracks": [],
+  "failed_tracks": [
+    {
+      "track_id": "3G3jvHGt3nyRosv66FQndK",
+      "track_uri": "spotify:track:3G3jvHGt3nyRosv66FQndK",
+      "name": "Metrotech",
+      "artist": "Public Access T.V.",
+      "album": "Street Safari",
+      "isrc": "QMKSC1700163",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "7pTYN6Gxy3MOibdXmkzc5V",
+      "track_uri": "spotify:track:7pTYN6Gxy3MOibdXmkzc5V",
+      "name": "Jhak Maar Ke",
+      "artist": "Pritam, Neeraj Shridhar, Harshdeep Kaur",
+      "album": "Desi Boyz",
+      "isrc": "INS181103806",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "3y8PHo3ln3b7C9kkPuEWRN",
+      "track_uri": "spotify:track:3y8PHo3ln3b7C9kkPuEWRN",
+      "name": "A Celebration",
+      "artist": "Joe Satriani",
+      "album": "Unstoppable Momentum",
+      "isrc": "USSM11301414",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "5hM5arv9KDbCHS0k9uqwjr",
+      "track_uri": "spotify:track:5hM5arv9KDbCHS0k9uqwjr",
+      "name": "Borderline",
+      "artist": "Tame Impala",
+      "album": "The Slow Rush",
+      "isrc": "AUUM71900956",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "57VAuR1WgKFzcpO3ujQx9A",
+      "track_uri": "spotify:track:57VAuR1WgKFzcpO3ujQx9A",
+      "name": "Harbor",
+      "artist": "Clairo",
+      "album": "Sling",
+      "isrc": "USUG12101896",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "6vN77lE9LK6HP2DewaN6HZ",
+      "track_uri": "spotify:track:6vN77lE9LK6HP2DewaN6HZ",
+      "name": "Yes Indeed",
+      "artist": "Lil Baby, Drake",
+      "album": "Harder Than Ever",
+      "isrc": "USUM71806749",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "2CMrQfTj0Frv8bM8axjBN9",
+      "track_uri": "spotify:track:2CMrQfTj0Frv8bM8axjBN9",
+      "name": "Blood Brothers",
+      "artist": "Amy Shark",
+      "album": "Night Thinker - EP",
+      "isrc": "AUBM01700389",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "6Xt4fng2W4XDW2CWzGa0Nn",
+      "track_uri": "spotify:track:6Xt4fng2W4XDW2CWzGa0Nn",
+      "name": "Flex Kar",
+      "artist": "DIVINE",
+      "album": "Gunehgar",
+      "isrc": "QMDA72261784",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "5xPsybHWRHbTYO44xnREY5",
+      "track_uri": "spotify:track:5xPsybHWRHbTYO44xnREY5",
+      "name": "Love Story",
+      "artist": "Taylor Swift",
+      "album": "Fearless (International Version)",
+      "isrc": "USCJY0803447",
+      "reason": "No lyrics found"
+    },
+    {
+      "track_id": "0FeJltV3BtqpyQZ0hv49oi",
+      "track_uri": "spotify:track:0FeJltV3BtqpyQZ0hv49oi",
+      "name": "Bulleya - Reprise",
+      "artist": "Pritam, Arijit Singh, Shilpa Rao",
+      "album": "Ae Dil Hai Mushkil (Original Motion Picture Soundtrack) [Deluxe Edition]",
+      "isrc": "INS171602906",
+      "reason": "No lyrics found"
+    }
+  ]
+}
