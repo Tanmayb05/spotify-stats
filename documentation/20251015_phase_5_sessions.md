@@ -7,21 +7,21 @@
 Phase 5 implements intelligent session segmentation and clustering using machine learning. The system automatically groups streaming records into listening sessions using a 30-minute gap threshold, extracts multi-dimensional features from each session, and applies k-means clustering with automatic optimal cluster selection via silhouette score analysis. This reveals distinct listening patterns such as "Quick Listens," "Deep Dives," "Discovery Sessions," and more.
 
 ## Files Created
-- `backend/app/routes/sessions.py` - FastAPI routes for session clustering endpoints
+- `apps/api/app/routes/sessions.py` - FastAPI routes for session clustering endpoints
 - `documentation/20251015_phase_5_sessions.md` - This documentation file
 
 ## Files Modified
-- `backend/app/services/data_loader.py` - Added comprehensive session clustering methods:
+- `apps/api/app/services/data_loader.py` - Added comprehensive session clustering methods:
   - `_build_sessions()` - Session segmentation with 30-min gap
   - `_extract_session_features()` - Feature extraction
   - `_cluster_sessions()` - K-means clustering with optimal k selection
   - `get_session_clusters()` - Cluster statistics and profiles
   - `get_session_centroids()` - Centroid feature values
   - `get_session_assignments()` - Recent sessions with labels
-- `backend/app/main.py` - Registered sessions router
-- `frontend/src/types/api.ts` - Added session clustering TypeScript types
-- `frontend/src/api/client.ts` - Added session clustering API methods
-- `frontend/src/pages/Sessions.tsx` - Complete implementation of Sessions clustering page
+- `apps/api/app/main.py` - Registered sessions router
+- `apps/web/src/types/api.ts` - Added session clustering TypeScript types
+- `apps/web/src/api/client.ts` - Added session clustering API methods
+- `apps/web/src/pages/Sessions.tsx` - Complete implementation of Sessions clustering page
 
 ## Checklist
 - [x] Intuitive navigation

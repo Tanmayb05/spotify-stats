@@ -19,9 +19,11 @@ This project analyzes **71,052 streams** spanning **7 years** of listening histo
 ```
 spotify-stats/
 ├── data/                  # Raw JSON streaming data (5 audio files + 1 video file)
-├── src/                   # Python analysis scripts (original)
-├── backend/               # FastAPI REST API
-├── frontend/              # React + Material-UI web app
+├── apps/
+│   ├── api/               # FastAPI REST API
+│   └── web/               # React + Material-UI web app
+├── libraries/
+│   └── analysis/          # Python analysis scripts (original)
 ├── outputs/               # Generated visualizations and reports
 │   ├── images/           # PNG charts and graphs
 │   ├── data/             # CSV reports and statistics
@@ -84,11 +86,11 @@ If you prefer to run servers manually:
 ```bash
 # Terminal 1: Backend (port 3011)
 source .venv/bin/activate
-cd backend
+cd apps/api
 uvicorn app.main:app --reload --port 3011
 
 # Terminal 2: Frontend (port 3010)
-cd frontend
+cd apps/web
 npm run dev
 ```
 
@@ -130,15 +132,15 @@ pip install pandas numpy matplotlib seaborn
 Execute all analysis scripts at once:
 ```bash
 source .venv/bin/activate
-python3 src/run_all_analyses.py
+python3 libraries/analysis/run_all_analyses.py
 ```
 
 ### Run Individual Analyses
 Each script can also be run independently:
 ```bash
-python3 src/explore_data.py
-python3 src/listening_patterns.py
-python3 src/artist_discovery.py
+python3 libraries/analysis/explore_data.py
+python3 libraries/analysis/listening_patterns.py
+python3 libraries/analysis/artist_discovery.py
 # ... etc
 ```
 

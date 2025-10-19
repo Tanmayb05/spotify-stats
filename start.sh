@@ -11,7 +11,7 @@ tell application "Terminal"
     activate
 
     -- Create new window with backend tab
-    do script "cd '$PROJECT_DIR' && source .venv/bin/activate && cd backend && echo '🚀 Starting Backend on port 3011...' && uvicorn app.main:app --reload --port 3011"
+    do script "cd '$PROJECT_DIR' && source .venv/bin/activate && cd apps/api && echo '🚀 Starting Backend on port 3011...' && uvicorn app.main:app --reload --port 3011"
 
     -- Wait a moment for the window to be created
     delay 0.5
@@ -25,7 +25,7 @@ tell application "Terminal"
     delay 0.5
 
     -- Execute frontend command in the new tab
-    do script "cd '$PROJECT_DIR/frontend' && echo '🎨 Starting Frontend on port 3010...' && npm run dev" in front window
+    do script "cd '$PROJECT_DIR/apps/web' && echo '🎨 Starting Frontend on port 3010...' && npm run dev" in front window
 
 end tell
 EOF

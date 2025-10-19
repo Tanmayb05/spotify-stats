@@ -7,15 +7,15 @@
 Phase 4 introduces the Milestones feature, which tracks and displays listening achievements, streaks, peak listening days, artist discoveries, and diversity milestones. It also includes a Flashback widget that allows users to travel back to any specific date and view detailed listening statistics from that day.
 
 ## Files Created
-- `backend/app/routes/milestones.py` - FastAPI routes for milestones endpoints
+- `apps/api/app/routes/milestones.py` - FastAPI routes for milestones endpoints
 - `documentation/20251015_phase_4_milestones.md` - This documentation file
 
 ## Files Modified
-- `backend/app/services/data_loader.py` - Added `get_milestones_list()` and `get_flashback()` methods
-- `backend/app/main.py` - Registered milestones router
-- `frontend/src/types/api.ts` - Added `Milestone` and `FlashbackData` types
-- `frontend/src/api/client.ts` - Added `getMilestones()` and `getFlashback()` API methods
-- `frontend/src/pages/Milestones.tsx` - Complete implementation of Milestones page
+- `apps/api/app/services/data_loader.py` - Added `get_milestones_list()` and `get_flashback()` methods
+- `apps/api/app/main.py` - Registered milestones router
+- `apps/web/src/types/api.ts` - Added `Milestone` and `FlashbackData` types
+- `apps/web/src/api/client.ts` - Added `getMilestones()` and `getFlashback()` API methods
+- `apps/web/src/pages/Milestones.tsx` - Complete implementation of Milestones page
 
 ## Checklist
 - [x] Intuitive navigation
