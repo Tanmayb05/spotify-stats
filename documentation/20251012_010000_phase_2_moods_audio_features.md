@@ -7,19 +7,19 @@
 Implemented mood analysis and time-based discovery using Spotify audio features (valence, energy, danceability). Added timeline visualizations, context comparisons, and mood ring displays.
 
 ## Files Created
-- backend/app/services/spotify_client.py - Spotify API client for fetching audio features
-- backend/app/routes/mood.py - Mood analysis API endpoints
-- backend/jobs/enrich_audio_features.py - Job script to fetch and cache audio features
-- backend/jobs/__init__.py - Jobs package init
-- backend/.env.example - Environment variables template for Spotify credentials
+- apps/api/app/services/spotify_client.py - Spotify API client for fetching audio features
+- apps/api/app/routes/mood.py - Mood analysis API endpoints
+- apps/api/jobs/enrich_audio_features.py - Job script to fetch and cache audio features
+- apps/api/jobs/__init__.py - Jobs package init
+- apps/api/.env.example - Environment variables template for Spotify credentials
 
 ## Files Modified
-- backend/requirements.txt - Added spotipy and pandas
-- backend/app/services/data_loader.py - Added mood analysis methods
-- backend/app/main.py - Registered mood router
-- frontend/src/types/api.ts - Added mood-related types
-- frontend/src/api/client.ts - Added mood API functions
-- frontend/src/pages/Moods.tsx - Fully implemented Moods page with charts
+- apps/api/requirements.txt - Added spotipy and pandas
+- apps/api/app/services/data_loader.py - Added mood analysis methods
+- apps/api/app/main.py - Registered mood router
+- apps/web/src/types/api.ts - Added mood-related types
+- apps/web/src/api/client.ts - Added mood API functions
+- apps/web/src/pages/Moods.tsx - Fully implemented Moods page with charts
 
 ## Checklist
 - [x] Intuitive navigation
@@ -59,7 +59,7 @@ Enable users to analyze their listening moods over time based on Spotify's audio
 
 ### Flow
 - User obtains Spotify API credentials from developer.spotify.com
-- User configures backend/.env with SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET
+- User configures apps/api/.env with SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET
 - User runs enrichment job: python3 -m backend.jobs.enrich_audio_features
 - Job fetches audio features for all unique tracks and caches in data/audio_features.json
 - Backend loads cached audio features on startup
@@ -70,7 +70,7 @@ Enable users to analyze their listening moods over time based on Spotify's audio
 
 ### Usage
 - Set up Spotify API: Create app at https://developer.spotify.com/dashboard
-- Configure backend/.env with credentials (use backend/.env.example as template)
+- Configure apps/api/.env with credentials (use apps/api/.env.example as template)
 - Run enrichment job: python3 -m backend.jobs.enrich_audio_features
 - Restart backend to load new audio features
 - Navigate to Moods page in the webapp

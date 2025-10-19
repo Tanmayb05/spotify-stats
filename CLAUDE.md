@@ -604,8 +604,8 @@ Complete Specifications for Line Graph
 ```
 You are a senior full-stack engineer. In repo root, ensure this structure exists:
 
-- /frontend (Vite + React + TS)
-- /backend (FastAPI Python)  // keep minimal health endpoint if backend exists, else stub it
+- /apps/web (Vite + React + TS)
+- /apps/api (FastAPI Python)  // keep minimal health endpoint if backend exists, else stub it
 - /documentation             // markdown reports per phase
 
 FRONTEND (Material UI + MUI X Charts):
@@ -635,7 +635,7 @@ FRONTEND (Material UI + MUI X Charts):
 - Routes wired with react-router v6 and <AppLayout />.
 
 DOCS TOOLING:
-- Add /frontend/scripts/writePhaseDoc.ts (Node script) that writes a file:
+- Add /apps/web/scripts/writePhaseDoc.ts (Node script) that writes a file:
   documentation/<YYYYMMDD_HHMMSS>_phase_<number>_<name>.md
   with sections: date; phase; status; overview; time to complete; files created; files modified; checklist; what was implemented (purpose, features, implementation, flow, usage); next steps; conclusion.
 - Add an npm script: "doc:phase": "ts-node scripts/writePhaseDoc.ts"
@@ -724,7 +724,7 @@ Return the updated files and the doc content your script would write.
 
 ```
 Phase 2 Setup:
-- Backend job: /backend/jobs/enrich_audio_features.py to fetch and cache audio features for known tracks (valence, energy, danceability, tempo, key, mode, loudness).
+- Backend job: /apps/api/jobs/enrich_audio_features.py to fetch and cache audio features for known tracks (valence, energy, danceability, tempo, key, mode, loudness).
 - Add endpoints:
   GET /api/mood/summary?window=7d|30d|90d
   GET /api/mood/contexts (weekday vs weekend, platform vs platform)
@@ -901,7 +901,7 @@ Phase 6 Setup:
 - Backend:
   GET /api/reco?top_k=20&target_mood=optional
 - Implement content-based scorer (cosine on normalized features), recency weighting, and MMR diversification.
-- Add minimal evaluation notebook (offline) saved under /backend/notebooks (optional).
+- Add minimal evaluation notebook (offline) saved under /apps/api/notebooks (optional).
 
 Frontend:
 - Recommendations page skeleton with filters.
@@ -1054,3 +1054,4 @@ Bulleted, concrete tasks for next phase.
   * Check contrast via MUI theme palette.
 
 ---
+- always save the documentation created in documentation dir.

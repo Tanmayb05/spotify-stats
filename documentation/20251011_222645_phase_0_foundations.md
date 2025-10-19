@@ -7,36 +7,36 @@
 Successfully established the foundational architecture for the Spotify Stats web application, including a Vite + React + TypeScript frontend with Material-UI, FastAPI backend with health endpoint, and comprehensive documentation tooling.
 
 ## Files Created
-- `frontend/` - Complete Vite + React + TypeScript project structure
-- `frontend/src/theme/AppThemeProvider.tsx` - Material-UI theme provider with Spotify-themed dark mode
-- `frontend/src/layout/AppLayout.tsx` - Responsive drawer navigation and app bar
-- `frontend/src/components/StatCard.tsx` - Reusable statistics card component
-- `frontend/src/components/ErrorBanner.tsx` - Global error notification component
-- `frontend/src/api/client.ts` - Axios API client with error handling
-- `frontend/src/store/app.ts` - Zustand state management store
-- `frontend/src/pages/Overview.tsx` - Overview dashboard page (placeholder)
-- `frontend/src/pages/Moods.tsx` - Moods analysis page (placeholder)
-- `frontend/src/pages/Discovery.tsx` - Artist discovery page (placeholder)
-- `frontend/src/pages/Milestones.tsx` - Milestones page (placeholder)
-- `frontend/src/pages/Sessions.tsx` - Listening sessions page (placeholder)
-- `frontend/src/pages/Recommendations.tsx` - ML recommendations page (placeholder)
-- `frontend/src/pages/Simulator.tsx` - Predictive simulator page (placeholder)
-- `frontend/src/pages/NotFound.tsx` - 404 error page
-- `frontend/src/utils/format.ts` - Utility functions for formatting numbers, dates, etc.
-- `frontend/scripts/writePhaseDoc.ts` - Documentation generation script
-- `frontend/.env` - Environment variables configuration
-- `frontend/.env.example` - Environment variables template
-- `backend/` - FastAPI application structure
-- `backend/app/__init__.py` - Python package initialization
-- `backend/app/main.py` - FastAPI application with CORS configuration
-- `backend/app/routes/__init__.py` - Routes package initialization
-- `backend/app/routes/health.py` - Health check endpoint
-- `backend/requirements.txt` - Python dependencies
-- `backend/README.md` - Backend documentation
+- `apps/web/` - Complete Vite + React + TypeScript project structure
+- `apps/web/src/theme/AppThemeProvider.tsx` - Material-UI theme provider with Spotify-themed dark mode
+- `apps/web/src/layout/AppLayout.tsx` - Responsive drawer navigation and app bar
+- `apps/web/src/components/StatCard.tsx` - Reusable statistics card component
+- `apps/web/src/components/ErrorBanner.tsx` - Global error notification component
+- `apps/web/src/api/client.ts` - Axios API client with error handling
+- `apps/web/src/store/app.ts` - Zustand state management store
+- `apps/web/src/pages/Overview.tsx` - Overview dashboard page (placeholder)
+- `apps/web/src/pages/Moods.tsx` - Moods analysis page (placeholder)
+- `apps/web/src/pages/Discovery.tsx` - Artist discovery page (placeholder)
+- `apps/web/src/pages/Milestones.tsx` - Milestones page (placeholder)
+- `apps/web/src/pages/Sessions.tsx` - Listening sessions page (placeholder)
+- `apps/web/src/pages/Recommendations.tsx` - ML recommendations page (placeholder)
+- `apps/web/src/pages/Simulator.tsx` - Predictive simulator page (placeholder)
+- `apps/web/src/pages/NotFound.tsx` - 404 error page
+- `apps/web/src/utils/format.ts` - Utility functions for formatting numbers, dates, etc.
+- `apps/web/scripts/writePhaseDoc.ts` - Documentation generation script
+- `apps/web/.env` - Environment variables configuration
+- `apps/web/.env.example` - Environment variables template
+- `apps/api/` - FastAPI application structure
+- `apps/api/app/__init__.py` - Python package initialization
+- `apps/api/app/main.py` - FastAPI application with CORS configuration
+- `apps/api/app/routes/__init__.py` - Routes package initialization
+- `apps/api/app/routes/health.py` - Health check endpoint
+- `apps/api/requirements.txt` - Python dependencies
+- `apps/api/README.md` - Backend documentation
 
 ## Files Modified
-- `frontend/src/App.tsx` - Replaced default Vite template with React Router setup
-- `frontend/package.json` - Added `doc:phase` script for documentation generation
+- `apps/web/src/App.tsx` - Replaced default Vite template with React Router setup
+- `apps/web/package.json` - Added `doc:phase` script for documentation generation
 - `.gitignore` - Added Node.js, frontend build, and backend cache exclusions
 
 ## Checklist
@@ -97,7 +97,7 @@ Create a robust, accessible, and scalable foundation for the Spotify Stats web a
 ### Usage
 **Frontend Development:**
 ```bash
-cd frontend
+cd apps/web
 npm run dev              # Start dev server on http://localhost:5173
 npm run build           # Build for production
 npm run doc:phase       # Generate phase documentation
@@ -105,7 +105,7 @@ npm run doc:phase       # Generate phase documentation
 
 **Backend Development:**
 ```bash
-cd backend
+cd apps/api
 python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
