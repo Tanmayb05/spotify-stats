@@ -30,8 +30,8 @@ import time
 
 from path_utils import DATA_DIR, OUTPUT_DIR
 
-# Load environment variables
-load_dotenv()
+# Load environment variables from spotify-stats.env
+load_dotenv('../../spotify-stats.env')
 
 class LyricsFetcher:
     """Handles fetching lyrics for Spotify tracks via Genius API (primary) and Musixmatch API (fallback)."""

@@ -176,7 +176,7 @@ For each song:
 
 ### Required Environment Variables
 
-Add to your `.env` file:
+Add to your `spotify-stats.env` file:
 
 ```bash
 # Spotify API (required for metadata fetching)
@@ -345,9 +345,9 @@ ls -lh data/*.json
 ### "SPOTIFY_CLIENT_ID not set"
 
 ```bash
-# Add to .env file
-echo "SPOTIFY_CLIENT_ID=your_id" >> .env
-echo "SPOTIFY_CLIENT_SECRET=your_secret" >> .env
+# Add to spotify-stats.env file
+echo "SPOTIFY_CLIENT_ID=your_id" >> spotify-stats.env
+echo "SPOTIFY_CLIENT_SECRET=your_secret" >> spotify-stats.env
 ```
 
 ### "Queue CSV not found"

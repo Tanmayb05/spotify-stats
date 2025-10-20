@@ -32,8 +32,8 @@ import time
 
 from path_utils import DATA_DIR
 
-# Load environment variables
-load_dotenv()
+# Load environment variables from spotify-stats.env
+load_dotenv('../../spotify-stats.env')
 
 UNIQUE_SONGS_CSV = DATA_DIR / 'unique_songs.csv'
 PROCESSING_QUEUE_CSV = DATA_DIR / 'songs_processing_queue.csv'

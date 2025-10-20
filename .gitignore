@@ -38,6 +38,8 @@ build/
 *.ipynb
 
 # Environment
+spotify-stats.env
+spotify-stats.env.local
 .env
 .env.local
 
