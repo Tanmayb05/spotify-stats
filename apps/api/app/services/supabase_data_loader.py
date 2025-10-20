@@ -23,8 +23,8 @@ except ImportError:
         "supabase-py is required. Install with: pip install supabase"
     )
 
-# Load environment variables
-load_dotenv()
+# Load environment variables from spotify-stats.env
+load_dotenv('spotify-stats.env')
 
 # Configuration
 SUPABASE_URL = os.getenv('SUPABASE_URL')
@@ -37,7 +37,7 @@ class SupabaseDataLoader:
     def __init__(self):
         if not SUPABASE_URL or not SUPABASE_KEY:
             raise ValueError(
-                "Missing Supabase credentials. Set SUPABASE_URL and SUPABASE_SERVICE_KEY in .env"
+                "Missing Supabase credentials. Set SUPABASE_URL and SUPABASE_SERVICE_KEY in spotify-stats.env"
             )
 
         self.supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)

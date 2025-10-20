@@ -32,8 +32,8 @@ import time
 
 from path_utils import DATA_DIR, OUTPUT_DIR
 
-# Load environment variables
-load_dotenv()
+# Load environment variables from spotify-stats.env
+load_dotenv('../../spotify-stats.env')
 
 # Constants
 BATCH_SIZE = 500

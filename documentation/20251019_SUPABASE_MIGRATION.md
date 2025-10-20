@@ -134,10 +134,10 @@ CREATE TABLE streaming_history (
 
 3. **Update Environment Variables**
    ```bash
-   cp .env.example .env
+   cp spotify-stats.env.example spotify-stats.env
    ```
 
-   Edit `.env`:
+   Edit `spotify-stats.env`:
    ```env
    SUPABASE_URL=https://your-project.supabase.co
    SUPABASE_SERVICE_KEY=your_service_role_key_here
@@ -486,8 +486,8 @@ SELECT * FROM get_top_artists(10);
 
 **Solution:**
 ```bash
-# Check .env file exists and has correct values
-cat .env | grep SUPABASE
+# Check spotify-stats.env file exists and has correct values
+cat spotify-stats.env | grep SUPABASE
 
 # Make sure you're using service_role key, not anon key
 ```
@@ -580,7 +580,7 @@ SELECT refresh_all_views();
 
 - [ ] Create Supabase project
 - [ ] Get Supabase credentials (URL + keys)
-- [ ] Update `.env` file
+- [ ] Update `spotify-stats.env` file
 - [ ] Run migration 001 (tables and views)
 - [ ] Run migration 002 (functions)
 - [ ] Install Python dependencies

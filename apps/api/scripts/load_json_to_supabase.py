@@ -40,8 +40,8 @@ except ImportError:
     sys.exit(1)
 
 
-# Load environment variables
-load_dotenv()
+# Load environment variables from spotify-stats.env
+load_dotenv('spotify-stats.env')
 
 # Configuration
 PROJECT_ROOT = _find_project_root()
@@ -57,7 +57,7 @@ class StreamingDataLoader:
     def __init__(self):
         if not SUPABASE_URL or not SUPABASE_KEY:
             raise ValueError(
-                "Missing Supabase credentials. Please set SUPABASE_URL and SUPABASE_SERVICE_KEY in .env"
+                "Missing Supabase credentials. Please set SUPABASE_URL and SUPABASE_SERVICE_KEY in spotify-stats.env"
             )
 
         self.supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
@@ -322,7 +322,7 @@ def main():
 
         print("\n✅ Migration complete!")
         print("\nNext steps:")
-        print("1. Update .env.example with Supabase configuration")
+        print("1. Update spotify-stats.env.example with Supabase configuration")
         print("2. Update data_loader.py to use Supabase instead of JSON files")
         print("3. Test API endpoints with new data source")
 
