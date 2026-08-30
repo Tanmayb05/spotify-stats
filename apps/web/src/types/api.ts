@@ -261,3 +261,52 @@ export interface SessionAssignment {
   platform: string;
   cluster_label: number;
 }
+
+// Phase 6 - Recommendations
+export interface RecommendationWhyFeature {
+  feature: string;
+  value: number;
+}
+
+export interface RecommendationWhy {
+  summary: string;
+  top_features: RecommendationWhyFeature[];
+}
+
+export interface Recommendation {
+  track: string;
+  artist: string;
+  album: string;
+  track_uri: string;
+  score: number;
+  play_count: number;
+  why: RecommendationWhy;
+}
+
+export interface RecommendationsResponse {
+  target_mood: string | null;
+  generated_at: string;
+  count: number;
+  recommendations: Recommendation[];
+}
+
+export type TargetMood = 'happy' | 'energetic' | 'chill';
+
+// Phase 7 - Simulator
+export interface SimulationStep {
+  step: number;
+  from_artist: string;
+  to_artist: string;
+  probability: number;
+}
+
+export interface SimulationResponse {
+  seed: string | null;
+  seed_status: 'ok' | 'default' | 'unknown';
+  hour: number | null;
+  n: number;
+  generated_at: string;
+  count: number;
+  truncated: boolean;
+  sequence: SimulationStep[];
+}

@@ -1,6 +1,7 @@
 import axios, { AxiosError } from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3011';
+const rawApiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? '').trim();
+const API_BASE_URL = rawApiBaseUrl.replace(/\/+$/, '');
 
 // Create axios instance with default config
 export const apiClient = axios.create({
@@ -67,6 +68,9 @@ import type {
   SessionClustersResponse,
   SessionCentroid,
   SessionAssignment,
+  RecommendationsResponse,
+  TargetMood,
+  SimulationResponse,
 } from '../types/api';
 
 // API functions
@@ -239,7 +243,49 @@ export const api = {
     return response.data;
   },
 
-  // Placeholder for future phases
   // Phase 6 - Recommendations
+  getRecommendations: async (
+    topK = 20,
+    targetMood?: TargetMood
+  ): Promise<RecommendationsResponse> => {
+    const q = new URLSearchParams({ top_k: String(topK) });
+    if (targetMood) q.set('target_mood', targetMood);
+    const response = await apiClient.get<RecommendationsResponse>(`/api/reco?${q.toString()}`);
+    return response.data;
+  },
+
+  exportRecommendations: (topK = 50, targetMood?: TargetMood): string => {
+    const q = new URLSearchParams({ top_k: String(topK) });
+    if (targetMood) q.set('target_mood', targetMood);
+    return `${API_BASE_URL}/api/export/recommendations?${q.toString()}`;
+  },
+
   // Phase 7 - Simulator
+  getSimulation: async (
+    n = 20,
+    seed?: string,
+    hour?: number
+  ): Promise<SimulationResponse> => {
+    const q = new URLSearchParams({ n: String(n) });
+    if (seed) q.set('seed', seed);
+    if (hour != null) q.set('hour', String(hour));
+    const response = await apiClient.get<SimulationResponse>(
+      `/api/simulate/next?${q.toString()}`
+    );
+    return response.data;
+  },
+
+  getSimulationArtists: async (): Promise<string[]> => {
+    const response = await apiClient.get<{ artists: string[] }>(
+      '/api/simulate/artists'
+    );
+    return response.data.artists;
+  },
+
+  exportSimulation: (n = 50, seed?: string, hour?: number): string => {
+    const q = new URLSearchParams({ n: String(n) });
+    if (seed) q.set('seed', seed);
+    if (hour != null) q.set('hour', String(hour));
+    return `${API_BASE_URL}/api/export/simulation?${q.toString()}`;
+  },
 };

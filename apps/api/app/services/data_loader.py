@@ -4,10 +4,12 @@ from typing import List, Dict, Any, Optional
 from datetime import datetime, timedelta
 from collections import defaultdict
 import statistics
+import math
 import numpy as np
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import silhouette_score
+from sklearn.metrics.pairwise import cosine_similarity
 
 def _find_project_root() -> Path:
     """Find repository root by walking up until data directory is found."""
@@ -21,6 +23,51 @@ def _find_project_root() -> Path:
 
 PROJECT_ROOT = _find_project_root()
 DATA_DIR = PROJECT_ROOT / 'data'
+OUTPUTS_DATA_DIR = PROJECT_ROOT / 'outputs' / 'data'
+
+# --- Phase 6: content-based recommender ---------------------------------------
+# Spotify deprecated the /audio-features API (Nov 2024) and this project has no
+# cached feature data, so each track's content vector is synthesised from a
+# behavioural + metadata hybrid. FEATURE_NAMES is the fixed column order of the
+# feature matrix; the first three come from _calculate_mood_metrics, the rest
+# from outputs/data/{songs_info,artists_info}.json.
+RECO_FEATURE_NAMES = [
+    'valence', 'energy', 'danceability',
+    'track_popularity', 'artist_popularity', 'artist_followers_log',
+    'duration_min', 'explicit', 'release_year_recency',
+]
+RECO_MOOD_DIMS = slice(0, 3)  # valence / energy / danceability indices
+RECO_HALF_LIFE_DAYS = 180
+RECO_MMR_LAMBDA = 0.7
+RECO_EXCLUDE_TOP_PLAYED = 25
+# target_mood -> point in raw (valence, energy, danceability) space [0-1]
+RECO_MOOD_TARGETS = {
+    'happy': (0.85, 0.55, 0.60),
+    'energetic': (0.60, 0.90, 0.70),
+    'chill': (0.45, 0.20, 0.40),
+}
+# human-readable phrases for why.summary
+RECO_FEATURE_PHRASES = {
+    'valence': 'an upbeat mood',
+    'energy': 'high energy',
+    'danceability': 'a danceable feel',
+    'track_popularity': 'popular tracks',
+    'artist_popularity': 'well-known artists',
+    'artist_followers_log': 'artists with a large following',
+    'duration_min': 'longer tracks',
+    'explicit': 'explicit tracks',
+    'release_year_recency': 'recent releases',
+}
+
+# --- Phase 7: predictive simulator (artist-level Markov chain) ----------------
+# Consecutive plays within a listening session define artist->artist transitions,
+# optionally bucketed by hour-of-day. The walk is deterministic (most-probable
+# successor at each step) with Laplace smoothing over the observed successor set.
+SIM_GAP_MINUTES = 30          # don't chain a transition across a session break
+SIM_LAPLACE_ALPHA = 0.1       # additive smoothing for the successor distribution
+SIM_MAX_N = 50                # hard cap on simulated sequence length
+SIM_HOUR_BUCKETS = 24
+SIM_ARTIST_PICKER_LIMIT = 300 # size of the seed-autocomplete vocabulary
 
 
 class SpotifyDataLoader:
@@ -29,6 +76,13 @@ class SpotifyDataLoader:
     def __init__(self):
         self._data: List[Dict[str, Any]] = []
         self._loaded = False
+        # Phase 6 recommender caches (populated lazily, immutable per process)
+        self._track_meta: Dict[str, Dict[str, Any]] = {}
+        self._artist_meta: Dict[str, Dict[str, Any]] = {}
+        self._reco_meta_loaded = False
+        self._reco_vectors: Optional[Dict[str, Any]] = None
+        # Phase 7 simulator cache (transition counts, immutable per process)
+        self._markov_model: Optional[Dict[str, Any]] = None
 
     def load_data(self) -> None:
         """Load all audio streaming JSON files"""
@@ -1786,6 +1840,533 @@ class SpotifyDataLoader:
                 for track, data in top_tracks_day
             ]
         }
+
+
+    # ------------------------------------------------------------------
+    # Phase 6 — Content-based recommender
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _salvage_json_array(path: Path, array_key: str) -> List[Dict[str, Any]]:
+        """
+        Decode a JSON object's ``array_key`` array element-by-element, stopping at
+        the first malformed entry. songs_info.json in this repo is a truncated
+        write, so a plain json.load fails; this salvages every clean object.
+        """
+        if not path.exists():
+            return []
+        txt = path.read_text(encoding='utf-8')
+        try:
+            marker = txt.index(f'"{array_key}"')
+            start = txt.index('[', marker) + 1
+        except ValueError:
+            return []
+        decoder = json.JSONDecoder()
+        items: List[Dict[str, Any]] = []
+        i, n = start, len(txt)
+        while i < n:
+            while i < n and txt[i] in ' \t\r\n,':
+                i += 1
+            if i >= n or txt[i] == ']':
+                break
+            try:
+                obj, end = decoder.raw_decode(txt, i)
+            except json.JSONDecodeError:
+                break
+            if isinstance(obj, dict):
+                items.append(obj)
+            i = end
+        return items
+
+    def _load_track_metadata(self) -> None:
+        """Load track/artist metadata caches from outputs/data/*.json (lazy)."""
+        if self._reco_meta_loaded:
+            return
+
+        songs = self._salvage_json_array(OUTPUTS_DATA_DIR / 'songs_info.json', 'songs')
+        for s in songs:
+            uri = s.get('track_uri') or s.get('track_id')
+            if not uri:
+                continue
+            ti = s.get('track_info') if isinstance(s.get('track_info'), dict) else {}
+            album = ti.get('album') if isinstance(ti.get('album'), dict) else {}
+            release_date = album.get('release_date') or ''
+            release_year = None
+            if release_date[:4].isdigit():
+                release_year = int(release_date[:4])
+            self._track_meta[uri] = {
+                'track_popularity': ti.get('popularity') or 0,
+                'duration_ms': ti.get('duration_ms') or 0,
+                'explicit': 1.0 if ti.get('explicit') else 0.0,
+                'release_year': release_year,
+            }
+
+        artists = self._salvage_json_array(OUTPUTS_DATA_DIR / 'artists_info.json', 'artists')
+        for a in artists:
+            name = (a.get('artist_name') or '').strip().lower()
+            if not name:
+                continue
+            self._artist_meta[name] = {
+                'artist_popularity': a.get('popularity') or 0,
+                'followers': a.get('followers') or 0,
+            }
+
+        self._reco_meta_loaded = True
+        print(
+            f"✅ Reco metadata: {len(self._track_meta)} tracks, "
+            f"{len(self._artist_meta)} artists"
+        )
+
+    def _build_track_vectors(self) -> Dict[str, Any]:
+        """
+        Build the per-track feature matrix. Returns a dict with:
+          keys   -> list[str] track uris (or "name|||artist" when uri missing)
+          meta   -> dict[key] -> {track, artist, album, play_count, last_ts, ...}
+          X      -> np.ndarray (n_tracks, len(RECO_FEATURE_NAMES)) raw features
+        Cached on self (data is immutable per process).
+        """
+        if self._reco_vectors is not None:
+            return self._reco_vectors
+
+        if not self._loaded:
+            self.load_data()
+        self._load_track_metadata()
+
+        agg: Dict[str, Dict[str, Any]] = {}
+        for record in self._data:
+            track = record.get('master_metadata_track_name')
+            artist = record.get('master_metadata_album_artist_name')
+            if not track or not artist:
+                continue  # skip podcasts / audiobooks / malformed rows
+            uri = record.get('spotify_track_uri') or f"{track}|||{artist}"
+            mood = self._calculate_mood_metrics(record)
+            entry = agg.get(uri)
+            if entry is None:
+                entry = agg[uri] = {
+                    'track': track,
+                    'artist': artist,
+                    'album': record.get('master_metadata_album_album_name') or '',
+                    'uri': record.get('spotify_track_uri') or '',
+                    'play_count': 0,
+                    'ms_total': 0,
+                    'val': [], 'ene': [], 'dan': [],
+                    'last_ts': None,
+                }
+            entry['play_count'] += 1
+            entry['ms_total'] += record.get('ms_played', 0) or 0
+            if mood['valence'] is not None:
+                entry['val'].append(mood['valence'])
+                entry['ene'].append(mood['energy'])
+                entry['dan'].append(mood['danceability'])
+            ts = record.get('ts')
+            if ts and (entry['last_ts'] is None or ts > entry['last_ts']):
+                entry['last_ts'] = ts
+
+        # median release year for defaulting missing values
+        years = [
+            m['release_year'] for m in self._track_meta.values()
+            if m.get('release_year')
+        ]
+        median_year = int(statistics.median(years)) if years else 2015
+        min_year, max_year = 1960, datetime.now().year
+        year_span = max(max_year - min_year, 1)
+
+        keys: List[str] = []
+        meta: Dict[str, Dict[str, Any]] = {}
+        rows: List[List[float]] = []
+
+        for uri, e in agg.items():
+            if not e['val']:
+                continue  # no timestamped plays -> no behavioural signal
+            tmeta = self._track_meta.get(uri, {})
+            ameta = self._artist_meta.get(e['artist'].strip().lower(), {})
+
+            duration_ms = tmeta.get('duration_ms') or (
+                e['ms_total'] / max(e['play_count'], 1)
+            )
+            release_year = tmeta.get('release_year') or median_year
+            recency = (release_year - min_year) / year_span
+
+            row = [
+                statistics.mean(e['val']),
+                statistics.mean(e['ene']),
+                statistics.mean(e['dan']),
+                float(tmeta.get('track_popularity', 0)),
+                float(ameta.get('artist_popularity', 0)),
+                math.log1p(float(ameta.get('followers', 0))),
+                duration_ms / 60000.0,
+                float(tmeta.get('explicit', 0.0)),
+                max(0.0, min(1.0, recency)),
+            ]
+            keys.append(uri)
+            meta[uri] = {
+                'track': e['track'],
+                'artist': e['artist'],
+                'album': e['album'],
+                'track_uri': e['uri'],
+                'play_count': e['play_count'],
+                'last_ts': e['last_ts'],
+            }
+            rows.append(row)
+
+        self._reco_vectors = {
+            'keys': keys,
+            'meta': meta,
+            'X': np.array(rows, dtype=float) if rows else np.empty((0, len(RECO_FEATURE_NAMES))),
+        }
+        return self._reco_vectors
+
+    def _why_summary(self, feature_names: List[str]) -> str:
+        phrases = [RECO_FEATURE_PHRASES.get(f, f) for f in feature_names]
+        if not phrases:
+            return 'Matches your overall listening profile'
+        if len(phrases) == 1:
+            joined = phrases[0]
+        else:
+            joined = ', '.join(phrases[:-1]) + ' and ' + phrases[-1]
+        return f'Matches your preference for {joined}'
+
+    def get_recommendations(
+        self, top_k: int = 20, target_mood: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Content-based recommendations: cosine similarity between each track's
+        synthesised feature vector and a recency-weighted preference vector,
+        MMR-diversified. See RECO_* constants for tunables.
+        """
+        from datetime import timezone
+
+        vectors = self._build_track_vectors()
+        keys, meta, X = vectors['keys'], vectors['meta'], vectors['X']
+
+        empty = {
+            'target_mood': target_mood,
+            'generated_at': datetime.now(timezone.utc).isoformat(),
+            'count': 0,
+            'recommendations': [],
+        }
+        if X.shape[0] < 5:
+            return empty
+
+        scaler = StandardScaler()
+        Xs = scaler.fit_transform(X)
+
+        now = datetime.now(timezone.utc)
+        play_counts = np.array([meta[k]['play_count'] for k in keys], dtype=float)
+        weights = np.ones(len(keys))
+        for idx, k in enumerate(keys):
+            ts = meta[k]['last_ts']
+            if ts:
+                try:
+                    age_days = (now - datetime.fromisoformat(ts.replace('Z', '+00:00'))).days
+                    weights[idx] = math.exp(-max(age_days, 0) / RECO_HALF_LIFE_DAYS)
+                except ValueError:
+                    pass
+        weights *= np.log1p(play_counts)  # favour repeatedly-played tracks in the profile
+        if weights.sum() <= 0:
+            weights = np.ones(len(keys))
+
+        pref = np.average(Xs, axis=0, weights=weights)
+
+        if target_mood in RECO_MOOD_TARGETS:
+            target_raw = np.array(RECO_MOOD_TARGETS[target_mood])
+            # standardise the 3 mood dims with the fitted scaler
+            mood_mean = scaler.mean_[RECO_MOOD_DIMS]
+            mood_scale = scaler.scale_[RECO_MOOD_DIMS]
+            target_std = (target_raw - mood_mean) / mood_scale
+            pref[RECO_MOOD_DIMS] = 0.5 * pref[RECO_MOOD_DIMS] + 0.5 * target_std
+
+        sims = cosine_similarity(pref.reshape(1, -1), Xs)[0]
+        # lightly damp heavy-rotation favourites so adjacent-but-fresh tracks surface
+        sims = sims / (1.0 + np.log1p(play_counts) * 0.15)
+
+        # exclude the most-played tracks entirely
+        exclude = set(np.argsort(play_counts)[::-1][:RECO_EXCLUDE_TOP_PLAYED].tolist())
+        candidate_idx = [i for i in np.argsort(sims)[::-1] if i not in exclude]
+        pool = candidate_idx[: max(top_k * 5, top_k)]
+
+        # MMR diversification
+        selected: List[int] = []
+        pool_set = list(pool)
+        while pool_set and len(selected) < top_k:
+            if not selected:
+                best = max(pool_set, key=lambda i: sims[i])
+            else:
+                sel_matrix = Xs[selected]
+                def mmr_score(i: int) -> float:
+                    redundancy = float(
+                        np.max(cosine_similarity(Xs[i].reshape(1, -1), sel_matrix)[0])
+                    )
+                    return RECO_MMR_LAMBDA * sims[i] - (1 - RECO_MMR_LAMBDA) * redundancy
+                best = max(pool_set, key=mmr_score)
+            selected.append(best)
+            pool_set.remove(best)
+
+        recs = []
+        for i in selected:
+            k = keys[i]
+            # features that pull hardest in the same direction as the preference
+            contrib = pref * Xs[i]
+            order = np.argsort(contrib)[::-1]
+            top_names = [
+                RECO_FEATURE_NAMES[j] for j in order[:3]
+                if contrib[j] > 0
+            ] or [RECO_FEATURE_NAMES[order[0]]]
+            top_features = [
+                {
+                    'feature': RECO_FEATURE_NAMES[j],
+                    'value': round(float(X[i][j]), 3),
+                }
+                for j in order[:3]
+                if RECO_FEATURE_NAMES[j] in top_names
+            ]
+            recs.append({
+                'track': meta[k]['track'],
+                'artist': meta[k]['artist'],
+                'album': meta[k]['album'],
+                'track_uri': meta[k]['track_uri'],
+                'score': round(float(sims[i]), 4),
+                'play_count': meta[k]['play_count'],
+                'why': {
+                    'summary': self._why_summary(top_names),
+                    'top_features': top_features,
+                },
+            })
+
+        return {
+            'target_mood': target_mood,
+            'generated_at': now.isoformat(),
+            'count': len(recs),
+            'recommendations': recs,
+        }
+
+    def get_recommendations_csv_rows(
+        self, top_k: int = 50, target_mood: Optional[str] = None
+    ) -> List[Dict[str, Any]]:
+        """Flat rows for CSV export."""
+        result = self.get_recommendations(top_k=top_k, target_mood=target_mood)
+        rows = []
+        for r in result['recommendations']:
+            rows.append({
+                'track': r['track'],
+                'artist': r['artist'],
+                'album': r['album'],
+                'score': r['score'],
+                'play_count': r['play_count'],
+                'why': ', '.join(f['feature'] for f in r['why']['top_features']),
+            })
+        return rows
+
+    # --- Phase 7: predictive simulator --------------------------------------
+
+    def _build_artist_transitions(self) -> Dict[str, Any]:
+        """
+        Build artist->artist transition counts from consecutive in-session plays.
+
+        Returns a dict with:
+          by_hour     -> {hour: {from_artist: {to_artist: count}}}
+          all         -> {from_artist: {to_artist: count}}   (any hour aggregate)
+          hour_plays  -> {hour: {artist: play_count}}        (for default seeding)
+          plays       -> {artist: play_count}                (global, for default)
+          artists     -> sorted list of the artist vocabulary
+        Cached on self._markov_model (data is immutable per process).
+        """
+        if self._markov_model is not None:
+            return self._markov_model
+
+        if not self._loaded:
+            self.load_data()
+
+        # Music plays only (podcasts/audiobooks lack a track name), time-ordered.
+        records = sorted(
+            [
+                r for r in self._data
+                if r.get('ts')
+                and r.get('master_metadata_album_artist_name')
+                and r.get('master_metadata_track_name')
+            ],
+            key=lambda x: datetime.fromisoformat(x['ts'].replace('Z', '+00:00')),
+        )
+
+        by_hour: Dict[int, Dict[str, Dict[str, int]]] = defaultdict(
+            lambda: defaultdict(lambda: defaultdict(int))
+        )
+        counts_all: Dict[str, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
+        hour_plays: Dict[int, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
+        plays: Dict[str, int] = defaultdict(int)
+        vocab = set()
+
+        prev_artist: Optional[str] = None
+        prev_dt: Optional[datetime] = None
+
+        for r in records:
+            artist = r['master_metadata_album_artist_name']
+            dt = datetime.fromisoformat(r['ts'].replace('Z', '+00:00'))
+            hour = dt.hour
+
+            vocab.add(artist)
+            plays[artist] += 1
+            hour_plays[hour][artist] += 1
+
+            if prev_artist is not None and prev_dt is not None:
+                gap_minutes = (dt - prev_dt).total_seconds() / 60
+                if gap_minutes <= SIM_GAP_MINUTES:
+                    by_hour[prev_dt.hour][prev_artist][artist] += 1
+                    counts_all[prev_artist][artist] += 1
+
+            prev_artist = artist
+            prev_dt = dt
+
+        self._markov_model = {
+            'by_hour': by_hour,
+            'all': counts_all,
+            'hour_plays': hour_plays,
+            'plays': plays,
+            'artists': sorted(vocab),
+        }
+        return self._markov_model
+
+    def get_sim_artists(self) -> List[str]:
+        """Artist names for the seed autocomplete, most-played first, capped."""
+        model = self._build_artist_transitions()
+        ranked = sorted(
+            model['plays'].items(), key=lambda kv: kv[1], reverse=True
+        )
+        return [a for a, _ in ranked[:SIM_ARTIST_PICKER_LIMIT]]
+
+    def get_simulation(
+        self,
+        seed: Optional[str] = None,
+        n: int = 20,
+        hour: Optional[int] = None,
+    ) -> Dict[str, Any]:
+        """
+        Simulate the next ``n`` plays as a deterministic most-probable walk over
+        the artist-level Markov chain. See SIM_* constants for tunables.
+        """
+        from datetime import timezone
+
+        try:
+            n = int(n)
+        except (TypeError, ValueError):
+            n = 20
+        n = max(1, min(n, SIM_MAX_N))
+
+        if hour is not None:
+            try:
+                hour = int(hour)
+            except (TypeError, ValueError):
+                hour = None
+            if hour is not None and not (0 <= hour <= 23):
+                hour = None
+
+        model = self._build_artist_transitions()
+        now_iso = datetime.now(timezone.utc).isoformat()
+
+        empty = {
+            'seed': None,
+            'seed_status': 'unknown',
+            'hour': hour,
+            'n': n,
+            'generated_at': now_iso,
+            'count': 0,
+            'truncated': False,
+            'sequence': [],
+        }
+        if not model['artists']:
+            return empty
+
+        hour_table = model['by_hour'].get(hour) if hour is not None else None
+        all_table = model['all']
+
+        def successors(artist: str) -> Dict[str, int]:
+            """Hour-specific row if present, else fall back to the any-hour row."""
+            if hour_table is not None and artist in hour_table and hour_table[artist]:
+                return hour_table[artist]
+            return all_table.get(artist, {})
+
+        # --- resolve the seed -------------------------------------------------
+        seed_status = 'ok'
+        current: Optional[str] = None
+        if seed:
+            lut = {a.lower(): a for a in model['artists']}
+            match = lut.get(seed.strip().lower())
+            if match is not None:
+                current = match
+            else:
+                seed_status = 'unknown'
+
+        if current is None:
+            if seed_status != 'unknown':
+                seed_status = 'default'
+            if hour is not None and model['hour_plays'].get(hour):
+                current = max(
+                    model['hour_plays'][hour].items(), key=lambda kv: kv[1]
+                )[0]
+            elif model['plays']:
+                current = max(model['plays'].items(), key=lambda kv: kv[1])[0]
+            else:
+                return empty
+
+        resolved_seed = current
+
+        # --- walk -----------------------------------------------------------
+        # Deterministic most-probable walk. To keep the sequence exploratory
+        # (the top artist's most likely successor is itself), the current artist
+        # is skipped when choosing the next hop unless it is the only option.
+        sequence: List[Dict[str, Any]] = []
+        truncated = False
+        for step in range(1, n + 1):
+            succ = successors(current)
+            if not succ:
+                truncated = True
+                break
+            k = len(succ)
+            total = sum(succ.values())
+            denom = total + SIM_LAPLACE_ALPHA * k
+            candidates = {a: c for a, c in succ.items() if a != current} or succ
+            best_to, best_count = max(candidates.items(), key=lambda kv: kv[1])
+            probability = (best_count + SIM_LAPLACE_ALPHA) / denom
+            sequence.append({
+                'step': step,
+                'from_artist': current,
+                'to_artist': best_to,
+                'probability': round(probability, 4),
+            })
+            if best_to == current:
+                # forced self-loop with no other successor: stop, it will repeat
+                truncated = True
+                break
+            current = best_to
+
+        return {
+            'seed': resolved_seed,
+            'seed_status': seed_status,
+            'hour': hour,
+            'n': n,
+            'generated_at': now_iso,
+            'count': len(sequence),
+            'truncated': truncated,
+            'sequence': sequence,
+        }
+
+    def get_simulation_csv_rows(
+        self,
+        seed: Optional[str] = None,
+        n: int = 50,
+        hour: Optional[int] = None,
+    ) -> List[Dict[str, Any]]:
+        """Flat rows for CSV export."""
+        result = self.get_simulation(seed=seed, n=n, hour=hour)
+        return [
+            {
+                'step': s['step'],
+                'from_artist': s['from_artist'],
+                'to_artist': s['to_artist'],
+                'probability': s['probability'],
+            }
+            for s in result['sequence']
+        ]
 
 
 # Global instance
