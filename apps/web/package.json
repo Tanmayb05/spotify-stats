@@ -9,7 +9,9 @@
     "build:check": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "doc:phase": "ts-node scripts/writePhaseDoc.ts"
+    "doc:phase": "tsx scripts/writePhaseDoc.ts",
+    "doc:phase6": "tsx scripts/writePhase6Doc.ts",
+    "doc:phase7": "tsx scripts/writePhase7Doc.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -34,6 +36,7 @@
     "eslint-plugin-react-refresh": "^0.4.22",
     "globals": "^16.4.0",
     "ts-node": "^10.9.2",
+    "tsx": "^4.23.13",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.45.0",
     "vite": "^7.1.7"

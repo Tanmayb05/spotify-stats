@@ -1,10 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes import health, stats, mood, discovery, patterns, milestones, sessions
+from app.routes import health, stats, mood, discovery, patterns, milestones, sessions, reco, sim
 
 # Create FastAPI app
 app = FastAPI(
-    title="Spotify Stats API",
+    title="Spotify Insights API",
     description="API for Spotify streaming history analysis",
     version="0.1.0",
 )
@@ -31,11 +31,13 @@ app.include_router(discovery.router)
 app.include_router(patterns.router)
 app.include_router(milestones.router)
 app.include_router(sessions.router)
+app.include_router(reco.router)
+app.include_router(sim.router)
 
 @app.get("/")
 async def root():
     return {
-        "message": "Spotify Stats API",
+        "message": "Spotify Insights API",
         "version": "0.1.0",
         "status": "operational"
     }
