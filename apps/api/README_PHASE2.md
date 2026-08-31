@@ -16,7 +16,7 @@ Phase 2 adds mood analysis based on Spotify's audio features: valence (happiness
 2. Log in with your Spotify account
 3. Click "Create app"
 4. Fill in:
-   - **App name**: Spotify Stats (or any name)
+   - **App name**: Spotify Insights (or any name)
    - **App description**: Personal listening statistics
    - **Redirect URI**: http://localhost (not used but required)
 5. Accept the terms and click "Save"

@@ -25,6 +25,7 @@ import {
   Workspaces,
   Recommend,
   Science,
+  Groups,
   Brightness4,
   Brightness7,
 } from '@mui/icons-material';
@@ -38,6 +39,7 @@ const menuItems = [
   { label: 'Discovery', path: '/discovery', icon: <Explore /> },
   { label: 'Milestones', path: '/milestones', icon: <EmojiEvents /> },
   { label: 'Sessions', path: '/sessions', icon: <Workspaces /> },
+  { label: 'Comparison', path: '/comparison', icon: <Groups /> },
   { label: 'Recommendations ⚗️', path: '/recommendations', icon: <Recommend /> },
   { label: 'Simulator ⚗️', path: '/simulator', icon: <Science /> },
 ];
@@ -65,7 +67,7 @@ export default function AppLayout() {
     <Box>
       <Toolbar>
         <Typography variant="h6" noWrap component="div">
-          Spotify Stats
+          Spotify Insights
         </Typography>
       </Toolbar>
       <Divider />

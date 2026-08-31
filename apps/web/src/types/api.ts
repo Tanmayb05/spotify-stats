@@ -310,3 +310,50 @@ export interface SimulationResponse {
   truncated: boolean;
   sequence: SimulationStep[];
 }
+
+// Friend-group comparison
+export interface CompareUser {
+  user_id: string;
+  username: string;
+  display_name: string;
+  is_primary: boolean;
+}
+
+export interface LeaderboardRow extends CompareUser {
+  total_streams: number;
+  total_hours: number;
+  unique_artists: number;
+  unique_tracks: number;
+  skip_rate: number;
+  first_stream: string;
+  last_stream: string;
+}
+
+export interface OverlapPair {
+  user_a: string;
+  user_b: string;
+  shared: number;
+  only_a: number;
+  only_b: number;
+  jaccard: number;
+}
+
+export interface SharedArtist {
+  artist: string;
+  total_plays: number;
+}
+
+export interface OverlapResult {
+  users: string[];
+  pairs: OverlapPair[];
+  shared_by_all_count: number;
+  top_shared_by_all: SharedArtist[];
+}
+
+export interface SimilarityMatrix {
+  users: string[];
+  matrix: (number | null)[][];
+}
+
+// { [displayName]: { artist, streams }[] }
+export type TopArtistsMulti = Record<string, TopArtist[]>;

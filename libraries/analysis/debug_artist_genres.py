@@ -11,7 +11,7 @@ import json
 
 # Load environment variables
 repo_root = Path(__file__).resolve().parent.parent.parent
-load_dotenv(repo_root / 'spotify-stats.env')
+load_dotenv(repo_root / 'spotify-insights.env')
 
 # Initialize Spotify
 client_id = os.getenv('SPOTIFY_CLIENT_ID')

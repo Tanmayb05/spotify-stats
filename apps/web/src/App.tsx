@@ -11,6 +11,7 @@ import Milestones from './pages/Milestones';
 import Sessions from './pages/Sessions';
 import Recommendations from './pages/Recommendations';
 import Simulator from './pages/Simulator';
+import Comparison from './pages/Comparison';
 import NotFound from './pages/NotFound';
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
             <Route path="sessions" element={<Sessions />} />
             <Route path="recommendations" element={<Recommendations />} />
             <Route path="simulator" element={<Simulator />} />
+            <Route path="comparison" element={<Comparison />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

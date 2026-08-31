@@ -418,7 +418,7 @@ python fetch_tracks_info.py
 # 1. Install dependencies
 pip install spotipy python-dotenv
 
-# 2. Set up environment variables in spotify-stats.env
+# 2. Set up environment variables in spotify-insights.env
 SPOTIFY_CLIENT_ID=your_client_id
 SPOTIFY_CLIENT_SECRET=your_client_secret
 ```
@@ -426,7 +426,7 @@ SPOTIFY_CLIENT_SECRET=your_client_secret
 ### Execution Order (CRITICAL!)
 
 ```bash
-cd /Users/tanmaybhuskute/Documents/spotify-stats/libraries/analysis
+cd /Users/tanmaybhuskute/Documents/spotify-insights/libraries/analysis
 
 # PHASE 1: Extract entities
 python extract_unique_entities.py

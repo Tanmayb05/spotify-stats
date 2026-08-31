@@ -31,9 +31,9 @@ Copy this checklist and check off items as you complete them.
 - [ ] Copy service_role key → `eyJhbG...`
 - [ ] Copy anon key → `eyJhbG...`
 
-### Update spotify-stats.env File
-- [ ] Run: `cp spotify-stats.env.example spotify-stats.env`
-- [ ] Edit `spotify-stats.env` file
+### Update spotify-insights.env File
+- [ ] Run: `cp spotify-insights.env.example spotify-insights.env`
+- [ ] Edit `spotify-insights.env` file
 - [ ] Add `SUPABASE_URL=https://xxxxx.supabase.co`
 - [ ] Add `SUPABASE_SERVICE_KEY=eyJhbG...` (service_role key)
 - [ ] Add `SUPABASE_ANON_KEY=eyJhbG...` (anon key)
@@ -227,7 +227,7 @@ SELECT * FROM pg_stat_user_indexes WHERE tablename = 'streaming_history';
 
 If something goes wrong, check:
 
-1. **Credentials**: `cat spotify-stats.env | grep SUPABASE`
+1. **Credentials**: `cat spotify-insights.env | grep SUPABASE`
 2. **Migrations**: Re-run SQL files in Supabase SQL Editor
 3. **Dependencies**: `pip install -r requirements.txt`
 4. **Data**: `SELECT COUNT(*) FROM streaming_history;` in SQL Editor

@@ -1,4 +1,4 @@
-# Netlify configuration for Spotify Stats webapp
+# Netlify configuration for Spotify Insights webapp
 
 [build]
   # Base directory for the build
