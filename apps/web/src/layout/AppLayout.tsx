@@ -30,6 +30,7 @@ import {
   Brightness7,
 } from '@mui/icons-material';
 import { useAppStore } from '../store/app';
+import UserSwitcher from '../components/UserSwitcher';
 
 const drawerWidth = 240;
 
@@ -109,6 +110,7 @@ export default function AppLayout() {
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             Spotify Streaming Analysis
           </Typography>
+          <UserSwitcher />
           <IconButton
             color="inherit"
             onClick={toggleTheme}

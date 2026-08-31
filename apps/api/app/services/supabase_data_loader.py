@@ -17,6 +17,8 @@ from typing import List, Dict, Any, Optional
 from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
 
+from app.services.data_loader import SpotifyDataLoader
+
 try:
     from supabase import create_client, Client
 except ImportError:
@@ -53,6 +55,87 @@ class SupabaseDataLoader:
 
         self.supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
         self._loaded = True  # Database is always "loaded"
+
+        # Resolved primary user id (cached; used when a caller passes user_id=None
+        # for the row-fetch path, mirroring SQL's _effective_user_id fallback).
+        self._primary_user_id: Optional[str] = None
+        # Per-user SpotifyDataLoader instances, each pre-populated with that
+        # user's streaming_history rows. Heavy compute (session KMeans, the
+        # content-based recommender, the Markov simulator) is delegated to these
+        # so the numpy/sklearn logic is shared verbatim with the JSON loader and
+        # the return shapes are guaranteed identical.
+        self._delegate_by_user: Dict[str, SpotifyDataLoader] = {}
+
+    # ------------------------------------------------------------------
+    # Per-user raw-row fetch + heavy-compute delegation
+    # ------------------------------------------------------------------
+
+    _ROW_COLUMNS = (
+        "ts,ms_played,master_metadata_track_name,"
+        "master_metadata_album_artist_name,master_metadata_album_album_name,"
+        "platform,skipped,spotify_track_uri"
+    )
+
+    def _resolve_user_id(self, user_id: Optional[str]) -> Optional[str]:
+        """Return user_id, or the primary user's id when user_id is None."""
+        if user_id:
+            return user_id
+        if self._primary_user_id is None:
+            try:
+                resp = (
+                    self.supabase.table("users")
+                    .select("id")
+                    .eq("is_primary", True)
+                    .limit(1)
+                    .execute()
+                )
+                if resp.data:
+                    self._primary_user_id = resp.data[0]["id"]
+            except Exception as e:
+                print(f"Error resolving primary user id: {e}")
+        return self._primary_user_id
+
+    def _user_rows(self, user_id: Optional[str]) -> List[Dict[str, Any]]:
+        """Paginated fetch of one user's streaming_history rows.
+
+        Returns records shaped exactly like the JSON export rows that
+        SpotifyDataLoader consumes (same key names; `ts` is an ISO-8601 string).
+        """
+        uid = self._resolve_user_id(user_id)
+        if not uid:
+            return []
+
+        rows: List[Dict[str, Any]] = []
+        page = 0
+        page_size = 1000
+        while True:
+            start = page * page_size
+            resp = (
+                self.supabase.table("streaming_history")
+                .select(self._ROW_COLUMNS)
+                .eq("user_id", uid)
+                .range(start, start + page_size - 1)
+                .execute()
+            )
+            batch = resp.data or []
+            rows.extend(batch)
+            if len(batch) < page_size:
+                break
+            page += 1
+        return rows
+
+    def _delegate(self, user_id: Optional[str]) -> SpotifyDataLoader:
+        """A SpotifyDataLoader pre-loaded with this user's rows (cached)."""
+        uid = self._resolve_user_id(user_id) or "__none__"
+        cached = self._delegate_by_user.get(uid)
+        if cached is not None:
+            return cached
+
+        loader = SpotifyDataLoader()
+        loader._data = self._user_rows(user_id)
+        loader._loaded = True  # skip load_data()'s JSON glob
+        self._delegate_by_user[uid] = loader
+        return loader
 
     @staticmethod
     def _uid(params: dict, user_id: Optional[str]) -> dict:
@@ -415,12 +498,32 @@ class SupabaseDataLoader:
             ]
         return out
 
-    # Placeholder methods for features not yet implemented in SQL
-    # These can be implemented later with SQL functions
+    # ------------------------------------------------------------------
+    # Analytics — mood / discovery / milestones / listening patterns
+    #
+    # Ported from the JSON SpotifyDataLoader. SQL-friendly aggregates run as
+    # user-scoped RPCs from migration 006 (single indexed pass, sub-second).
+    # Return shapes are identical to the JSON loader's.
+    # ------------------------------------------------------------------
 
-    def get_mood_summary(self, window_days: int = 30) -> Dict[str, Any]:
-        """Get mood statistics - placeholder for future implementation"""
-        # TODO: Implement with SQL function
+    def get_mood_summary(self, window_days: int = 30, user_id: Optional[str] = None) -> Dict[str, Any]:
+        """Average valence / energy / danceability over the last `window_days`."""
+        try:
+            resp = self.supabase.rpc(
+                'get_mood_summary',
+                self._uid({'p_window_days': window_days}, user_id),
+            ).execute()
+            if resp.data and len(resp.data) > 0:
+                row = resp.data[0]
+                return {
+                    'window_days': row['window_days'],
+                    'avg_valence': float(row['avg_valence']) if row['avg_valence'] is not None else None,
+                    'avg_energy': float(row['avg_energy']) if row['avg_energy'] is not None else None,
+                    'avg_danceability': float(row['avg_danceability']) if row['avg_danceability'] is not None else None,
+                    'sample_size': row['sample_size'],
+                }
+        except Exception as e:
+            print(f"Error getting mood summary: {e}")
         return {
             'window_days': window_days,
             'avg_valence': None,
@@ -429,40 +532,112 @@ class SupabaseDataLoader:
             'sample_size': 0,
         }
 
-    def get_mood_contexts(self) -> Dict[str, Any]:
-        """Get mood contexts - placeholder for future implementation"""
-        # TODO: Implement with SQL function
+    def get_mood_contexts(self, user_id: Optional[str] = None) -> Dict[str, Any]:
+        """Mood metrics for weekday vs weekend and per platform."""
+        try:
+            resp = self.supabase.rpc('get_mood_contexts', self._uid({}, user_id)).execute()
+            if resp.data:
+                return resp.data  # RPC returns the full jsonb object
+        except Exception as e:
+            print(f"Error getting mood contexts: {e}")
         return {
             'weekday_vs_weekend': {
                 'weekday': {'avg_valence': None, 'avg_energy': None, 'avg_danceability': None, 'sample_size': 0},
-                'weekend': {'avg_valence': None, 'avg_energy': None, 'avg_danceability': None, 'sample_size': 0}
+                'weekend': {'avg_valence': None, 'avg_energy': None, 'avg_danceability': None, 'sample_size': 0},
             },
-            'by_platform': {}
+            'by_platform': {},
         }
 
-    def get_mood_monthly(self) -> List[Dict[str, Any]]:
-        """Get monthly mood averages - placeholder for future implementation"""
-        # TODO: Implement with SQL function
+    def get_mood_monthly(self, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        """Monthly average mood metrics over time."""
+        try:
+            resp = self.supabase.rpc('get_mood_monthly', self._uid({}, user_id)).execute()
+            if resp.data:
+                return [
+                    {
+                        'month': row['month'],
+                        'avg_valence': float(row['avg_valence']) if row['avg_valence'] is not None else None,
+                        'avg_energy': float(row['avg_energy']) if row['avg_energy'] is not None else None,
+                        'avg_danceability': float(row['avg_danceability']) if row['avg_danceability'] is not None else None,
+                        'sample_size': row['sample_size'],
+                    }
+                    for row in resp.data
+                ]
+        except Exception as e:
+            print(f"Error getting mood monthly: {e}")
         return []
 
-    def get_discovery_timeline(self) -> List[Dict[str, Any]]:
-        """Get artist discovery timeline"""
-        # TODO: Implement with SQL function
+    def get_discovery_timeline(self, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        """New-artist discoveries per month (first listen = MIN(ts))."""
+        try:
+            resp = self.supabase.rpc('get_discovery_timeline', self._uid({}, user_id)).execute()
+            if resp.data:
+                return [
+                    {'month': row['month'], 'new_artists_count': row['new_artists_count']}
+                    for row in resp.data
+                ]
+        except Exception as e:
+            print(f"Error getting discovery timeline: {e}")
         return []
 
-    def get_artist_loyalty(self, limit: int = 20) -> List[Dict[str, Any]]:
-        """Calculate artist loyalty metrics"""
-        # TODO: Implement with SQL function
+    def get_artist_loyalty(self, limit: int = 20, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        """Return probability and half-life for the top `limit` artists."""
+        try:
+            resp = self.supabase.rpc(
+                'get_artist_loyalty', self._uid({'p_limit': limit}, user_id)
+            ).execute()
+            if resp.data:
+                return [
+                    {
+                        'artist': row['artist'],
+                        'return_prob': float(row['return_prob']),
+                        'half_life_days': float(row['half_life_days']),
+                        'total_streams': row['total_streams'],
+                    }
+                    for row in resp.data
+                ]
+        except Exception as e:
+            print(f"Error getting artist loyalty: {e}")
         return []
 
-    def get_artist_obsessions(self, limit: int = 15) -> List[Dict[str, Any]]:
-        """Identify obsession periods"""
-        # TODO: Implement with SQL function
+    def get_artist_obsessions(self, limit: int = 15, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        """Weeks where one artist held >= 30% of listening."""
+        try:
+            resp = self.supabase.rpc(
+                'get_artist_obsessions', self._uid({'p_limit': limit}, user_id)
+            ).execute()
+            if resp.data:
+                return [
+                    {
+                        'artist': row['artist'],
+                        'period_start': row['period_start'],
+                        'period_end': row['period_end'],
+                        'period_share': float(row['period_share']),
+                        'streams_in_period': row['streams_in_period'],
+                    }
+                    for row in resp.data
+                ]
+        except Exception as e:
+            print(f"Error getting artist obsessions: {e}")
         return []
 
-    def get_reflective_insights(self) -> Dict[str, Any]:
-        """Generate reflective insights"""
-        # TODO: Implement with SQL function
+    def get_reflective_insights(self, user_id: Optional[str] = None) -> Dict[str, Any]:
+        """Headline listening stats + 4 templated insight sentences."""
+        try:
+            resp = self.supabase.rpc('get_reflective_insights', self._uid({}, user_id)).execute()
+            if resp.data:
+                data = resp.data
+                return {
+                    'total_streams': data['total_streams'],
+                    'longest_streak_days': data['longest_streak_days'],
+                    'most_active_hour': data['most_active_hour'],
+                    'most_active_day': data['most_active_day'],
+                    'top_artist': data['top_artist'],
+                    'avg_streams_per_day': float(data['avg_streams_per_day']),
+                    'insights': data['insights'],
+                }
+        except Exception as e:
+            print(f"Error getting reflective insights: {e}")
         return {
             'total_streams': 0,
             'longest_streak_days': 0,
@@ -470,77 +645,162 @@ class SupabaseDataLoader:
             'most_active_day': 'Unknown',
             'top_artist': 'Unknown',
             'avg_streams_per_day': 0,
-            'insights': []
+            'insights': [],
         }
 
-    def get_session_durations(self) -> List[Dict[str, Any]]:
-        """Get session duration distribution"""
-        # TODO: Implement with SQL function
-        return []
-
-    def get_binge_sessions(self, limit: int = 20) -> List[Dict[str, Any]]:
-        """Get top binge sessions"""
-        # TODO: Implement with SQL function
-        return []
-
-    def get_session_statistics(self) -> Dict[str, Any]:
-        """Get aggregate session statistics"""
-        # TODO: Implement with SQL function
-        return {
-            'total_sessions': 0,
-            'avg_duration_minutes': 0,
-            'median_duration_minutes': 0,
-            'avg_tracks_per_session': 0,
-            'longest_session_minutes': 0,
-        }
-
-    def get_weekend_weekday_comparison(self) -> Dict[str, Any]:
-        """Weekend vs weekday comparison"""
-        # TODO: Implement with SQL function
+    def get_weekend_weekday_comparison(self, user_id: Optional[str] = None) -> Dict[str, Any]:
+        """Streams / hours / avg-per-day split by weekday vs weekend."""
+        try:
+            resp = self.supabase.rpc(
+                'get_weekend_weekday_comparison', self._uid({}, user_id)
+            ).execute()
+            if resp.data:
+                return resp.data
+        except Exception as e:
+            print(f"Error getting weekend/weekday comparison: {e}")
         return {
             'weekday': {'streams': 0, 'hours': 0, 'avg_per_day': 0},
-            'weekend': {'streams': 0, 'hours': 0, 'avg_per_day': 0}
+            'weekend': {'streams': 0, 'hours': 0, 'avg_per_day': 0},
         }
 
-    def get_most_repeated_tracks(self, limit: int = 20) -> List[Dict[str, Any]]:
-        """Get most repeated tracks"""
-        # TODO: Implement with SQL function
+    def get_most_repeated_tracks(self, limit: int = 20, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        """Tracks with the highest plays-per-unique-day score."""
+        try:
+            resp = self.supabase.rpc(
+                'get_most_repeated_tracks', self._uid({'p_limit': limit}, user_id)
+            ).execute()
+            if resp.data:
+                return [
+                    {
+                        'track': row['track'],
+                        'artist': row['artist'],
+                        'play_count': row['play_count'],
+                        'repeat_score': float(row['repeat_score']),
+                    }
+                    for row in resp.data
+                ]
+        except Exception as e:
+            print(f"Error getting most repeated tracks: {e}")
         return []
 
-    def get_monthly_diversity(self) -> List[Dict[str, Any]]:
-        """Get artist diversity over time"""
-        # TODO: Implement with SQL function
+    def get_monthly_diversity(self, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        """Unique artists / total streams / diversity ratio per month."""
+        try:
+            resp = self.supabase.rpc('get_monthly_diversity', self._uid({}, user_id)).execute()
+            if resp.data:
+                return [
+                    {
+                        'month': row['month'],
+                        'unique_artists': row['unique_artists'],
+                        'total_streams': row['total_streams'],
+                        'diversity_ratio': float(row['diversity_ratio']),
+                    }
+                    for row in resp.data
+                ]
+        except Exception as e:
+            print(f"Error getting monthly diversity: {e}")
         return []
 
-    def get_listening_heatmap(self) -> List[Dict[str, Any]]:
-        """Get day-hour heatmap data"""
-        # TODO: Implement with SQL function
+    def get_listening_heatmap(self, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        """168-cell day-hour heatmap (Mon..Sun outer, 0..23 inner)."""
+        try:
+            resp = self.supabase.rpc('get_listening_heatmap', self._uid({}, user_id)).execute()
+            if resp.data:
+                return [
+                    {'day': row['day'], 'hour': row['hour'], 'stream_count': row['stream_count']}
+                    for row in resp.data
+                ]
+        except Exception as e:
+            print(f"Error getting listening heatmap: {e}")
         return []
 
-    def get_session_clusters(self) -> Dict[str, Any]:
-        """Get session cluster statistics"""
-        # TODO: Implement with SQL function
-        return {'error': 'Not implemented yet'}
-
-    def get_session_centroids(self) -> List[Dict[str, Any]]:
-        """Get cluster centroids"""
-        # TODO: Implement with SQL function
+    def get_milestones_list(self, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        """Streaks / top days / first-discoveries / diverse days, newest first."""
+        try:
+            resp = self.supabase.rpc('get_milestones_list', self._uid({}, user_id)).execute()
+            if resp.data:
+                return [
+                    {
+                        'date': row['date'],
+                        'year': row['year'],
+                        'type': row['type'],
+                        'title': row['title'],
+                        'description': row['description'],
+                        'value': row['value'],
+                        'badge_color': row['badge_color'],
+                    }
+                    for row in resp.data
+                ]
+        except Exception as e:
+            print(f"Error getting milestones list: {e}")
         return []
 
-    def get_session_assignments(self, limit: int = 100) -> List[Dict[str, Any]]:
-        """Get session assignments"""
-        # TODO: Implement with SQL function
-        return []
+    def get_flashback(self, date_str: str, user_id: Optional[str] = None) -> Dict[str, Any]:
+        """Detailed listening recap for one date."""
+        try:
+            datetime.fromisoformat(date_str)
+        except ValueError:
+            return {'error': 'Invalid date format. Use YYYY-MM-DD', 'date': date_str}
 
-    def get_milestones_list(self) -> List[Dict[str, Any]]:
-        """Get all milestones"""
-        # TODO: Implement with SQL function
-        return []
+        try:
+            resp = self.supabase.rpc(
+                'get_flashback', self._uid({'p_date': date_str}, user_id)
+            ).execute()
+            if resp.data:
+                return resp.data
+        except Exception as e:
+            print(f"Error getting flashback: {e}")
+        return {
+            'date': date_str,
+            'streams': 0,
+            'message': 'No listening data found for this date',
+        }
 
-    def get_flashback(self, date_str: str) -> Dict[str, Any]:
-        """Get flashback for specific date"""
-        # TODO: Implement with SQL function
-        return {'error': 'Not implemented yet', 'date': date_str}
+    # ------------------------------------------------------------------
+    # Analytics — heavy compute (sessions / recommender / simulator)
+    #
+    # KMeans clustering, the sklearn content-based scorer, and the Markov
+    # simulator can't be expressed as one SQL statement, so they run in Python
+    # via a per-user SpotifyDataLoader delegate (see _delegate). The numpy/
+    # sklearn code and return shapes are shared verbatim with the JSON loader.
+    # ------------------------------------------------------------------
+
+    def get_session_durations(self, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        return self._delegate(user_id).get_session_durations()
+
+    def get_binge_sessions(self, limit: int = 20, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        return self._delegate(user_id).get_binge_sessions(limit=limit)
+
+    def get_session_statistics(self, user_id: Optional[str] = None) -> Dict[str, Any]:
+        return self._delegate(user_id).get_session_statistics()
+
+    def get_session_clusters(self, user_id: Optional[str] = None) -> Dict[str, Any]:
+        return self._delegate(user_id).get_session_clusters()
+
+    def get_session_centroids(self, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        return self._delegate(user_id).get_session_centroids()
+
+    def get_session_assignments(self, limit: int = 100, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        return self._delegate(user_id).get_session_assignments(limit)
+
+    def get_recommendations(self, top_k: int = 20, target_mood: Optional[str] = None,
+                            user_id: Optional[str] = None) -> Dict[str, Any]:
+        return self._delegate(user_id).get_recommendations(top_k=top_k, target_mood=target_mood)
+
+    def get_recommendations_csv_rows(self, top_k: int = 50, target_mood: Optional[str] = None,
+                                     user_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        return self._delegate(user_id).get_recommendations_csv_rows(top_k=top_k, target_mood=target_mood)
+
+    def get_sim_artists(self, user_id: Optional[str] = None) -> List[str]:
+        return self._delegate(user_id).get_sim_artists()
+
+    def get_simulation(self, seed: Optional[str] = None, n: int = 20, hour: Optional[int] = None,
+                       user_id: Optional[str] = None) -> Dict[str, Any]:
+        return self._delegate(user_id).get_simulation(seed=seed, n=n, hour=hour)
+
+    def get_simulation_csv_rows(self, seed: Optional[str] = None, n: int = 50, hour: Optional[int] = None,
+                                user_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        return self._delegate(user_id).get_simulation_csv_rows(seed=seed, n=n, hour=hour)
 
 
 # Global instance

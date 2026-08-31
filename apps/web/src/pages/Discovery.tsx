@@ -13,6 +13,7 @@ import {
 import { LineChart } from '@mui/x-charts/LineChart';
 import { BarChart } from '@mui/x-charts/BarChart';
 import { api } from '../api/client';
+import { useAppStore } from '../store/app';
 import type {
   DiscoveryTimeline,
   ArtistLoyalty,
@@ -43,14 +44,17 @@ export default function Discovery() {
   // Error state
   const [error, setError] = useState<string | null>(null);
 
+  const { selectedUserId } = useAppStore();
+
   // Chart range and slider state
   const [chartRange, setChartRange] = useState<'all' | '12m' | '6m' | '3m'>('all');
   const [sliderValue, setSliderValue] = useState<number>(0);
 
-  // Fetch all data on mount
+  // Fetch all data on mount and whenever the selected user changes
   useEffect(() => {
     fetchAllData();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedUserId]);
 
   const fetchAllData = async () => {
     try {

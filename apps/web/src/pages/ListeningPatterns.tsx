@@ -46,11 +46,12 @@ export default function ListeningPatterns() {
   const [monthlyDiversity, setMonthlyDiversity] = useState<MonthlyDiversity[]>([]);
   const [behaviorTab, setBehaviorTab] = useState<'streaks' | 'repeated' | 'diversity'>('streaks');
 
-  const { setError } = useAppStore();
+  const { setError, selectedUserId } = useAppStore();
 
   useEffect(() => {
     loadData();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedUserId]);
 
   const loadData = async () => {
     try {

@@ -39,7 +39,7 @@ function handleExportCSV(url: string, filename: string) {
 }
 
 export default function Recommendations() {
-  const { setError } = useAppStore();
+  const { setError, selectedUserId } = useAppStore();
   const [loading, setLoading] = useState(true);
   const [recs, setRecs] = useState<Recommendation[]>([]);
   const [generatedAt, setGeneratedAt] = useState<string>('');
@@ -69,7 +69,7 @@ export default function Recommendations() {
     return () => {
       cancelled = true;
     };
-  }, [mood, setError]);
+  }, [mood, selectedUserId, setError]);
 
   return (
     <Box>

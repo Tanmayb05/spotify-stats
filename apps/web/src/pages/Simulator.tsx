@@ -47,7 +47,7 @@ function handleExportCSV(url: string, filename: string) {
 }
 
 export default function Simulator() {
-  const { setError } = useAppStore();
+  const { setError, selectedUserId } = useAppStore();
   const [loadingArtists, setLoadingArtists] = useState(true);
   const [running, setRunning] = useState(false);
   const [artists, setArtists] = useState<string[]>([]);
@@ -75,10 +75,11 @@ export default function Simulator() {
       }
     };
     load();
+    setResult(null);
     return () => {
       cancelled = true;
     };
-  }, [setError]);
+  }, [selectedUserId, setError]);
 
   const runSimulation = async () => {
     setRunning(true);

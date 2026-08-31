@@ -1,32 +1,31 @@
 from fastapi import APIRouter, Query
-from typing import Optional
-from app.services.data_loader import spotify_data
+from app.services.supabase_data_loader import supabase_data
 
 router = APIRouter(prefix="/api/sessions", tags=["sessions"])
 
 
 @router.get("/clusters")
-async def get_session_clusters():
+async def get_session_clusters(user_id: str | None = Query(None)):
     """
     Get session cluster statistics and profiles
     """
-    spotify_data.load_data()
-    return spotify_data.get_session_clusters()
+    return supabase_data.get_session_clusters(user_id=user_id)
 
 
 @router.get("/centroids")
-async def get_session_centroids():
+async def get_session_centroids(user_id: str | None = Query(None)):
     """
     Get cluster centroids with feature values
     """
-    spotify_data.load_data()
-    return spotify_data.get_session_centroids()
+    return supabase_data.get_session_centroids(user_id=user_id)
 
 
 @router.get("/assignments")
-async def get_session_assignments(limit: int = Query(default=100, ge=1, le=500)):
+async def get_session_assignments(
+    limit: int = Query(default=100, ge=1, le=500),
+    user_id: str | None = Query(None),
+):
     """
     Get recent sessions with their cluster assignments
     """
-    spotify_data.load_data()
-    return spotify_data.get_session_assignments(limit)
+    return supabase_data.get_session_assignments(limit, user_id=user_id)
