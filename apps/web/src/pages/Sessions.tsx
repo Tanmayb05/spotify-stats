@@ -13,6 +13,7 @@ import {
 import { BarChart } from '@mui/x-charts/BarChart';
 import { Groups, Science, TrendingUp } from '@mui/icons-material';
 import { api } from '../api/client';
+import { useAppStore } from '../store/app';
 import type {
   SessionClustersResponse,
   SessionCentroid,
@@ -61,10 +62,13 @@ export default function Sessions() {
   // Error state
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch all data on mount
+  const { selectedUserId } = useAppStore();
+
+  // Fetch all data on mount and whenever the selected user changes
   useEffect(() => {
     fetchAllData();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedUserId]);
 
   const fetchAllData = async () => {
     try {

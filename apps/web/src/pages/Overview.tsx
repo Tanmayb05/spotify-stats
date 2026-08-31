@@ -55,11 +55,12 @@ export default function Overview() {
   const [rankingTab, setRankingTab] = useState<'artists' | 'tracks' | 'skip'>('artists');
   const [temporalTab, setTemporalTab] = useState<'hourly' | 'daily'>('hourly');
   const [yearlyTab, setYearlyTab] = useState<'streams' | 'hours'>('streams');
-  const { setError } = useAppStore();
+  const { setError, selectedUserId } = useAppStore();
 
   useEffect(() => {
     loadData();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedUserId]);
 
   const loadData = async () => {
     try {

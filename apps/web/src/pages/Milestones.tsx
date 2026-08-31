@@ -27,6 +27,7 @@ import {
   MusicNote,
 } from '@mui/icons-material';
 import { api } from '../api/client';
+import { useAppStore } from '../store/app';
 import type { Milestone, FlashbackData } from '../types/api';
 import ErrorBanner from '../components/ErrorBanner';
 
@@ -47,10 +48,14 @@ export default function Milestones() {
   // Error state
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch milestones on mount
+  const { selectedUserId } = useAppStore();
+
+  // Fetch milestones on mount and whenever the selected user changes
   useEffect(() => {
     fetchMilestones();
-  }, []);
+    setFlashbackData(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedUserId]);
 
   const fetchMilestones = async () => {
     try {

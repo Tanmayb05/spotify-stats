@@ -1,11 +1,14 @@
 from fastapi import APIRouter, Query
-from app.services.data_loader import spotify_data
+from app.services.supabase_data_loader import supabase_data
 
 router = APIRouter(prefix="/api/mood", tags=["mood"])
 
 
 @router.get("/summary")
-async def get_mood_summary(window: str = Query("30d", regex="^(7d|30d|90d|all)$")):
+async def get_mood_summary(
+    window: str = Query("30d", regex="^(7d|30d|90d|all)$"),
+    user_id: str | None = Query(None),
+):
     """
     Get mood summary for a time window
 
@@ -21,26 +24,26 @@ async def get_mood_summary(window: str = Query("30d", regex="^(7d|30d|90d|all)$"
     else:
         window_days = int(window.rstrip('d'))
 
-    return spotify_data.get_mood_summary(window_days=window_days)
+    return supabase_data.get_mood_summary(window_days=window_days, user_id=user_id)
 
 
 @router.get("/contexts")
-async def get_mood_contexts():
+async def get_mood_contexts(user_id: str | None = Query(None)):
     """
     Get mood comparisons across different contexts
 
     Returns:
         Mood metrics for weekday vs weekend and by platform
     """
-    return spotify_data.get_mood_contexts()
+    return supabase_data.get_mood_contexts(user_id=user_id)
 
 
 @router.get("/monthly")
-async def get_mood_monthly():
+async def get_mood_monthly(user_id: str | None = Query(None)):
     """
     Get monthly mood trends over time
 
     Returns:
         List of monthly average mood metrics
     """
-    return spotify_data.get_mood_monthly()
+    return supabase_data.get_mood_monthly(user_id=user_id)
