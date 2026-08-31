@@ -237,7 +237,7 @@ def handle_429_error(self, retry_after: Optional[int] = None):
 
 ```
 1. INITIALIZATION
-   ├─ Load Spotify credentials from spotify-stats.env
+   ├─ Load Spotify credentials from spotify-insights.env
    ├─ Initialize SpotifyClientCredentials
    ├─ Create RateLimiter (180 calls/30s)
    └─ Print configuration
@@ -305,7 +305,7 @@ def handle_429_error(self, retry_after: Optional[int] = None):
 #### Basic Usage
 
 ```bash
-cd /Users/tanmaybhuskute/Documents/spotify-stats/libraries/analysis
+cd /Users/tanmaybhuskute/Documents/spotify-insights/libraries/analysis
 python fetch_spotify_song_info.py
 ```
 
@@ -321,7 +321,7 @@ rate_limit = 180              # Dev mode: 180, Extended: 1000+
 
 #### Environment Variables Required
 
-In `spotify-stats.env`:
+In `spotify-insights.env`:
 ```bash
 SPOTIFY_CLIENT_ID=your_client_id
 SPOTIFY_CLIENT_SECRET=your_client_secret

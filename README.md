@@ -17,7 +17,7 @@ This project analyzes **71,052 streams** spanning **7 years** of listening histo
 ## Project Structure
 
 ```
-spotify-stats/
+spotify-insights/
 ├── data/                  # Raw JSON streaming data (5 audio files + 1 video file)
 ├── apps/
 │   ├── api/               # FastAPI REST API
@@ -112,7 +112,7 @@ python3 --version
 
 1. Clone or navigate to the project directory:
 ```bash
-cd spotify-stats
+cd spotify-insights
 ```
 
 2. Create and activate virtual environment:

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Spotify Stats - Start Script
+# Spotify Insights - Start Script
 # Opens Terminal with two tabs: one for backend, one for frontend
 
 PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"

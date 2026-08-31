@@ -12,6 +12,7 @@ Performance benefits:
 """
 
 import os
+from pathlib import Path
 from typing import List, Dict, Any, Optional
 from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
@@ -23,8 +24,18 @@ except ImportError:
         "supabase-py is required. Install with: pip install supabase"
     )
 
-# Load environment variables from spotify-stats.env
-load_dotenv('spotify-stats.env')
+# Load environment variables from spotify-insights.env.
+# Search upward from this file so it works regardless of the process CWD
+# (start.sh launches uvicorn from apps/api, scripts run from the repo root).
+_env_loaded = False
+for _parent in Path(__file__).resolve().parents:
+    _candidate = _parent / 'spotify-insights.env'
+    if _candidate.exists():
+        load_dotenv(_candidate)
+        _env_loaded = True
+        break
+if not _env_loaded:
+    load_dotenv('spotify-insights.env')  # last-resort relative fallback
 
 # Configuration
 SUPABASE_URL = os.getenv('SUPABASE_URL')
@@ -37,16 +48,27 @@ class SupabaseDataLoader:
     def __init__(self):
         if not SUPABASE_URL or not SUPABASE_KEY:
             raise ValueError(
-                "Missing Supabase credentials. Set SUPABASE_URL and SUPABASE_SERVICE_KEY in spotify-stats.env"
+                "Missing Supabase credentials. Set SUPABASE_URL and SUPABASE_SERVICE_KEY in spotify-insights.env"
             )
 
         self.supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
         self._loaded = True  # Database is always "loaded"
 
-    def get_overview_stats(self) -> Dict[str, Any]:
+    @staticmethod
+    def _uid(params: dict, user_id: Optional[str]) -> dict:
+        """Attach p_user_id to an RPC param dict when a user is specified.
+
+        When user_id is None the SQL functions (migration 004) fall back to the
+        primary user, so existing single-user callers need no changes.
+        """
+        if user_id:
+            params = {**params, 'p_user_id': user_id}
+        return params
+
+    def get_overview_stats(self, user_id: Optional[str] = None) -> Dict[str, Any]:
         """Get overview statistics using optimized SQL function"""
         try:
-            response = self.supabase.rpc('get_overview_stats').execute()
+            response = self.supabase.rpc('get_overview_stats', self._uid({}, user_id)).execute()
             if response.data and len(response.data) > 0:
                 data = response.data[0]
                 return {
@@ -61,10 +83,10 @@ class SupabaseDataLoader:
             print(f"Error getting overview stats: {e}")
             return {}
 
-    def get_top_artists(self, limit: int = 10) -> List[Dict[str, Any]]:
+    def get_top_artists(self, limit: int = 10, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """Get top artists from materialized view"""
         try:
-            response = self.supabase.rpc('get_top_artists', {'limit_count': limit}).execute()
+            response = self.supabase.rpc('get_top_artists', self._uid({'limit_count': limit}, user_id)).execute()
             if response.data:
                 return [
                     {
@@ -78,10 +100,10 @@ class SupabaseDataLoader:
             print(f"Error getting top artists: {e}")
             return []
 
-    def get_top_tracks(self, limit: int = 10) -> List[Dict[str, Any]]:
+    def get_top_tracks(self, limit: int = 10, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """Get top tracks from materialized view"""
         try:
-            response = self.supabase.rpc('get_top_tracks', {'limit_count': limit}).execute()
+            response = self.supabase.rpc('get_top_tracks', self._uid({'limit_count': limit}, user_id)).execute()
             if response.data:
                 return [
                     {
@@ -96,10 +118,10 @@ class SupabaseDataLoader:
             print(f"Error getting top tracks: {e}")
             return []
 
-    def get_monthly_data(self) -> List[Dict[str, Any]]:
+    def get_monthly_data(self, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """Get monthly streaming statistics from materialized view"""
         try:
-            response = self.supabase.rpc('get_monthly_data').execute()
+            response = self.supabase.rpc('get_monthly_data', self._uid({}, user_id)).execute()
             if response.data:
                 return [
                     {
@@ -114,10 +136,10 @@ class SupabaseDataLoader:
             print(f"Error getting monthly data: {e}")
             return []
 
-    def get_platform_stats(self) -> List[Dict[str, Any]]:
+    def get_platform_stats(self, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """Get platform usage statistics"""
         try:
-            response = self.supabase.rpc('get_platform_stats').execute()
+            response = self.supabase.rpc('get_platform_stats', self._uid({}, user_id)).execute()
             if response.data:
                 # Return top 10 platforms, group rest as "Other"
                 platforms = response.data[:10]
@@ -140,10 +162,10 @@ class SupabaseDataLoader:
             print(f"Error getting platform stats: {e}")
             return []
 
-    def get_hourly_distribution(self) -> List[Dict[str, Any]]:
+    def get_hourly_distribution(self, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """Get listening distribution by hour of day"""
         try:
-            response = self.supabase.rpc('get_hourly_distribution').execute()
+            response = self.supabase.rpc('get_hourly_distribution', self._uid({}, user_id)).execute()
             if response.data:
                 return [
                     {
@@ -157,10 +179,10 @@ class SupabaseDataLoader:
             print(f"Error getting hourly distribution: {e}")
             return []
 
-    def get_daily_distribution(self) -> List[Dict[str, Any]]:
+    def get_daily_distribution(self, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """Get listening distribution by day of week"""
         try:
-            response = self.supabase.rpc('get_daily_distribution').execute()
+            response = self.supabase.rpc('get_daily_distribution', self._uid({}, user_id)).execute()
             if response.data:
                 # Map day numbers to names
                 day_names = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
@@ -176,10 +198,10 @@ class SupabaseDataLoader:
             print(f"Error getting daily distribution: {e}")
             return []
 
-    def get_skip_behavior(self, limit: int = 20) -> List[Dict[str, Any]]:
+    def get_skip_behavior(self, limit: int = 20, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """Get skip behavior by artist"""
         try:
-            response = self.supabase.rpc('get_skip_behavior', {'limit_count': limit}).execute()
+            response = self.supabase.rpc('get_skip_behavior', self._uid({'limit_count': limit}, user_id)).execute()
             if response.data:
                 return [
                     {
@@ -195,10 +217,10 @@ class SupabaseDataLoader:
             print(f"Error getting skip behavior: {e}")
             return []
 
-    def get_yearly_comparison(self) -> List[Dict[str, Any]]:
+    def get_yearly_comparison(self, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """Get year-over-year comparison"""
         try:
-            response = self.supabase.rpc('get_yearly_comparison').execute()
+            response = self.supabase.rpc('get_yearly_comparison', self._uid({}, user_id)).execute()
             if response.data:
                 return [
                     {
@@ -213,10 +235,10 @@ class SupabaseDataLoader:
             print(f"Error getting yearly comparison: {e}")
             return []
 
-    def get_listening_streaks(self, limit: int = 10) -> List[Dict[str, Any]]:
+    def get_listening_streaks(self, limit: int = 10, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """Get listening streaks"""
         try:
-            response = self.supabase.rpc('get_listening_streaks', {'limit_count': limit}).execute()
+            response = self.supabase.rpc('get_listening_streaks', self._uid({'limit_count': limit}, user_id)).execute()
             if response.data:
                 return [
                     {
@@ -231,6 +253,167 @@ class SupabaseDataLoader:
         except Exception as e:
             print(f"Error getting listening streaks: {e}")
             return []
+
+    # ------------------------------------------------------------------
+    # Friend-group comparison (multi-user)
+    #
+    # Leaderboard is one grouped aggregate (RPC). Everything else is computed
+    # here in Python from the per-user `top_artists` materialized view, because
+    # cross-user Jaccard / an N x N matrix would exceed the PostgREST statement
+    # timeout as SQL.
+    # ------------------------------------------------------------------
+
+    def list_users(self) -> List[Dict[str, Any]]:
+        """All users (primary first, then alphabetical)."""
+        try:
+            resp = (
+                self.supabase.table('users')
+                .select('id, username, display_name, is_primary')
+                .order('is_primary', desc=True)
+                .order('username')
+                .execute()
+            )
+            return [
+                {
+                    'user_id': r['id'],
+                    'username': r['username'],
+                    'display_name': r['display_name'] or r['username'].title(),
+                    'is_primary': r['is_primary'],
+                }
+                for r in (resp.data or [])
+            ]
+        except Exception as e:
+            print(f"Error listing users: {e}")
+            return []
+
+    def get_leaderboard(self) -> List[Dict[str, Any]]:
+        """Per-user listening totals (RPC get_user_leaderboard)."""
+        try:
+            resp = self.supabase.rpc('get_user_leaderboard').execute()
+            out = []
+            for r in (resp.data or []):
+                out.append({
+                    'user_id': r['user_id'],
+                    'username': r['username'],
+                    'display_name': r['display_name'] or r['username'].title(),
+                    'is_primary': r['is_primary'],
+                    'total_streams': r['total_streams'],
+                    'total_hours': float(r['total_hours']) if r['total_hours'] is not None else 0.0,
+                    'unique_artists': r['unique_artists'],
+                    'unique_tracks': r['unique_tracks'],
+                    'skip_rate': float(r['skip_rate']) if r['skip_rate'] is not None else 0.0,
+                    'first_stream': r['first_stream'],
+                    'last_stream': r['last_stream'],
+                })
+            return out
+        except Exception as e:
+            print(f"Error getting leaderboard: {e}")
+            return []
+
+    def _artist_vector(self, user_id: str) -> Dict[str, int]:
+        """{artist: stream_count} for a user, from the top_artists view. Cached."""
+        if not hasattr(self, '_artist_vecs'):
+            self._artist_vecs: Dict[str, Dict[str, int]] = {}
+        if user_id in self._artist_vecs:
+            return self._artist_vecs[user_id]
+
+        vec: Dict[str, int] = {}
+        page = 0
+        page_size = 1000
+        while True:
+            start = page * page_size
+            resp = (
+                self.supabase.table('top_artists')
+                .select('artist, stream_count')
+                .eq('user_id', user_id)
+                .range(start, start + page_size - 1)
+                .execute()
+            )
+            rows = resp.data or []
+            for r in rows:
+                if r['artist']:
+                    vec[r['artist']] = r['stream_count']
+            if len(rows) < page_size:
+                break
+            page += 1
+
+        self._artist_vecs[user_id] = vec
+        return vec
+
+    @staticmethod
+    def _jaccard(a: set, b: set) -> float:
+        union = len(a | b)
+        return round(len(a & b) / union * 100, 1) if union else 0.0
+
+    def get_overlap(self, user_ids: List[str], top_n: int = 25) -> Dict[str, Any]:
+        """Artist overlap between 2+ users."""
+        users = {u['user_id']: u for u in self.list_users()}
+        picked = [uid for uid in user_ids if uid in users]
+        if len(picked) < 2:
+            return {'error': 'need at least 2 valid users'}
+
+        vecs = {uid: self._artist_vector(uid) for uid in picked}
+        sets = {uid: set(v.keys()) for uid, v in vecs.items()}
+
+        pairs = []
+        for i in range(len(picked)):
+            for j in range(i + 1, len(picked)):
+                a, b = picked[i], picked[j]
+                pairs.append({
+                    'user_a': users[a]['display_name'],
+                    'user_b': users[b]['display_name'],
+                    'shared': len(sets[a] & sets[b]),
+                    'only_a': len(sets[a] - sets[b]),
+                    'only_b': len(sets[b] - sets[a]),
+                    'jaccard': self._jaccard(sets[a], sets[b]),
+                })
+
+        shared_all = set.intersection(*sets.values()) if sets else set()
+        top_shared = sorted(
+            (
+                {'artist': art, 'total_plays': sum(vecs[uid].get(art, 0) for uid in picked)}
+                for art in shared_all
+            ),
+            key=lambda x: x['total_plays'],
+            reverse=True,
+        )[:top_n]
+
+        return {
+            'users': [users[uid]['display_name'] for uid in picked],
+            'pairs': pairs,
+            'shared_by_all_count': len(shared_all),
+            'top_shared_by_all': top_shared,
+        }
+
+    def get_similarity_matrix(self) -> Dict[str, Any]:
+        """N x N pairwise artist-Jaccard % across all users (diagonal null)."""
+        users = self.list_users()
+        vecs = {u['user_id']: set(self._artist_vector(u['user_id']).keys()) for u in users}
+        labels = [u['display_name'] for u in users]
+        matrix: List[List[Optional[float]]] = []
+        for ui in users:
+            row: List[Optional[float]] = []
+            for uj in users:
+                if ui['user_id'] == uj['user_id']:
+                    row.append(None)
+                else:
+                    row.append(self._jaccard(vecs[ui['user_id']], vecs[uj['user_id']]))
+            matrix.append(row)
+        return {'users': labels, 'matrix': matrix}
+
+    def get_top_artists_multi(self, user_ids: List[str], limit: int = 10) -> Dict[str, Any]:
+        """Each user's top `limit` artists, keyed by display name."""
+        users = {u['user_id']: u for u in self.list_users()}
+        out: Dict[str, List[Dict[str, Any]]] = {}
+        for uid in user_ids:
+            if uid not in users:
+                continue
+            vec = self._artist_vector(uid)
+            top = sorted(vec.items(), key=lambda kv: kv[1], reverse=True)[:limit]
+            out[users[uid]['display_name']] = [
+                {'artist': art, 'streams': cnt} for art, cnt in top
+            ]
+        return out
 
     # Placeholder methods for features not yet implemented in SQL
     # These can be implemented later with SQL functions

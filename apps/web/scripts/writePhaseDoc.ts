@@ -1,7 +1,10 @@
-#!/usr/bin/env ts-node
+#!/usr/bin/env node
 
 import * as fs from 'fs';
 import * as path from 'path';
+import { fileURLToPath } from 'url';
+
+const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 
 interface PhaseDocParams {
   phaseNumber: number;
@@ -25,7 +28,6 @@ interface PhaseDocParams {
 
 function generatePhaseDoc(params: PhaseDocParams): string {
   const now = new Date();
-  const timestamp = now.toISOString().replace(/[-:]/g, '').split('.')[0].replace('T', '_');
   const dateString = now.toISOString().replace('T', ' ').split('.')[0];
 
   const checklistItems = Object.entries(params.checklist)
@@ -80,7 +82,8 @@ function writePhaseDoc(params: PhaseDocParams): string {
   const now = new Date();
   const timestamp = now.toISOString().replace(/[-:]/g, '').split('.')[0].replace('T', '_');
 
-  const docDir = path.join(__dirname, '../../documentation');
+  // scriptDir = apps/web/scripts -> repo-root documentation/
+  const docDir = path.resolve(scriptDir, '../../../documentation');
   if (!fs.existsSync(docDir)) {
     fs.mkdirSync(docDir, { recursive: true });
   }
@@ -91,15 +94,16 @@ function writePhaseDoc(params: PhaseDocParams): string {
   const content = generatePhaseDoc(params);
   fs.writeFileSync(filepath, content, 'utf-8');
 
-  console.log(`✅ Phase ${params.phaseNumber} documentation written to: ${filename}`);
+  console.log(`✅ Phase ${params.phaseNumber} documentation written to: ${filepath}`);
   return filepath;
 }
 
 // Export for use in other scripts
 export { PhaseDocParams, writePhaseDoc, generatePhaseDoc };
 
-// CLI usage
-if (require.main === module) {
+// CLI usage — run directly (node --loader ts-node/esm, tsx, or compiled)
+const isMain = process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1]);
+if (isMain) {
   // Example usage - can be customized per phase
   const exampleParams: PhaseDocParams = {
     phaseNumber: 0,
@@ -124,7 +128,7 @@ if (require.main === module) {
       'Docs generated': true,
     },
     implementation: {
-      purpose: 'Create the foundation for the Spotify Stats web application.',
+      purpose: 'Create the foundation for the Spotify Insights web application.',
       features: [
         'Vite + React + TypeScript frontend',
         'Material-UI with dark theme',
@@ -158,7 +162,7 @@ if (require.main === module) {
       'Connect frontend to backend API endpoints',
       'Load and display actual Spotify streaming data',
     ],
-    conclusion: 'Phase 0 successfully establishes the foundation for the Spotify Stats application with a robust frontend and backend architecture.',
+    conclusion: 'Phase 0 successfully establishes the foundation for the Spotify Insights application with a robust frontend and backend architecture.',
   };
 
   writePhaseDoc(exampleParams);

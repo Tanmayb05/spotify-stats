@@ -278,7 +278,7 @@ class PerformanceComparator:
     def run_comparison(self):
         """Run full comparison"""
         print("="*70)
-        print("⚡ Spotify Stats Performance Comparison")
+        print("⚡ Spotify Insights Performance Comparison")
         print("   JSON Files vs Supabase PostgreSQL")
         print("="*70)
 

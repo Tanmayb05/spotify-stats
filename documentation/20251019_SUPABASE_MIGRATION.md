@@ -1,4 +1,4 @@
-# Spotify Stats: JSON to Supabase PostgreSQL Migration
+# Spotify Insights: JSON to Supabase PostgreSQL Migration
 
 **Date:** 2025-10-19
 **Status:** Ready for Implementation
@@ -134,10 +134,10 @@ CREATE TABLE streaming_history (
 
 3. **Update Environment Variables**
    ```bash
-   cp spotify-stats.env.example spotify-stats.env
+   cp spotify-insights.env.example spotify-insights.env
    ```
 
-   Edit `spotify-stats.env`:
+   Edit `spotify-insights.env`:
    ```env
    SUPABASE_URL=https://your-project.supabase.co
    SUPABASE_SERVICE_KEY=your_service_role_key_here
@@ -260,7 +260,7 @@ This will benchmark:
 **Expected output:**
 ```
 ======================================================================
-⚡ Spotify Stats Performance Comparison
+⚡ Spotify Insights Performance Comparison
    JSON Files vs Supabase PostgreSQL
 ======================================================================
 
@@ -486,8 +486,8 @@ SELECT * FROM get_top_artists(10);
 
 **Solution:**
 ```bash
-# Check spotify-stats.env file exists and has correct values
-cat spotify-stats.env | grep SUPABASE
+# Check spotify-insights.env file exists and has correct values
+cat spotify-insights.env | grep SUPABASE
 
 # Make sure you're using service_role key, not anon key
 ```
@@ -580,7 +580,7 @@ SELECT refresh_all_views();
 
 - [ ] Create Supabase project
 - [ ] Get Supabase credentials (URL + keys)
-- [ ] Update `spotify-stats.env` file
+- [ ] Update `spotify-insights.env` file
 - [ ] Run migration 001 (tables and views)
 - [ ] Run migration 002 (functions)
 - [ ] Install Python dependencies

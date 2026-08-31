@@ -35,13 +35,13 @@ service_role key: eyJhbG... (long key)
 anon key: eyJhbG... (different long key)
 ```
 
-3. Create `spotify-stats.env` file in project root:
+3. Create `spotify-insights.env` file in project root:
 
 ```bash
-cp spotify-stats.env.example spotify-stats.env
+cp spotify-insights.env.example spotify-insights.env
 ```
 
-4. Edit `spotify-stats.env` and add:
+4. Edit `spotify-insights.env` and add:
 
 ```env
 SUPABASE_URL=https://xxxxxxxxxxxxx.supabase.co
@@ -126,7 +126,7 @@ SELECT * FROM monthly_stats ORDER BY month DESC LIMIT 12;
 ## 🆘 Common Issues
 
 ### "Missing credentials"
-→ Check your `spotify-stats.env` file has `SUPABASE_URL` and `SUPABASE_SERVICE_KEY`
+→ Check your `spotify-insights.env` file has `SUPABASE_URL` and `SUPABASE_SERVICE_KEY`
 
 ### "Table does not exist"
 → Run the SQL migrations (step 3)
@@ -162,7 +162,7 @@ See [documentation/20251019_SUPABASE_MIGRATION.md](documentation/20251019_SUPABA
 ## ✅ Checklist
 
 - [ ] Supabase project created
-- [ ] Credentials in `spotify-stats.env`
+- [ ] Credentials in `spotify-insights.env`
 - [ ] Migrations run (both SQL files)
 - [ ] Data loaded successfully
 - [ ] Comparison shows speedup

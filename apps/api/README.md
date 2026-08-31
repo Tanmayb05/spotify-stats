@@ -1,4 +1,4 @@
-# Spotify Stats API Backend
+# Spotify Insights API Backend
 
 FastAPI backend for Spotify streaming history analysis.
 

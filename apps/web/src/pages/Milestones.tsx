@@ -109,7 +109,7 @@ ${flashbackData.top_artists.map((a, i) => `${i + 1}. ${a.artist} (${a.streams} s
 🎶 Top Tracks:
 ${flashbackData.top_tracks.map((t, i) => `${i + 1}. ${t.track} - ${t.artist} (${t.plays} plays)`).join('\n')}
 
-Generated with Spotify Stats
+Generated with Spotify Insights
     `.trim();
 
     navigator.clipboard.writeText(summary);

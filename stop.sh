@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Spotify Stats - Stop Script
+# Spotify Insights - Stop Script
 # Stops all running servers and closes Terminal application
 
 echo "🛑 Stopping all servers..."

@@ -3,6 +3,11 @@
 # *.json
 .cache
 
+# Extracted other-users streaming history (contains third-party PII: ip_addr).
+# The source .zip archives are tracked; extracted per-user dirs are not.
+data/other users/*/
+
+
 # IMPORTANT: Allow package.json and related files for builds
 !package.json
 !package-lock.json
@@ -38,8 +43,8 @@ build/
 *.ipynb
 
 # Environment
-spotify-stats.env
-spotify-stats.env.local
+spotify-insights.env
+spotify-insights.env.local
 .env
 .env.local
 

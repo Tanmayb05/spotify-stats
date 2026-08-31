@@ -71,6 +71,11 @@ import type {
   RecommendationsResponse,
   TargetMood,
   SimulationResponse,
+  CompareUser,
+  LeaderboardRow,
+  OverlapResult,
+  SimilarityMatrix,
+  TopArtistsMulti,
 } from '../types/api';
 
 // API functions
@@ -287,5 +292,33 @@ export const api = {
     if (seed) q.set('seed', seed);
     if (hour != null) q.set('hour', String(hour));
     return `${API_BASE_URL}/api/export/simulation?${q.toString()}`;
+  },
+
+  // Friend-group comparison
+  getCompareUsers: async (): Promise<CompareUser[]> => {
+    const response = await apiClient.get<CompareUser[]>('/api/compare/users');
+    return response.data;
+  },
+
+  getLeaderboard: async (): Promise<LeaderboardRow[]> => {
+    const response = await apiClient.get<LeaderboardRow[]>('/api/compare/leaderboard');
+    return response.data;
+  },
+
+  getOverlap: async (userIds: string[], topN = 25): Promise<OverlapResult> => {
+    const q = new URLSearchParams({ users: userIds.join(','), top_n: String(topN) });
+    const response = await apiClient.get<OverlapResult>(`/api/compare/overlap?${q.toString()}`);
+    return response.data;
+  },
+
+  getSimilarityMatrix: async (): Promise<SimilarityMatrix> => {
+    const response = await apiClient.get<SimilarityMatrix>('/api/compare/similarity-matrix');
+    return response.data;
+  },
+
+  getTopArtistsMulti: async (userIds: string[], limit = 10): Promise<TopArtistsMulti> => {
+    const q = new URLSearchParams({ users: userIds.join(','), limit: String(limit) });
+    const response = await apiClient.get<TopArtistsMulti>(`/api/compare/top-artists?${q.toString()}`);
+    return response.data;
   },
 };

@@ -9,5 +9,5 @@ async def health_check():
     return {
         "status": "healthy",
         "timestamp": datetime.utcnow().isoformat(),
-        "service": "spotify-stats-api"
+        "service": "spotify-insights-api"
     }

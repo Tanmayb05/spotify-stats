@@ -40,6 +40,47 @@ python load_json_to_supabase.py
 
 ---
 
+### `load_multi_user_data.py`
+
+**Purpose:** Load *other users'* Spotify Extended Streaming History into the
+multi-user schema (migrations `003` + `004`).
+
+**Usage:**
+```bash
+python load_multi_user_data.py                 # load all 9, skip any already loaded
+python load_multi_user_data.py --only amit,sam  # subset
+python load_multi_user_data.py --reload --only sohan   # delete + reload one user
+python load_multi_user_data.py --dry-run        # parse + report, no writes
+```
+
+**What it does:**
+1. Reads `data/other users/<slug>/Streaming_History_Audio*.json` (extracted from the
+   friends' export zips).
+2. Creates a `users` row per person (`is_primary = FALSE`).
+3. Transforms records — **drops `ip_addr`** (third-party PII), keeps `conn_country`,
+   injects `user_id`.
+4. Batch-inserts into `streaming_history` (1000/batch). A user that already has rows
+   is skipped unless `--reload`.
+5. Calls `refresh_all_views()`.
+
+**Notes:**
+- Not an upsert — real Spotify exports contain exact-duplicate rows, so there is no
+  safe conflict target. Idempotency = skip-if-loaded, or `--reload` (which
+  `DELETE`s that user's rows via the `truncate_streaming_history(p_user_id)` RPC).
+- The final `refresh_all_views()` RPC can hit the PostgREST statement timeout on a
+  large load. If it does, refresh directly instead:
+  ```bash
+  psql "$SUPABASE_DIRECT_CONN" -c "SELECT refresh_all_views();"
+  # SUPABASE_DIRECT_CONN = postgresql://postgres:<SUPABASE_DATABASE_PASSWORD>@db.<ref>.supabase.co:5432/postgres?sslmode=require
+  ```
+
+**Prerequisites:**
+- Migrations `003_add_multi_user_support.sql` + `004_user_scoped_functions.sql` applied
+- `SUPABASE_URL` + `SUPABASE_SERVICE_KEY` in `spotify-insights.env`
+- Friends' zips already extracted to `data/other users/<slug>/`
+
+---
+
 ### `compare_performance.py`
 
 **Purpose:** Benchmark JSON files vs Supabase PostgreSQL performance
@@ -70,7 +111,7 @@ python compare_performance.py
 **Output:**
 ```
 ======================================================================
-⚡ Spotify Stats Performance Comparison
+⚡ Spotify Insights Performance Comparison
 ======================================================================
 
 1. Initial Setup

@@ -39,7 +39,7 @@ from path_utils import DATA_DIR, OUTPUT_DIR
 
 # Load environment variables
 repo_root = Path(__file__).resolve().parent.parent.parent
-load_dotenv(repo_root / 'spotify-stats.env')
+load_dotenv(repo_root / 'spotify-insights.env')
 
 # Constants
 UNIQUE_ARTISTS_CSV = DATA_DIR / 'unique_artists.csv'
