@@ -25,7 +25,7 @@ it, then update the row + append to the log here.
 |---|---|---|---|---|---|---|
 | 9  | Repo hygiene & public-safe history | S | — | DONE | `chore/phase-9-repo-hygiene` | 2026-09-01 |
 | 10 | Local infra: Docker Compose + migration runner + DB backend switch | M | — | DONE | `feat/phase-10-local-infra` | 2026-09-01 |
-| 11 | Star schema + enrichment into Postgres + bronze/silver/gold | L | 1 (schema) | NOT STARTED | — | — |
+| 11 | Star schema + enrichment into Postgres + bronze/silver/gold | L | 1 (schema) | DONE | `feat/phase-11-star-schema` | 2026-09-01 |
 | 12 | Dagster ingestion pipeline (incremental / idempotent / quarantine) | XL | 1 | NOT STARTED | — | — |
 | 13 | DQ suite + Data Health page + cull to 3 pages | M | 2 | NOT STARTED | — | — |
 | 13.5 | Behavioral EDA notebook set (decision-support reference) | M | — (feeds 3,4,5) | NOT STARTED | — | — |
@@ -33,7 +33,7 @@ it, then update the row + append to the log here.
 | 15 | 4 recommenders + eval harness + explainable recs + human-eval loop | XL | 4 + 5 | NOT STARTED | — | — |
 | 16 | Production loop + tests + CI + README/architecture/write-up | L | — | NOT STARTED | — | — |
 
-**Next phase to start:** Phase 11.
+**Next phase to start:** Phase 12.
 
 ---
 
@@ -269,3 +269,97 @@ plus the stripout check; P16 `RESEARCH_WRITEUP.md` now sources its 2–3 EDA cha
 13.5 notebooks via `save_fig` instead of rebuilding them, so the two cannot disagree.
 
 **Next phase to start is unchanged: Phase 11.**
+
+### Phase 11 — done 2026-09-01 · branch `feat/phase-11-star-schema`
+
+Detail: `documentation/20260901_174048_phase_11_star_schema.md`. Design/blocker analysis
+and pre-declared deviations: `documentation/20260901_152320_phase_11_star_schema_PLAN.md`.
+Data model reference: `documentation/DATA_MODEL.md`.
+
+Turned `streaming_history` into a Medallion star schema (`bronze`/`silver`/`gold`),
+populated real dimension tables from on-disk enrichment JSON, repointed 3 materialized
+views + 8 hottest RPCs at `gold.fact_streams` — **verified numerically unchanged** via a
+full pre/post 44-route API baseline diff.
+
+**Shipped:** migrations `008_medallion_schemas.sql` (bronze+silver DDL, one-time bronze
+backfill), `009_star_schema.sql` (gold DDL: `dim_user`/`dim_time`/`dim_artist`/
+`dim_track`/`dim_album`/`fact_streams`/`track_lyrics`/`recommendation_events` + `public`
+compat views for Blocker B1), `010_mvs_on_star.sql` (repoints `monthly_stats`/
+`top_artists`/`top_tracks` + `get_overview_stats`/`get_date_range`/`get_platform_stats`/
+`get_hourly_distribution`/`get_daily_distribution`/`get_yearly_comparison`/
+`get_listening_streaks`/`_mood_rows` at `gold.fact_streams`, exact `DROP FUNCTION IF
+EXISTS` before each per Blocker B2). New `app/ingest/` package (`normalize.py`,
+`salvage.py` — extracted/shared, 35 unit tests). New scripts:
+`load_enrichment_to_db.py` (idempotent JSON→gold upserts), `backfill_artist_tags.py`
+(opt-in MusicBrainz/Last.fm genre backfill), `build_star_schema.py` (orchestrates
+bronze→silver→gold, re-runnable), `capture_api_baseline.py` +
+`compare_api_baseline.py` (the V4 gate tooling). Closed Blocker B5:
+`data_loader.py._load_track_metadata()` now reads `gold.dim_track`/`dim_artist` when
+`DB_BACKEND=local`, falling back to the JSON files only when those tables are empty.
+
+**Verify gate results (measured, not assumed):**
+- V1 (fact completeness): **PASS** — 71,052 == 71,052 (primary user), exact.
+- V2 (enriched tracks): **PASS** — exactly 808.
+- V3 (artist enrichment): 4,536 `dim_artist` rows; **93.5%** artist match-rate of plays
+  (plan measured 93.7% in a slightly different snapshot).
+- V4 (numbers unchanged, full baseline diff): **PASS** after catching and fixing 2 real
+  bugs mid-implementation (a stale container copy of `build_star_schema.py` missing new
+  columns, and MVs left stale after a schema rebuild — both exactly what this gate is
+  for). One `/api/reco` floating-point score drift was investigated exhaustively and
+  ruled out as pre-existing/non-Phase-11 (see the phase doc's "investigated, ruled-out
+  non-issue" section) — the DB-path and JSON-path metadata were proven bit-identical.
+- V5 (genre coverage / D2 kill gate): pre-backfill 53.1% (exact match to plan);
+  post-backfill **78.1%** (measured mid-run, backfill continued past this point).
+  **Verdict: KEEP** `user_genre_affinity` as a full Phase 14 feature (cleared ≥75%).
+- V6 (no ambiguous overloads): **PASS** — 0 rows.
+- V7 (migration replay): **PASS** — idempotent; fresh-clone-equivalent stack applied all
+  9 pending migrations cleanly, 44/44 routes 200.
+- V8 (backend parity): **PASS** — all 34 methods agree across local/Supabase (Supabase
+  credentials were testable in this environment).
+- V9 (fresh-clone integrity): **PASS with a caveat** — boots/migrates/seeds/44-routes-200
+  from a true git-tracked-files-only tree (no `outputs/`, no real `data/`). `/api/reco`
+  and `/api/simulate` return empty (not non-empty) against the 40-row fixture alone —
+  pre-existing fixture-size limitation (`RECO_EXCLUDE_TOP_PLAYED=25` > 20 rows/user),
+  same class Phase 10 already documented for 7 other methods. B5 itself is proven
+  separately against the real 71k-row dataset.
+- V10 (no PII regression): **PASS** — no `ip_addr` in any new layer, no lyrics text
+  anywhere, `git ls-files` clean.
+
+> ROADMAP DEVIATION (all 6 pre-declared in the plan doc; none new beyond these):
+> 1. Verify gate "≈340k" replaced with exact source-equality (measured 71,052 for one
+>    user, not 340k).
+> 2. `mood_proxy_*` columns ship empty — no real audio-features data exists in this repo
+>    (Spotify's endpoint deprecated Nov 2024); `audio_source` defaults `'none'`.
+> 3. Only 3 MVs + 8 RPCs repointed at `gold`; migration 006's remaining ~10 functions
+>    (`get_milestones_list`, `get_flashback`, etc.) still read `streaming_history`
+>    directly — Phase 12 finishes the move.
+> 4. Dedup deferred to Phase 12 (`row_fingerprint` defined in `normalize.py`, unused this
+>    phase) — required for this phase's "numbers unchanged" gate to mean anything.
+> 5. Artist-tag backfill is opt-in/skippable (`backfill_artist_tags.py`), not an inline
+>    pipeline step.
+> 6. `_salvage_json_array` relocated to `app/ingest/salvage.py`, shared by the loader and
+>    the new enrichment script (was duplicated before).
+
+**Deviations beyond the plan's 6 pre-declared ones:** (a) `spotify-insights.env.example`
+was updated for `LASTFM_API_KEY`, not `apps/api/.env.example` as the plan's file list
+said — the config module actually loads `spotify-insights.env` at the repo root, so
+that's the file a real deployer edits. (b) `data_loader.py._load_track_metadata()`
+(the actual location of the B5 fix) lives in `app/services/data_loader.py`, not
+`supabase_data_loader.py` as the task brief said — `SupabaseDataLoader` delegates heavy
+compute to a per-user `SpotifyDataLoader` instance, and that delegate is where this
+method has always lived. (c) `gold.fact_streams` gained three denormalized
+`artist_name`/`track_name`/`album_name` columns beyond the plan's original column list,
+required so migration 010's rewritten MVs could reproduce the pre-Phase-11 grouping
+semantics (case-sensitive text, not the normalized `artist_key`) bit-for-bit — see
+`DATA_MODEL.md`'s natural-keys section. (d) `requests==2.34.2` added to
+`requirements-dev.txt` (not in the plan's file list) — needed by the two new baseline
+scripts and the backfill script; not a FastAPI runtime dependency so kept out of
+`requirements.txt`.
+
+**Follow-up for Phase 12:** `bronze.raw_streams` + `_source_file`/`_ingested_at` are the
+landing target; `app/ingest/normalize.py` (`row_fingerprint` especially) is written for
+Phase 12 to consume; `build_star_schema.py`'s 7 stages map 1:1 onto the planned Dagster
+asset graph; the ~10 remaining migration-006 functions still reading
+`streaming_history` directly are Phase 12's to finish repointing.
+
+**Next phase to start: Phase 12.**

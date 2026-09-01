@@ -19,6 +19,11 @@ outputs/lyrics/
 # ...but keep the small aggregate CSVs the current app reads:
 !outputs/data/*.csv
 
+# Phase 11: pre/post-migration API snapshots (real listening history) and the
+# MusicBrainz/Last.fm artist-tag cache -- both reproducible, neither committed.
+outputs/baseline/
+outputs/enrichment/
+
 # Local scratch copies of moved data
 archived/
 

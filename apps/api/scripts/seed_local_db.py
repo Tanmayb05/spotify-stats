@@ -22,7 +22,8 @@ Notes
   `refresh_all_views()` (migration 004) uses REFRESH ... CONCURRENTLY, which
   errors on a view that has never been populated.
 
-Phase 11 extracts the row normalization here into app/ingest/normalize.py.
+Phase 11: boolean coercion delegates to app/ingest/normalize.coerce_bool
+(previously inline here), shared with scripts/build_star_schema.py.
 """
 
 from __future__ import annotations
@@ -36,6 +37,7 @@ from typing import Any, Dict, Iterable, List, Optional
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from sqlalchemy import text  # noqa: E402
+from app.ingest.normalize import coerce_bool  # noqa: E402
 
 def _find_fixture() -> Path:
     """Locate the fixture from either the repo layout or the container layout.
@@ -85,14 +87,18 @@ MATERIALIZED_VIEWS = ["monthly_stats", "top_artists", "top_tracks"]
 
 
 def normalize(row: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-    """One export row -> one streaming_history row. None if unusable."""
+    """One export row -> one streaming_history row. None if unusable.
+
+    Boolean coercion delegates to app/ingest/normalize.coerce_bool (Phase 11
+    extraction) so there is exactly one definition shared with
+    scripts/build_star_schema.py.
+    """
     if not row.get("ts") or row.get("ms_played") is None:
         return None
     out = {col: row.get(col) for col in COLUMNS}
     # Booleans are nullable in some exports but NOT NULL-defaulted in the schema.
     for flag in ("shuffle", "skipped", "offline", "incognito_mode"):
-        if out[flag] is None:
-            out[flag] = False
+        out[flag] = coerce_bool(out[flag])
     return out
 
 

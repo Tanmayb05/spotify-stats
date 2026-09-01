@@ -76,6 +76,12 @@ class Settings:
 
         self.cors_origins: List[str] = self._parse_cors(os.getenv("CORS_ORIGINS"))
 
+        # Phase 11: optional Last.fm key for scripts/backfill_artist_tags.py
+        # (Decision D5). MusicBrainz needs no key; Last.fm augments coverage
+        # when set. Never required -- the script runs (with lower coverage)
+        # if this is unset.
+        self.lastfm_api_key: Optional[str] = os.getenv("LASTFM_API_KEY") or None
+
     @staticmethod
     def _parse_cors(raw: Optional[str]) -> List[str]:
         if not raw or not raw.strip():

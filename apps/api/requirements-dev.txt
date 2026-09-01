@@ -12,6 +12,8 @@ httpx==0.28.1            # FastAPI TestClient / async client
 
 ruff==0.16.5             # lint + format
 
+requests==2.34.2         # scripts/{capture,compare}_api_baseline.py, backfill_artist_tags.py (Phase 11)
+
 pandera==0.33.0          # in-pipeline dataframe schemas (Phase 13)
 
 dagster==1.13.20         # orchestrator (Phase 12+)
