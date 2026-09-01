@@ -60,17 +60,19 @@ BATCH_SIZE = 1000
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
 
-# slug (directory name) -> display name
+# slug (directory name) -> display name.
+# Display names are masked placeholders (see migration 007_mask_user_names.sql);
+# gender is preserved. The slug/username is the stable join key and is unchanged.
 USERS: Dict[str, str] = {
-    "abhiraj": "Abhiraj",
-    "amit": "Amit",
-    "antara": "Antara",
-    "ash": "Ash",
-    "nihal": "Nihal",
-    "prathamesh": "Prathamesh",
-    "sam": "Sam",
-    "snehal": "Snehal",
-    "sohan": "Sohan",
+    "abhiraj": "John Smith",
+    "amit": "Richard Roe",
+    "antara": "Jane Doe",
+    "ash": "Mary Major",
+    "nihal": "John Stiles",
+    "prathamesh": "Richard Miles",
+    "sam": "Jane Roe",
+    "snehal": "Mary Minor",
+    "sohan": "John Poe",
 }
 
 
