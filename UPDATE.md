@@ -112,8 +112,18 @@ pandera / dagster); root `requirements.txt` `==`-pinned; README "Data & privacy"
 section.
 
 **Verify:** no PII paths and no real IP literals anywhere in history (exhaustive blob
-scan); `import app.main` OK; `uvicorn app.main:app` boots; `/health` → 200; JSON
-loader still reads 70,817 records.
+scan on a **fresh clone of the pushed remote**); `pip install -r apps/api/requirements.txt`
+clean + `pip check` OK + `import supabase`/`fastapi`; fixture parses, `ip_addr` absent
+from every row; `LICENSE`/`SECURITY.md`/`data/README.md` present; `git ls-files` shows
+no PII at HEAD; `.git` 7.3 MB. On the working repo (has `spotify-insights.env`):
+`import app.main` OK, `uvicorn app.main:app` boots, `/health` → 200, JSON loader reads
+70,817 records. Credential-less boot still fails at import (`SupabaseDataLoader()` at
+`supabase_data_loader.py:807`) — pre-existing, fixed by Phase 10, out of scope here.
+
+**Dependency fixes from the fresh-clone test:** `supabase==2.22.0` (the `.venv` version)
+is **yanked on PyPI** and breaks on Python 3.14 → pinned `2.31.0`. `pydantic==2.12.0`
+has a `FieldInfo` bug breaking `supabase-auth` on 3.14 → pinned `2.12.3`. Both verified
+on Python 3.13 + 3.14.
 
 **Remote actions (force-push):** `main` rewritten + force-pushed; stale
 `origin/feat/multi-user-analytics-switch` force-deleted (unmerged, carried the purged

@@ -32,10 +32,10 @@ JSON loader still works.
   (`data/raw/`, `data/other users/`, `data/Spotify Account Data/`, `data/*.json`,
   `data/*.csv` with a `!data/fixtures/` exception, `outputs/data/*.json`,
   `outputs/lyrics/`, `archived/`); tightened env rules to `*.env` + `!*.env.example`
-- `apps/api/requirements.txt` — **added `supabase==2.22.0`** (a hard runtime dep of
-  `app/services/supabase_data_loader.py`, previously absent from this file); pinned
-  fastapi / uvicorn / pydantic / python-dotenv / pandas / numpy / scikit-learn to the
-  `.venv` versions with `==`
+- `apps/api/requirements.txt` — **added `supabase==2.31.0`** (a hard runtime dep of
+  `app/services/supabase_data_loader.py`, previously absent from this file — the `.venv`
+  had the yanked `2.22.0`); pinned fastapi / uvicorn / `pydantic==2.12.3` /
+  python-dotenv / pandas / numpy / scikit-learn with `==`
 - `requirements.txt` (root) — pinned every entry with `==`
 - `README.md` — new `## Data & privacy` section near the top; rewrote `## Data Structure`
   → points at `data/README.md`; rewrote `## Privacy & Data Source` and `## License`
@@ -146,7 +146,16 @@ policy, and an honest `requirements.txt` (missing `supabase`, nothing pinned).
 6. Restore working-tree data files from the mirror.
 7. Rewrite `.gitignore`; add `LICENSE`, `SECURITY.md`, `data/README.md`, fixture;
    fix requirements; update README.
-8. Boot check: `import app.main` / `uvicorn` / `curl /health` / loader reads 70,817 rows.
+8. Boot check on the working repo (has `spotify-insights.env`): `import app.main` /
+   `uvicorn` / `curl /health` / loader reads 70,817 rows.
+   Fresh-clone check on the pushed remote: `pip install -r apps/api/requirements.txt`
+   clean, `pip check` OK, `import supabase`, fixture parses without `ip_addr`. A
+   credential-less clone still can't boot the API (`SupabaseDataLoader()` at
+   `supabase_data_loader.py:807` raises without `SUPABASE_*`) — pre-existing, fixed by
+   Phase 10.
+   The fresh-clone test also caught two bad pins: `supabase==2.22.0` is **yanked** and
+   breaks on Python 3.14 → `2.31.0`; `pydantic==2.12.0` has a `FieldInfo` bug breaking
+   `supabase-auth` on 3.14 → `2.12.3`. Both verified on 3.13 + 3.14.
 9. `git add -A && git commit` (file changes).
 10. `UPDATE.md` + this doc.
 11. Force-push `main`; force-delete `origin/feat/multi-user-analytics-switch`.

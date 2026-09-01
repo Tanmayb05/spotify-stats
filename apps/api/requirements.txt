@@ -3,7 +3,7 @@
 
 fastapi==0.119.0
 uvicorn[standard]==0.37.0
-pydantic==2.12.0
+pydantic==2.12.3   # 2.12.0 has a FieldInfo bug that breaks supabase-auth on Python 3.14
 python-dotenv==1.1.1
 pandas==2.3.3
 numpy==2.3.3
