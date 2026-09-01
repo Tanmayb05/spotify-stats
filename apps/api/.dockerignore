@@ -1,0 +1,17 @@
+# Virtualenvs (venv/ here is a stale local one; the repo uses the root .venv)
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+
+# Secrets - never bake credentials into an image
+*.env
+!*.env.example
+
+# Data and generated artifacts are mounted at runtime, not baked in
+data/
+outputs/
+
+.pytest_cache/
+.ruff_cache/
+*.md

@@ -24,7 +24,7 @@ it, then update the row + append to the log here.
 | Phase | Title | Effort | Feature(s) | Status | Branch / PR | Completed |
 |---|---|---|---|---|---|---|
 | 9  | Repo hygiene & public-safe history | S | — | DONE | `chore/phase-9-repo-hygiene` | 2026-09-01 |
-| 10 | Local infra: Docker Compose + migration runner + DB backend switch | M | — | NOT STARTED | — | — |
+| 10 | Local infra: Docker Compose + migration runner + DB backend switch | M | — | DONE | `feat/phase-10-local-infra` | 2026-09-01 |
 | 11 | Star schema + enrichment into Postgres + bronze/silver/gold | L | 1 (schema) | NOT STARTED | — | — |
 | 12 | Dagster ingestion pipeline (incremental / idempotent / quarantine) | XL | 1 | NOT STARTED | — | — |
 | 13 | DQ suite + Data Health page + cull to 3 pages | M | 2 | NOT STARTED | — | — |
@@ -32,7 +32,7 @@ it, then update the row + append to the log here.
 | 15 | 4 recommenders + eval harness + explainable recs + human-eval loop | XL | 4 + 5 | NOT STARTED | — | — |
 | 16 | Production loop + tests + CI + README/architecture/write-up | L | — | NOT STARTED | — | — |
 
-**Next phase to start:** Phase 10.
+**Next phase to start:** Phase 11.
 
 ---
 
@@ -137,3 +137,82 @@ removed the tracked data files from the working tree, not just history — resto
 app-needed ones (`data/streaming_*.json`, `outputs/data/{songs,artists}_info.json`)
 from the backup mirror. (3) Git LFS not used (`git lfs` absent) — download-step /
 `data/README.md` instead.
+
+### Phase 10 — done 2026-09-01 · branch `feat/phase-10-local-infra`
+
+Detail: `documentation/20260901_103036_phase_10_local_infra.md`.
+
+`docker compose up` now brings up Postgres + API + web with **no Supabase account
+and no credentials**. `DB_BACKEND=supabase` stays the default, so the deployed demo
+is unchanged.
+
+**Shipped:**
+
+- **Backend adapter** `apps/api/app/db/backends.py` — the loader reached the DB
+  through only 3 primitives (`.rpc`, `.table().select()`, `.range()` pagination), so
+  those became a `DBBackend` protocol with `SupabaseBackend` (PostgREST) and
+  `LocalBackend` (SQLAlchemy + psycopg3). The loader's ~800 lines of result-shaping
+  are **untouched**; both backends call the same SQL functions from `migrations/`,
+  which stays the single source of truth. Sets up the Phase 14 loader collapse.
+- **Lazy instantiation** — `supabase_data` is a proxy built on first attribute
+  access. Fixes Phase 9's open follow-up: `import app.main` used to raise without
+  credentials because every route imported an eagerly-constructed loader.
+- **`apps/api/app/config.py`** — first centralised env handling; real env vars beat
+  `spotify-insights.env` (how Compose injects). `DB_BACKEND`, `DATABASE_URL`,
+  `CORS_ORIGINS` (defaults to the previous four origins).
+- **`apps/api/db/migrate.py`** — ordered, tracked in `schema_migrations`,
+  `--dry-run` / `--status`. Tracking is required, not cosmetic: `001` uses bare
+  `CREATE INDEX` / `CREATE MATERIALIZED VIEW` and is not replay-safe.
+- **`apps/api/scripts/seed_local_db.py`** — fixture by default or `--from-dir`;
+  refuses to double-seed; keeps exactly one `is_primary` user; non-concurrent MV
+  refresh (`refresh_all_views()` uses `CONCURRENTLY`, which errors on a
+  never-populated view).
+- **`apps/api/scripts/check_backend_parity.py`** — diffs all 34 loader methods
+  across backends. Reusable by Phase 16 CI.
+- Dockerfiles ×2, `.dockerignore` ×3 (incl. root), `docker-compose.yml`,
+  `documentation/LOCAL_DEV.md`. The API image builds from the **repo root** context so
+  the committed fixture is baked in at `/app/data/fixtures` — the stack seeds itself
+  without depending on a bind mount. Found by testing a real fresh clone, where
+  `./data` mounted empty and seeding crashed; the root `.dockerignore` keeps ~800 MB
+  (`.git`, `.venv`, `outputs/`, real exports) out of the build context.
+
+**Three landmines found that the roadmap did not anticipate:**
+
+1. **Migration 002 vs 004 ambiguity.** Every function in 002 is redefined by 004
+   with an added `p_user_id UUID DEFAULT NULL`; both variants have all-default args,
+   so applying both breaks calls at runtime — reproduced on PG16:
+   `ERROR: function get_top_artists(limit_count => integer) is not unique`.
+   The runner records 002 as applied **without executing it** (`SUPERSEDED` set);
+   file kept as history with a header explaining why.
+2. **PostgREST vs psycopg type fidelity.** PostgREST serialises over JSON
+   (timestamps as ISO strings, numerics as floats); psycopg returns native
+   `datetime`/`Decimal`/`UUID`. Added `_jsonify`. Without it `get_monthly_data`
+   raised `'datetime.datetime' object is not subscriptable` and 6 delegated methods
+   raised `TypeError` — all of which the loader's except-and-return-empty would have
+   shipped as **blank charts, not errors**.
+3. **`RETURNS jsonb` vs `RETURNS TABLE`.** 4 functions return scalar jsonb consumed
+   as the object itself. Verified on PG16 that such a function yields one column
+   named after the function; `LocalBackend.rpc` unwraps exactly that case.
+
+**Verify:** credential-less `import app.main` OK (no env file at all); migrate
+second run = no-op; zero ambiguous overloads in `pg_proc`; clean
+`down -v` + `up --build` → api healthy in 2s, **44/44 routes HTTP 200**, leaderboard
+returns fixture users, web 200 and proxies to the API container; **parity: all 34
+methods agree** across backends with comparable data, and keys/types identical
+field-by-field on 12 representative endpoints; Supabase default path unchanged
+(same CORS list, 10 real users, uvicorn smoke all 200); seeder loaded 71,052/71,052
+export rows; `ruff --select E9,F` clean.
+
+Seven methods return empty against the 40-row fixture — all are minimum-data
+thresholds in SQL (`HAVING COUNT(*) >= 10`, `>= 5`, 3-consecutive-days), and all
+populate against the real 71k-row export. Not a regression.
+
+**Deviations:** roadmap's verify says "web :5173"; real ports are **3010** (web) /
+**3011** (api) and were used. `app/ingest/normalize.py` is listed in Phase 10's file
+list but its own note assigns it to Phase 11 — seeder normalization is inline for
+now, Phase 11 extracts it.
+
+**Follow-up for Phase 11:** `/api/reco` + `/api/simulate` still read gitignored
+`outputs/data/{songs,artists}_info.json`, absent on a fresh clone. Compose mounts
+`./outputs` read-only and the loader now warns explicitly instead of failing
+silently; Phase 11's `load_enrichment_to_db.py` removes the file dependency.

@@ -1,0 +1,73 @@
+# Local-first stack: Postgres + API + web, with no Supabase account required.
+#
+#   docker compose up --build
+#     web  -> http://localhost:3010
+#     api  -> http://localhost:3011  (/health, /docs)
+#     db   -> localhost:5433         (host port; 5432 inside the network)
+#
+# The api container runs migrations and seeds the committed fixture on start,
+# both idempotent, so repeated `up` runs are safe.
+#
+# To load a real Spotify export instead of the fixture, drop it in ./data and:
+#   docker compose exec api python scripts/seed_local_db.py --from-dir /app/data --reset
+#
+# Dagster is added as a fourth service in Phase 12.
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-spotify}
+    ports:
+      # 5433 on the host to avoid clashing with a local Postgres on 5432.
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-spotify}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      # Repo root, so the committed data/fixtures can be copied into the image.
+      context: .
+      dockerfile: apps/api/Dockerfile
+    environment:
+      DB_BACKEND: local
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-spotify}
+      CORS_ORIGINS: http://localhost:3010,http://localhost:5173,http://localhost:3000
+    ports:
+      - "3011:3011"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      # Read-only mounts, both optional. `outputs` carries the enrichment blobs
+      # that /api/reco and /api/simulate use; they are gitignored, so on a fresh
+      # clone the directory may be empty and those two endpoints return empty
+      # results (everything else works). Phase 11 moves this into Postgres.
+      - ./data:/app/data:ro
+      - ./outputs:/app/outputs:ro
+    command: >
+      sh -c "python db/migrate.py &&
+             python scripts/seed_local_db.py &&
+             uvicorn app.main:app --host 0.0.0.0 --port 3011"
+
+  web:
+    build:
+      context: ./apps/web
+    environment:
+      # The dev-server proxy reaches the API over the compose network. Leaving
+      # VITE_API_BASE_URL unset keeps the frontend on relative URLs.
+      VITE_API_PROXY_TARGET: http://api:3011
+    ports:
+      - "3010:3010"
+    depends_on:
+      - api
+
+volumes:
+  pgdata:

@@ -68,7 +68,22 @@ The application is deployed and accessible at:
 - **Netlify Dashboard**: [https://app.netlify.com/projects/tanmays-spotify-stats/overview](https://app.netlify.com/projects/tanmays-spotify-stats/overview)
 - **Render Dashboard**: [https://dashboard.render.com/web/srv-d3lia0umcj7s739v028g/events](https://dashboard.render.com/web/srv-d3lia0umcj7s739v028g/events)
 
-### Quick Start (macOS)
+### Quick Start — Docker (no accounts needed)
+
+Brings up Postgres, the API and the web app, runs the migrations, and seeds a
+small synthetic fixture. No Spotify or Supabase credentials required.
+
+```bash
+docker compose up --build
+open http://localhost:3010
+```
+
+See [documentation/LOCAL_DEV.md](documentation/LOCAL_DEV.md) for loading a real
+Spotify export, the `DB_BACKEND` switch, and the migration runner.
+
+### Quick Start (macOS, against Supabase)
+
+Requires `spotify-insights.env` with Supabase credentials.
 
 ```bash
 # Start both frontend and backend servers in Terminal tabs

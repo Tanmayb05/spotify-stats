@@ -1,6 +1,20 @@
 -- Migration: Helper functions and RPC endpoints
 -- Date: 2025-10-19
 -- Purpose: Create utility functions for data management and querying
+--
+-- ⚠️  SUPERSEDED — NOT APPLIED TO NEW DATABASES (since Phase 10).
+--
+-- Every function below is redefined by 004_user_scoped_functions.sql with an
+-- extra `p_user_id UUID DEFAULT NULL` argument. Both variants have all-default
+-- arguments, so applying both leaves ambiguous overloads and Postgres rejects
+-- calls at runtime:
+--
+--     ERROR:  function get_top_artists(limit_count => integer) is not unique
+--
+-- db/migrate.py therefore records this file as applied without executing it
+-- (see SUPERSEDED in that script). Kept in the repo as history — it is what
+-- the live Supabase database had applied before 004 landed. Do not run it by
+-- hand against a database that already has 004.
 
 -- Function to truncate streaming_history (for data reload)
 CREATE OR REPLACE FUNCTION truncate_streaming_history()

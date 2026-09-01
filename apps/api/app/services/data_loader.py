@@ -1912,10 +1912,24 @@ class SpotifyDataLoader:
             }
 
         self._reco_meta_loaded = True
-        print(
-            f"✅ Reco metadata: {len(self._track_meta)} tracks, "
-            f"{len(self._artist_meta)} artists"
-        )
+        if not self._track_meta and not self._artist_meta:
+            # These enrichment blobs are gitignored and absent from a fresh
+            # clone, so a Docker run without ./outputs mounted lands here. The
+            # recommender and simulator degrade to empty rather than failing;
+            # say so, because otherwise it looks like a silent bug.
+            # Phase 11 loads this data into Postgres and removes the file
+            # dependency entirely.
+            print(
+                f"⚠️  Reco metadata unavailable: no readable songs_info.json / "
+                f"artists_info.json under {OUTPUTS_DATA_DIR}. "
+                f"/api/reco and /api/simulate will return empty results. "
+                f"See documentation/LOCAL_DEV.md."
+            )
+        else:
+            print(
+                f"✅ Reco metadata: {len(self._track_meta)} tracks, "
+                f"{len(self._artist_meta)} artists"
+            )
 
     def _build_track_vectors(self) -> Dict[str, Any]:
         """

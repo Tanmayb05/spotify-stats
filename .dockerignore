@@ -1,0 +1,29 @@
+# Build context is the repo root (so data/fixtures can be baked into the API
+# image). Everything heavy or secret is excluded here.
+
+.git/
+.venv/
+venv/
+apps/api/venv/
+node_modules/
+apps/web/node_modules/
+apps/web/dist/
+
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# Secrets - never bake credentials into an image
+*.env
+!*.env.example
+
+# Personal data and generated artifacts. data/ is excluded wholesale, then the
+# committed synthetic fixture is re-included: it is the only data the image
+# needs, and real exports are bind-mounted at runtime instead.
+data/*
+!data/fixtures/
+outputs/
+libraries/
+documentation/
+*.ipynb
