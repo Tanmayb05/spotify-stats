@@ -11,6 +11,9 @@ trimmed DE + DS platform roadmap:
 
 ## Rules for Claude
 
+- **Role:** whenever implementing anything per this plan (Phases 9–16), act as a
+  **Senior Data Scientist/Engineer** — apply that level of rigor to design, code,
+  testing, and documentation.
 - **When asked "what's remaining" / "what's the status" / "where are we":** read
   `UPDATE.md`. Report from its status table + the latest log entries. Do not re-scan the
   codebase to reconstruct status.
