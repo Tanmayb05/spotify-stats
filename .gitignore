@@ -1,11 +1,26 @@
-# # Spotify Data - PRIVATE
-# data/
-# *.json
 .cache
 
-# Extracted other-users streaming history (contains third-party PII: ip_addr).
-# The source .zip archives are tracked; extracted per-user dirs are not.
-data/other users/*/
+# --- Personal data: never commit a real Spotify export -------------------------
+# Spotify GDPR exports contain third-party PII (ip_addr, and depending on the
+# package: email / postal address / payment records). All raw data stays local.
+# See data/README.md and SECURITY.md.
+data/raw/
+data/other users/
+data/Spotify Account Data/
+data/*.json
+data/*.csv
+# ...but keep the tiny synthetic CI fixture:
+!data/fixtures/
+!data/fixtures/**
+
+# Large enriched blobs — reproduced by the enrichment jobs, not committed.
+outputs/data/*.json
+outputs/lyrics/
+# ...but keep the small aggregate CSVs the current app reads:
+!outputs/data/*.csv
+
+# Local scratch copies of moved data
+archived/
 
 
 # IMPORTANT: Allow package.json and related files for builds
@@ -47,6 +62,9 @@ spotify-insights.env
 spotify-insights.env.local
 .env
 .env.local
+*.env
+# ...but the example stubs are meant to be committed:
+!*.env.example
 
 # Node.js / Frontend
 node_modules/
@@ -64,7 +82,5 @@ apps/api/.pytest_cache/
 apps/api/.coverage
 apps/api/htmlcov/
 
-# Outputs (optional - uncomment if you want to exclude outputs too)
-# outputs/
-# *.png
-# *.csv
+# Outputs: keep aggregate CSVs, images and dashboards (checked in above rules);
+# generated JSON blobs and lyrics are ignored via the personal-data block.

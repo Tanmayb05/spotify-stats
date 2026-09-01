@@ -1,14 +1,20 @@
-pandas>=2.0.0
-numpy>=1.24.0
-matplotlib>=3.7.0
-seaborn>=0.12.0
-spotipy
-scikit-learn>=1.3.0
-python-dotenv>=1.0.0
-musicxmatch-api
-lyricsgenius
+# Root env: data-pipeline / enrichment / one-off analysis scripts.
+# The FastAPI backend has its own pinned set in apps/api/requirements.txt.
+# Pinned to the project .venv (2026-09-01).
 
-# Supabase and database dependencies
-supabase>=2.0.0
-psutil>=5.9.0
-tabulate>=0.9.0
+pandas==2.3.3
+numpy==2.3.3
+matplotlib==3.10.7
+seaborn==0.13.2
+scikit-learn==1.7.2
+python-dotenv==1.1.1
+
+# Spotify / lyrics enrichment
+spotipy==2.25.1
+musicxmatch-api==1.0.7
+lyricsgenius==3.7.2
+
+# Supabase + DB utilities
+supabase==2.22.0
+psutil==7.1.0
+tabulate==0.9.0

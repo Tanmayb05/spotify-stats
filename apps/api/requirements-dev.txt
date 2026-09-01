@@ -1,0 +1,18 @@
+# Dev / test dependencies. Install with:
+#   pip install -r apps/api/requirements-dev.txt
+#
+# dagster (Phase 12) and pandera (Phase 13) are listed now so the dev env is a
+# single install for the rest of the roadmap. Versions resolved 2026-09-01.
+
+-r requirements.txt
+
+pytest==9.1.1
+pytest-asyncio==1.4.0
+httpx==0.28.1            # FastAPI TestClient / async client
+
+ruff==0.16.5             # lint + format
+
+pandera==0.33.0          # in-pipeline dataframe schemas (Phase 13)
+
+dagster==1.13.20         # orchestrator (Phase 12+)
+dagster-webserver==1.13.20

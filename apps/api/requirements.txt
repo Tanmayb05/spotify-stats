@@ -1,7 +1,14 @@
-fastapi>=0.104.0
-uvicorn[standard]>=0.24.0
-pydantic>=2.4.0
-python-dotenv>=1.0.0
-pandas>=2.1.0
-numpy>=1.24.0
-scikit-learn>=1.3.0
+# Runtime dependencies for the FastAPI backend.
+# Pinned to the versions in the project .venv (2026-09-01). Bump deliberately.
+
+fastapi==0.119.0
+uvicorn[standard]==0.37.0
+pydantic==2.12.0
+python-dotenv==1.1.1
+pandas==2.3.3
+numpy==2.3.3
+scikit-learn==1.7.2
+
+# Hard runtime dep: app/services/supabase_data_loader.py does
+# `from supabase import create_client` at import time. Was missing from this file.
+supabase==2.22.0

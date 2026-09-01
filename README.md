@@ -14,6 +14,25 @@ This project analyzes **71,052 streams** spanning **7 years** of listening histo
 - **Countries**: 5
 - **Longest Listening Streak**: 118 consecutive days
 
+## Data & privacy
+
+**This repository ships no personal data.** It analyses Spotify GDPR /
+"Extended streaming history" exports, which are personal data — every row carries an
+`ip_addr`, and the full account package includes address and payment records. All raw
+exports stay local, under `data/raw/` (git-ignored).
+
+- **To run it on your own history:** see [`data/README.md`](data/README.md).
+- **To run it with zero setup / in CI:** use the synthetic fixture
+  [`data/fixtures/sample_streaming_history.json`](data/fixtures/sample_streaming_history.json).
+- `ip_addr` is dropped on load and never persisted.
+- Security policy and history-rewrite notice: [`SECURITY.md`](SECURITY.md).
+
+> **History was rewritten on 2026-09-01.** Earlier commits tracked friends' raw
+> exports and the maintainer's account data; all of it was purged from the entire git
+> history with `git filter-repo`, and `.git` shrank from ~53 MB to ~7 MB. **If you
+> cloned or forked before that date, delete your copy and re-clone** — old commit SHAs
+> are no longer valid.
+
 ## Project Structure
 
 ```
@@ -279,30 +298,18 @@ open outputs/dashboards/spotify_advanced_dashboard.html
 ## Data Structure
 
 ### Data Files
-The `data/` directory contains:
-- `streaming_2018-2020_0.json` - Streaming data 2018-2020
-- `streaming_2020-2022_1.json` - Streaming data 2020-2022
-- `streaming_2022-2023_2.json` - Streaming data 2022-2023
-- `streaming_2023-2024_3.json` - Streaming data 2023-2024
-- `streaming_2024-2025_4.json` - Streaming data 2024-2025
-- `streaming_video_2018-2025.json` - Video/podcast streaming data
+The `data/` directory holds Spotify export JSON — **not committed** (git-ignored).
+Obtain and place your own per [`data/README.md`](data/README.md). The loader reads
+per-year `streaming_YYYY-YYYY_N.json` audio files (video/podcasts kept separate). A
+committed synthetic sample lives at `data/fixtures/sample_streaming_history.json`.
 
 ### JSON Structure
-Each streaming record contains:
-- **ts**: Timestamp (when track stopped playing)
-- **ms_played**: Milliseconds played
-- **master_metadata_track_name**: Track name
-- **master_metadata_album_artist_name**: Artist name
-- **master_metadata_album_album_name**: Album name
-- **platform**: Playback platform
-- **conn_country**: Country code
-- **shuffle**: Shuffle mode (true/false)
-- **skipped**: Whether track was skipped
-- **offline**: Offline mode status
-- **incognito_mode**: Private session status
-- **reason_start**: Why track started
-- **reason_end**: Why track ended
-- Plus additional metadata fields
+Each streaming record contains `ts`, `ms_played`, `master_metadata_track_name`,
+`master_metadata_album_artist_name`, `master_metadata_album_album_name`,
+`spotify_track_uri`, `platform`, `conn_country`, `shuffle`, `skipped`, `offline`,
+`incognito_mode`, `reason_start`, `reason_end`, plus podcast fields. Full table in
+[`data/README.md`](data/README.md). Real exports also include `ip_addr` on every row —
+**the loader drops it; it is never stored.**
 
 ## Key Insights
 
@@ -317,8 +324,12 @@ Based on the analysis:
 
 ## Privacy & Data Source
 
-This data was obtained through Spotify's GDPR data request. The data contains personal information (IP addresses, location data, listening history) and should not be shared publicly.
+See [**Data & privacy**](#data--privacy) above and [`SECURITY.md`](SECURITY.md). In
+short: Spotify exports are personal data, none is committed, `ip_addr` is dropped on
+load, and the git history was rewritten on 2026-09-01 to purge previously-committed
+exports — re-clone if your checkout predates that.
 
 ## License
 
-Personal data - all rights reserved.
+Source code: [MIT](LICENSE). This does **not** grant any rights to listening data;
+no export data is included in this repository.
