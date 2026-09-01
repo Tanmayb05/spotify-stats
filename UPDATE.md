@@ -28,6 +28,7 @@ it, then update the row + append to the log here.
 | 11 | Star schema + enrichment into Postgres + bronze/silver/gold | L | 1 (schema) | NOT STARTED | — | — |
 | 12 | Dagster ingestion pipeline (incremental / idempotent / quarantine) | XL | 1 | NOT STARTED | — | — |
 | 13 | DQ suite + Data Health page + cull to 3 pages | M | 2 | NOT STARTED | — | — |
+| 13.5 | Behavioral EDA notebook set (decision-support reference) | M | — (feeds 3,4,5) | NOT STARTED | — | — |
 | 14 | Feature store + nightly compute + dual-loader collapse | L | 3 | NOT STARTED | — | — |
 | 15 | 4 recommenders + eval harness + explainable recs + human-eval loop | XL | 4 + 5 | NOT STARTED | — | — |
 | 16 | Production loop + tests + CI + README/architecture/write-up | L | — | NOT STARTED | — | — |
@@ -216,3 +217,55 @@ now, Phase 11 extracts it.
 `outputs/data/{songs,artists}_info.json`, absent on a fresh clone. Compose mounts
 `./outputs` read-only and the loader now warns explicitly instead of failing
 silently; Phase 11's `load_enrichment_to_db.py` removes the file dependency.
+
+### Roadmap change — 2026-09-01 · EDA notebooks reinstated as Phase 13.5
+
+> ROADMAP DEVIATION (scope addition, owner-requested). No phase renumbered.
+
+The roadmap's "Decisions locked" table **cut the 8-notebook behavioral-EDA set** on the
+grounds that "notebooks are effort without a product surface". Owner reinstated them: they
+*do* have a surface — **decision support**, to be consulted when Phase 14/15 design calls
+are in doubt. Cut reversed; roadmap doc updated, not silently diverged.
+
+**New phase 13.5 — Behavioral EDA notebook set · M · read-only.** Full spec now in
+`documentation/20260901_013603_roadmap_trimmed_5features.md` under `### PHASE 13.5`.
+
+**Why 13.5 specifically** (both constraints have to hold at once):
+- *Data must be trustworthy* → after **13**: star schema exists (11), is incrementally
+  populated (12), and is DQ-gated (13). A chart cannot be quietly wrong.
+- *Must precede the decisions it informs* → before **14**: P14 picks `context_label`
+  buckets, `night_share` / `repeat_ratio` cutoffs, affinity half-life, behavior-vector
+  dims, and runs the **genre-affinity kill gate**; P15 picks CF weighting and candidate
+  pool. After P15 the notebooks would be archaeology; before P11 they would read the
+  un-modeled wide table and be invalidated by the star schema.
+- Decimal number chosen so **14/15/16 keep their numbers** — no churn in this file's rows,
+  branch names, or the Phase 9/10 docs already written.
+
+**Shape:** `apps/api/notebooks/` — `README.md` (incl. a "which notebook answers which
+question" map), `_common.py` (shared engine/loader/palette/`save_fig`/`decision`; no
+hardcoded DSN — reuses `app/config.py` + `db/session.py`), 8 notebooks
+(`01_dataset_overview` → `08_candidate_pool`), and `documentation/EDA_FINDINGS.md` — a
+2–4 page digest, one section per notebook, **question → chart → the number a later phase
+should quote**. That digest is the fast path when you don't want to boot Jupyter.
+
+Each notebook ends with a **`## Decision inputs`** cell. P14's sequencing note now says its
+feature definitions should quote those cells rather than pick thresholds by hand.
+
+**Two things this phase must not get wrong:**
+1. **PII.** Notebook outputs embed real listening history for 10 named people. Committed
+   with outputs stripped (`nbstripout`); non-primary users aliased `user_02…user_10` by the
+   `_common.py` loader; quoted charts go to gitignored `outputs/eda/`, only aggregates to
+   `documentation/assets/eda/`. P16 CI gains an `nbstripout --verify` step.
+2. **The `.gitignore` trap.** Phase 9 kept a blanket `*.ipynb` ignore *because* notebooks
+   were cut — so a new notebook would silently not be committed. 13.5 adds
+   `!apps/api/notebooks/*.ipynb`. This also unblocks P15's `evaluation.ipynb`, which had
+   the same latent problem: CI would have had no file to execute.
+
+**Other roadmap edits made for consistency:** "Decisions locked" EDA row rewritten
+(cut → reinstated, with the placement rationale); "What was cut" row marked UNCUT;
+sequencing rationale gained item 3 (later items renumbered); effort roll-up gained the
+13.5 row; P16 CI `notebook` job widened from `evaluation.ipynb` alone to all 9 notebooks
+plus the stripout check; P16 `RESEARCH_WRITEUP.md` now sources its 2–3 EDA charts from the
+13.5 notebooks via `save_fig` instead of rebuilding them, so the two cannot disagree.
+
+**Next phase to start is unchanged: Phase 11.**
