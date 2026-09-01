@@ -1,3 +1,38 @@
+# ⚑ ACTIVE ROADMAP (Phases 9–16) — read this first
+
+The original phase plan below (Phases 0–8) is **shipped**. Current work follows the
+trimmed DE + DS platform roadmap:
+
+- **Roadmap spec:** `documentation/20260901_013603_roadmap_trimmed_5features.md`
+  — 8 phases (9–16), 3 pages (Insights, Recommendations, Data Health), 5 headline
+  features. This is the authoritative plan.
+- **Progress tracker:** `UPDATE.md` (repo root) — per-phase status table + a running log.
+  **This is the source of truth for what is done and what is next.**
+
+## Rules for Claude
+
+- **When asked "what's remaining" / "what's the status" / "where are we":** read
+  `UPDATE.md`. Report from its status table + the latest log entries. Do not re-scan the
+  codebase to reconstruct status.
+- **When told "start the next phase" / "continue the roadmap" / "pick up where we left
+  off":**
+  1. Read `UPDATE.md` → find the first phase not `DONE` (or the `IN PROGRESS` one).
+  2. Read that phase's full spec (goal, files, verify step) in the roadmap doc above.
+  3. If it's `IN PROGRESS`, resume from the "what remains" note in that phase's log entry.
+  4. Execute it. Branch first (never commit to `main` directly).
+  5. On completion: run the phase's "Verify" step, commit/PR, then **update `UPDATE.md`**
+     (row status → `DONE`, fill Completed/PR, append a log entry, bump "Next phase to
+     start") **and** write the detailed `documentation/YYYYMMDD_HHMMSS_phase_<n>_<name>.md`
+     report per the schema at the bottom of this file.
+- **Whenever any roadmap work lands** (even a partial phase): update `UPDATE.md` before
+  ending the turn — status cell + a log entry with what changed and what remains.
+- **If the roadmap turns out wrong/infeasible mid-phase:** record it in the `UPDATE.md`
+  log and add a `> ROADMAP DEVIATION` note to affected rows; do not silently diverge.
+- Keep `UPDATE.md` terse (index + log). Deep detail goes in the per-phase
+  `documentation/` doc.
+
+---
+
 Perfect—let’s lock in a **phase-by-phase plan** where:
 
 * **Before each phase**: we run a **Phase Setup** that adds any missing skeleton files, routes, types, envs, and doc tooling.
