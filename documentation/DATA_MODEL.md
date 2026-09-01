@@ -139,14 +139,16 @@ of the user's actual plays to be meaningful, not just enough of the artist *cata
 **Measured:**
 - Pre-backfill: **53.1%** coverage-of-plays (matches the plan's measurement exactly).
 - Post-backfill (`scripts/backfill_artist_tags.py`, MusicBrainz, no Last.fm key
-  configured): **coverage rose to the high-70s/78%+ range** as the backfill progressed
-  (measured 78.0% partway through a ~1,886-artist run; see the Phase 11 completion doc
-  for the exact final number once the run finished).
+  configured): **78.2%** — final, complete run. 682 of 1,886 candidate artists (those
+  with no Spotify-reported genre) received at least one MusicBrainz tag; the rest had no
+  MusicBrainz match at the queried name.
 
 **Verdict: KEEP** `user_genre_affinity` as a full (non-degraded) Phase 14 feature — the
-measured coverage cleared the 75% bar. Phase 14 should re-verify the number at the time
-it builds the feature (the backfill cache in `outputs/enrichment/artist_tags.json` is
-reusable and free to re-run).
+measured 78.2% coverage cleared the 75% bar with room to spare. Phase 14 should
+re-verify the number at the time it builds the feature (the backfill cache in
+`outputs/enrichment/artist_tags.json` is reusable and free to re-run; a Last.fm key,
+currently unset, would likely push coverage higher still for the artists MusicBrainz
+had no match for).
 
 ---
 
@@ -210,6 +212,6 @@ repo, and a wrong automated guess would be worse than an honest unknown.
 | Artist match-rate of plays (play has an enriched `dim_artist` row) | 93.5% |
 | Track/artist FK presence rate (play has *any* `artist_key`/`track_key`, enriched or stub) | 99.8% |
 | Genre coverage-of-plays, pre-backfill | 53.1% |
-| Genre coverage-of-plays, post-backfill | see Phase 11 completion doc for the final measured number |
+| Genre coverage-of-plays, post-backfill | 78.2% (682/1,886 candidate artists tagged) |
 
 See `documentation/database_schema_diagram.md` for the full column-level ER diagram.

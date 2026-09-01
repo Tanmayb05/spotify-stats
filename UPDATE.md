@@ -309,8 +309,9 @@ bronze→silver→gold, re-runnable), `capture_api_baseline.py` +
   ruled out as pre-existing/non-Phase-11 (see the phase doc's "investigated, ruled-out
   non-issue" section) — the DB-path and JSON-path metadata were proven bit-identical.
 - V5 (genre coverage / D2 kill gate): pre-backfill 53.1% (exact match to plan);
-  post-backfill **78.1%** (measured mid-run, backfill continued past this point).
-  **Verdict: KEEP** `user_genre_affinity` as a full Phase 14 feature (cleared ≥75%).
+  post-backfill **78.2%** (final, completed run — 682/1,886 candidate artists tagged
+  via MusicBrainz, no Last.fm key configured). **Verdict: KEEP** `user_genre_affinity`
+  as a full Phase 14 feature (cleared ≥75%).
 - V6 (no ambiguous overloads): **PASS** — 0 rows.
 - V7 (migration replay): **PASS** — idempotent; fresh-clone-equivalent stack applied all
   9 pending migrations cleanly, 44/44 routes 200.
