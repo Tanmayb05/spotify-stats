@@ -95,8 +95,8 @@ became empty and was pruned):
   `data/unique_*.csv`, `data/failed_lyrics.csv`, `data/songs_processing_queue.csv`,
   `outputs/data/songs_info.json` (45 MB), `outputs/data/artists_info.json`,
   `outputs/lyrics*` (`lyrics-1.json` + `lyrics/`).
-- Redacted two real IP strings (`REDACTED_IP`, `REDACTED_IP`) that appeared in
-  design docs / the roadmap spec → `REDACTED_IP`.
+- Redacted two real IPv4 strings that had appeared as example values in design docs /
+  the roadmap spec → `REDACTED_IP` (the literals are deliberately not repeated here).
 - Full backup mirror kept at
   `/Users/tanmaybhuskute/Documents/spotify-insights-backup-pre-phase9.git` — **do not
   delete until the remote is confirmed clean.**

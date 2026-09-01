@@ -72,8 +72,8 @@ policy, and an honest `requirements.txt` (missing `supabase`, nothing pinned).
      account data, streaming JSON, unique CSVs, enriched JSON, lyrics).
    - a second pass for `outputs/lyrics-1.json` (the pre-rename path, missed by the first
      `outputs/lyrics` entry).
-   - `--replace-text` to redact `REDACTED_IP` and `REDACTED_IP` (real IPs that
-     appeared as example values in design docs) → `REDACTED_IP`.
+   - `--replace-text` to redact two real IPv4 literals that appeared as example values
+     in design docs → `REDACTED_IP` (literals not repeated here).
    Each followed by `git reflog expire --expire=now --all && git gc --prune=now
    --aggressive`.
 2. **Backup mirror** — `git clone --mirror` to

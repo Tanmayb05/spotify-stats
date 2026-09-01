@@ -11,4 +11,6 @@ scikit-learn==1.7.2
 
 # Hard runtime dep: app/services/supabase_data_loader.py does
 # `from supabase import create_client` at import time. Was missing from this file.
-supabase==2.22.0
+# 2.31.0: 2.22.0 (the version that shipped in .venv) is yanked on PyPI and breaks
+# under Python 3.14 / pydantic 2.12; 2.31.0 installs and imports cleanly on 3.13 + 3.14.
+supabase==2.31.0
