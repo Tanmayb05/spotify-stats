@@ -23,7 +23,7 @@ it, then update the row + append to the log here.
 
 | Phase | Title | Effort | Feature(s) | Status | Branch / PR | Completed |
 |---|---|---|---|---|---|---|
-| 9  | Repo hygiene & public-safe history | S | — | NOT STARTED | — | — |
+| 9  | Repo hygiene & public-safe history | S | — | DONE | `chore/phase-9-repo-hygiene` | 2026-09-01 |
 | 10 | Local infra: Docker Compose + migration runner + DB backend switch | M | — | NOT STARTED | — | — |
 | 11 | Star schema + enrichment into Postgres + bronze/silver/gold | L | 1 (schema) | NOT STARTED | — | — |
 | 12 | Dagster ingestion pipeline (incremental / idempotent / quarantine) | XL | 1 | NOT STARTED | — | — |
@@ -32,7 +32,7 @@ it, then update the row + append to the log here.
 | 15 | 4 recommenders + eval harness + explainable recs + human-eval loop | XL | 4 + 5 | NOT STARTED | — | — |
 | 16 | Production loop + tests + CI + README/architecture/write-up | L | — | NOT STARTED | — | — |
 
-**Next phase to start:** Phase 9.
+**Next phase to start:** Phase 10.
 
 ---
 
@@ -82,4 +82,48 @@ the affected rows.
 
 ## Log
 
-_(newest entries at the bottom; nothing yet — Phase 9 not started)_
+_(newest entries at the bottom)_
+
+### Phase 9 — done 2026-09-01 · branch `chore/phase-9-repo-hygiene`
+
+**History rewrite** (`git filter-repo`, `.git` 53 MB → 7.1 MB, 25 → 24 commits — one
+became empty and was pruned):
+
+- Purged from **all history**: `data/other users/` (9 friends' raw `*.zip` Spotify
+  exports, introduced in `7d16c08`), `data/Spotify Account Data/` (owner address +
+  payments + identity), `data/streaming_*.json` (6 files, each row had `ip_addr`),
+  `data/unique_*.csv`, `data/failed_lyrics.csv`, `data/songs_processing_queue.csv`,
+  `outputs/data/songs_info.json` (45 MB), `outputs/data/artists_info.json`,
+  `outputs/lyrics*` (`lyrics-1.json` + `lyrics/`).
+- Redacted two real IP strings (`REDACTED_IP`, `REDACTED_IP`) that appeared in
+  design docs / the roadmap spec → `REDACTED_IP`.
+- Full backup mirror kept at
+  `/Users/tanmaybhuskute/Documents/spotify-insights-backup-pre-phase9.git` — **do not
+  delete until the remote is confirmed clean.**
+- Working-tree data files restored from the mirror so the local app still runs; they
+  are now `.gitignore`d.
+
+**Files** (commit `e3025c8`): `.gitignore` rewrite (personal-data + env rules were
+commented out), new `LICENSE` (MIT, source only), `SECURITY.md`, `data/README.md`,
+`data/fixtures/sample_streaming_history.json` (40 synthetic rows, no `ip_addr`);
+`apps/api/requirements.txt` now includes `supabase` (was a missing hard runtime dep)
+and is `==`-pinned; new `apps/api/requirements-dev.txt` (pytest / httpx / ruff /
+pandera / dagster); root `requirements.txt` `==`-pinned; README "Data & privacy"
+section.
+
+**Verify:** no PII paths and no real IP literals anywhere in history (exhaustive blob
+scan); `import app.main` OK; `uvicorn app.main:app` boots; `/health` → 200; JSON
+loader still reads 70,817 records.
+
+**Remote actions (force-push):** `main` rewritten + force-pushed; stale
+`origin/feat/multi-user-analytics-switch` force-deleted (unmerged, carried the purged
+blobs). Anyone with a pre-2026-09-01 clone must re-clone. Residual: old blob SHAs may
+stay fetchable via direct GitHub URL until GitHub GC — no ref points at them.
+
+**Deviations from spec:** (1) also purged `data/Spotify Account Data/` and the big
+`outputs` JSON blobs and `data/streaming_*.json` — the roadmap only named
+`data/other users`; owner approved the wider scope this session. (2) filter-repo
+removed the tracked data files from the working tree, not just history — restored the
+app-needed ones (`data/streaming_*.json`, `outputs/data/{songs,artists}_info.json`)
+from the backup mirror. (3) Git LFS not used (`git lfs` absent) — download-step /
+`data/README.md` instead.
