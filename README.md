@@ -121,11 +121,19 @@ The start script will:
 
 ### Features
 
-- **Overview Dashboard**: Real-time statistics with 70,817 streams analyzed
-- **Interactive Charts**: Monthly trends, top artists/tracks, platform distribution
+The web app has **3 pages** (as of Phase 13):
+
+- **Insights** (`/`) — overview stat cards, monthly trends, top artists/tracks,
+  platform distribution, temporal patterns, year-over-year, discovery timeline,
+  sessions, listening behavior, artist loyalty, reflective insights.
+- **Recommendations** (`/recommendations`) — content-based track recommendations.
+- **Data Health** (`/data-health`) — pipeline status, the data-quality check
+  results (`/api/health/data`), per-user freshness, ingestion-funnel and
+  row-count trend charts.
+
 - **Responsive Design**: Works on desktop, tablet, and mobile
-- **Dark Theme**: Spotify-inspired design with #1DB954 green
-- **Fast Performance**: Parallel API requests and optimized data loading
+- **Dark Theme**: brand palette `#1c0b19 / #140d4f / #4ea699 / #2dd881 / #6fedb7`
+- **Fast Performance**: staged parallel API requests, optimized data loading
 
 ### Manual Setup
 

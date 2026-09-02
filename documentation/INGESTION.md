@@ -16,7 +16,10 @@ raw_streams  (bronze; per-user-slug partition, or ALL slugs in a job run)
                   ├─ dim_user  dim_time  dim_artist  dim_track  dim_album
                   └─ fact_streams
                         └─→ refreshed_views   (monthly_stats / top_artists /
-                                               top_tracks + V7 freshness gate)
+                        │                      top_tracks + V7 freshness gate)
+                        └─→ data_quality      (terminal; app.quality suite, owns
+                                               finish_run, raises on a blocking
+                                               DQ failure — see DATA_QUALITY.md)
 ```
 
 Code:
@@ -153,12 +156,17 @@ per user). Invariants (V4):
 Metrics are written through **short-lived connections outside the pipeline
 transaction** (`metrics.py`), so a failed run still leaves a row. `gold_star`
 records the fact count + match rates but does **not** finish the run;
-`refreshed_views` (the true terminal asset) sets `status='success'`. A
-`run_failure_sensor` flips any run left `'running'` by a failure to `'failed'`.
+`refreshed_views` runs the V7 freshness gate but is **no longer terminal** (as of
+Phase 13). The terminal asset is **`data_quality`** (`app.quality`): it owns
+`finish_run` — `status='success'` when the DQ suite is clean, `'partial'` when
+only warn-severity checks fail, and it **raises** (leaving `'running'`) on any
+blocking-severity failure so the `run_failure_sensor` flips the run to `'failed'`.
+It merges its `dq_*` summary into the `detail` JSONB that `gold_star` already
+wrote. See `documentation/DATA_QUALITY.md`.
 
 `public.bronze_ingest_run` / `bronze_ingest_run_user` / `bronze_quarantine` /
-`bronze_ingest_state` are unqualified compatibility views (Blocker B1) for
-Phase 13's `/api/health/data`.
+`bronze_ingest_state` are unqualified compatibility views (Blocker B1), read
+live by `/api/health/data` alongside `public.dq_run` / `public.dq_result`.
 
 ---
 
@@ -169,9 +177,10 @@ After migration 012 (Phase 12 Commit 4) repointed the last 10 analytics RPCs at
 `truncate_streaming_history` (a utility) and `get_skip_behavior` /
 `get_user_leaderboard` (out of Phase 12 scope). The pipeline never writes it.
 
-It is left populated-but-stale for one phase:
-- Phase 13's DQ suite may want it as a cross-check;
-- dropping a table is not this phase's job.
+It is left populated-but-stale:
+- Phase 13's DQ suite deliberately does **not** compare it to `gold.fact_streams`
+  for equality — the grain differs, so any such check would be permanently red;
+- dropping a table is a later phase's job.
 
 It carries the *old* grain — video/podcast rows and export-internal duplicates
 included (71,052 for the primary user vs `gold.fact_streams`' 70,635). Do not

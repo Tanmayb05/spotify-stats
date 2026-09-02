@@ -27,13 +27,13 @@ it, then update the row + append to the log here.
 | 10 | Local infra: Docker Compose + migration runner + DB backend switch | M | — | DONE | `feat/phase-10-local-infra` | 2026-09-01 |
 | 11 | Star schema + enrichment into Postgres + bronze/silver/gold | L | 1 (schema) | DONE | `feat/phase-11-star-schema` | 2026-09-01 |
 | 12 | Dagster ingestion pipeline (incremental / idempotent / quarantine) | XL | 1 | DONE | `feat/phase-12-dagster-ingestion` | 2026-09-02 |
-| 13 | DQ suite + Data Health page + cull to 3 pages | M | 2 | NOT STARTED | — | — |
+| 13 | DQ suite + Data Health page + cull to 3 pages | M | 2 | DONE | `feat/phase-13-data-quality` | 2026-09-02 |
 | 13.5 | Behavioral EDA notebook set (decision-support reference) | M | — (feeds 3,4,5) | NOT STARTED | — | — |
 | 14 | Feature store + nightly compute + dual-loader collapse | L | 3 | NOT STARTED | — | — |
 | 15 | 4 recommenders + eval harness + explainable recs + human-eval loop | XL | 4 + 5 | NOT STARTED | — | — |
 | 16 | Production loop + tests + CI + README/architecture/write-up | L | — | NOT STARTED | — | — |
 
-**Next phase to start:** Phase 13.
+**Next phase to start:** Phase 13.5.
 
 ---
 
@@ -472,3 +472,91 @@ the primary user vs `gold.fact_streams`' 70,635).
 tests/test_dagster_pipeline.py` (both against a scratch Postgres) to the pipeline.
 
 **Next phase to start: Phase 13.**
+
+### Phase 13 — done 2026-09-02 · branch `feat/phase-13-data-quality`
+
+Detail: `documentation/20260902_154500_phase_13_data_quality.md`.
+Durable reference: `documentation/DATA_QUALITY.md`.
+
+Data-quality suite as a pipeline gate + `/api/health/data` + a Data Health page,
+and the web app cut to its final 3 pages.
+
+**Shipped (5 commits):**
+
+- `2332702` **migration 013** — `CREATE SCHEMA quality`; `quality.dq_run` (run
+  header + rollup + status) and `quality.dq_result` (one row per check,
+  `UNIQUE(dq_run_id, name, user_id)`); `public.dq_run` / `public.dq_result`
+  compat views (Blocker B1, so `/api/health/data` works on both backends).
+- `1ddbcec` **`app/quality/` library** — `checks.py` (21 checks via a `@check`
+  registry, all 6 categories; 12 blocking / 9 warn; `THRESHOLDS` dict set below
+  measured values with headroom), `pandera_schemas.py` (3 sample-based DataFrame
+  contracts — narrowed, since 19/21 checks are SQL aggregates), `run.py`
+  (`run_all` + `summarize` + the `python -m app.quality.run` CLI, exit 0/1/2).
+  Own-connection persistence rule (a raising blocking check still leaves its
+  `dq_run` row). 13 tests (`tests/test_quality.py`).
+- `61b8049` **`data_quality` Dagster asset + `GET /api/health/data`** —
+  `refreshed_views` stops owning `finish_run`; the new terminal `data_quality`
+  asset (`deps=["refreshed_views"]`) owns it: `success` clean / `partial`
+  warn-only / raise on blocking (→ `run_failure_sensor` → `failed`). Merges its
+  `dq_*` summary into the `detail` JSONB `gold_star` wrote (R1). `/api/health/data`
+  reads only `public.*` compat views via `DBBackend.select()`, each read caught,
+  degrades to `has_run:false` HTTP 200 on Supabase. `tests/test_health_data.py`
+  — the repo's first FastAPI TestClient test.
+- `1c9ecb0` **frontend cull** — router + drawer down to 3: `/` Insights,
+  `/recommendations`, `/data-health`. `Insights.tsx` merges Overview +
+  ListeningPatterns + Discovery (existing charts, 3 staged `Promise.allSettled`
+  waves). `DataHealth.tsx` new. `src/hooks/useTimeRange.ts` (extracted, slider
+  re-clamp bug fixed), `src/theme/chartColors.ts`. Deleted 8 pages + routers
+  `milestones/sessions/mood/sim`; `compare.py` → just `GET /api/compare/users`
+  (UserSwitcher). `client.ts` −15 fns −heatmap; `types/api.ts` −~19 interfaces.
+  `supabase_data_loader.py` untouched (Phase 14's collapse).
+- Commit 5 (this) — `DATA_QUALITY.md`, `INGESTION.md` edits (graph + terminal
+  asset + `streaming_history` note), `UPDATE.md`, phase doc.
+
+**Verify gate results (measured):**
+
+- `python -m app.quality.run` in compose → **31 results** (per-user freshness
+  fans out ×10), 29 passed, **0 blocking**, 2 warned (`release_year=0` on 28
+  tracks; 1 anomalous user-day), 0 skipped, exit 0.
+- `/api/health/data` → 6 categories, `dq.status='warn'`, `ingest.status='partial'`,
+  11 per-user rows. Old `/health` liveness blob unchanged.
+- **Gate proven both ways:** injected a duplicate `_ingest_id`,
+  `dagster asset materialize --select data_quality` → `IngestVerificationError`,
+  step + run FAIL, `quality.dq_run.status='fail'` persisted despite the raise.
+  `python -m app.quality.run` exited 1. Clean re-run → `RUN_SUCCESS`,
+  `bronze.ingest_run.status='partial'`, `detail` carries both `gold_star`'s
+  `artist_fk_rate` and the `dq_*` keys (R1 verified).
+- 3 pages serve 200 in compose; `/overview` falls through to NotFound; deleted
+  API routes 404; drawer = 3 items.
+- `npm run lint` + `npm run build:check` clean. `pytest tests/` → **76 passed,
+  3 skipped**.
+
+> ROADMAP DEVIATIONS:
+> 1. Migration is `013`, not `012` (`012_repoint_analytics_functions.sql` exists).
+> 2. `data_quality` is a terminal **`@asset`**, not a Dagster asset check — the
+>    repo has zero `@asset_check` and an asset check can't own `finish_run`.
+> 3. Roadmap's uniqueness checks on `dim_track` nat key + `fact_streams` PK are
+>    DB tautologies (both already PKs) — replaced with `fact_ingest_id_unique`
+>    (no FK/unique at 009:155) and `dim_track_uri_unique`.
+> 4. `latest_ingest_run_terminal` is **warn**, not blocking: by the time
+>    `data_quality` runs, the current run has rebuilt the warehouse, so a stale
+>    `failed` from a prior run must not fail today's pipeline. Blocking set = 12.
+> 5. `pandera_schemas.py` narrowed to sample-contract validation (the roadmap's
+>    "shared with `ingest/schemas.py`" doesn't hold — different column set).
+> 6. `enrichment_coverage` is warn-only at threshold 0.0 — `audio_source='enriched'`
+>    is 0% (audio-features enrichment doesn't exist in this repo).
+> 7. `Insights.tsx` kept as one file (not 13 extracted components) — the merged
+>    pages were self-contained, so it's a mechanical move.
+> 8. `getListeningHeatmap` client fn dropped (zero callers); `/api/patterns/heatmap`
+>    + its RPC stay live server-side.
+> 9. API-baseline diff done by eye (`compare_api_baseline.py` has no path filter):
+>    Phase 13 deletes endpoints and leaves survivor SQL untouched, so a scoped
+>    check (deleted paths 404, no value diffs on survivors) is the useful assertion.
+
+**Follow-ups for Phase 13.5:** `app/quality/` is a read-only consumer pattern the
+notebooks can mirror. **For Phase 14:** the `user_*` feature-table checks
+(affinity 0–1 range, etc.) are DQ extension points noted in `DATA_QUALITY.md`.
+**For Phase 16 CI:** add `python -m app.quality.run` (exit-code gate) +
+`pytest tests/test_quality.py tests/test_health_data.py` to the pipeline.
+
+**Next phase to start: Phase 13.5.**
