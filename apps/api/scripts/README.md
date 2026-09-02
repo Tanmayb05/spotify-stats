@@ -6,80 +6,38 @@ This directory contains utility scripts for data management and migration.
 
 ## 📄 Scripts
 
-### `load_json_to_supabase.py`
+### `build_star_schema.py`
 
-**Purpose:** Migrate Spotify streaming data from JSON files to Supabase PostgreSQL
-
-**Usage:**
-```bash
-python load_json_to_supabase.py
-```
-
-**What it does:**
-1. Reads all `data/streaming_*.json` files
-2. Transforms data to match database schema
-3. Batch inserts into `streaming_history` table (1000 records per batch)
-4. Refreshes materialized views
-5. Verifies data integrity
-
-**Prerequisites:**
-- Supabase project created
-- Environment variables set (`SUPABASE_URL`, `SUPABASE_SERVICE_KEY`)
-- Database migrations run
-- Dependencies installed: `pip install supabase`
-
-**Output:**
-- Progress indicators during load
-- Summary statistics
-- Error reporting (if any)
-
-**Options:**
-- Prompts to clear existing data before reload
-- Validates data before insertion
-- Shows memory usage and timing
-
----
-
-### `load_multi_user_data.py`
-
-**Purpose:** Load *other users'* Spotify Extended Streaming History into the
-multi-user schema (migrations `003` + `004`).
+**Purpose:** Build the warehouse end to end without Dagster — discover export
+files → land bronze → dedup to silver → dims + fact (gold) → refresh MVs. Same
+pipeline the Dagster `nightly_ingest_job` runs (see `documentation/INGESTION.md`).
 
 **Usage:**
 ```bash
-python load_multi_user_data.py                 # load all 9, skip any already loaded
-python load_multi_user_data.py --only amit,sam  # subset
-python load_multi_user_data.py --reload --only sohan   # delete + reload one user
-python load_multi_user_data.py --dry-run        # parse + report, no writes
+python scripts/build_star_schema.py                 # all users
+python scripts/build_star_schema.py --only amit sam # one/some slugs
+python scripts/build_star_schema.py --no-land       # rebuild silver/gold from bronze
 ```
 
-**What it does:**
-1. Reads `data/other users/<slug>/Streaming_History_Audio*.json` (extracted from the
-   friends' export zips).
-2. Creates a `users` row per person (`is_primary = FALSE`).
-3. Transforms records — **drops `ip_addr`** (third-party PII), keeps `conn_country`,
-   injects `user_id`.
-4. Batch-inserts into `streaming_history` (1000/batch). A user that already has rows
-   is skipped unless `--reload`.
-5. Calls `refresh_all_views()`.
-
-**Notes:**
-- Not an upsert — real Spotify exports contain exact-duplicate rows, so there is no
-  safe conflict target. Idempotency = skip-if-loaded, or `--reload` (which
-  `DELETE`s that user's rows via the `truncate_streaming_history(p_user_id)` RPC).
-- The final `refresh_all_views()` RPC can hit the PostgREST statement timeout on a
-  large load. If it does, refresh directly instead:
-  ```bash
-  psql "$SUPABASE_DIRECT_CONN" -c "SELECT refresh_all_views();"
-  # SUPABASE_DIRECT_CONN = postgresql://postgres:<SUPABASE_DATABASE_PASSWORD>@db.<ref>.supabase.co:5432/postgres?sslmode=require
-  ```
-
-**Prerequisites:**
-- Migrations `003_add_multi_user_support.sql` + `004_user_scoped_functions.sql` applied
-- `SUPABASE_URL` + `SUPABASE_SERVICE_KEY` in `spotify-insights.env`
-- Friends' zips already extracted to `data/other users/<slug>/`
+Exit code 0 = V1 verification passed, 1 = mismatch. Idempotent — re-running
+lands nothing new and rebuilds the star deterministically.
 
 ---
+
+### `load_json_to_supabase.py` / `load_multi_user_data.py` — DEPRECATED
+
+Both were replaced by the ingestion pipeline in Phase 12 and are now one-line
+stubs that print a pointer and exit 1. Their `ip_addr`-retaining code paths were
+**deleted** (they were the last DB write path for `ip_addr`). Use
+`build_star_schema.py` above, or the Dagster job:
+
+```bash
+docker compose exec dagster \
+    dagster job execute -j nightly_ingest_job -m dagster_project.definitions
+```
+
+---
+
 
 ### `compare_performance.py`
 

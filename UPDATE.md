@@ -26,21 +26,21 @@ it, then update the row + append to the log here.
 | 9  | Repo hygiene & public-safe history | S | — | DONE | `chore/phase-9-repo-hygiene` | 2026-09-01 |
 | 10 | Local infra: Docker Compose + migration runner + DB backend switch | M | — | DONE | `feat/phase-10-local-infra` | 2026-09-01 |
 | 11 | Star schema + enrichment into Postgres + bronze/silver/gold | L | 1 (schema) | DONE | `feat/phase-11-star-schema` | 2026-09-01 |
-| 12 | Dagster ingestion pipeline (incremental / idempotent / quarantine) | XL | 1 | NOT STARTED | — | — |
+| 12 | Dagster ingestion pipeline (incremental / idempotent / quarantine) | XL | 1 | DONE | `feat/phase-12-dagster-ingestion` | 2026-09-02 |
 | 13 | DQ suite + Data Health page + cull to 3 pages | M | 2 | NOT STARTED | — | — |
 | 13.5 | Behavioral EDA notebook set (decision-support reference) | M | — (feeds 3,4,5) | NOT STARTED | — | — |
 | 14 | Feature store + nightly compute + dual-loader collapse | L | 3 | NOT STARTED | — | — |
 | 15 | 4 recommenders + eval harness + explainable recs + human-eval loop | XL | 4 + 5 | NOT STARTED | — | — |
 | 16 | Production loop + tests + CI + README/architecture/write-up | L | — | NOT STARTED | — | — |
 
-**Next phase to start:** Phase 12.
+**Next phase to start:** Phase 13.
 
 ---
 
 ## The 5 target features (for reference)
 
 1. **Orchestrated ingestion pipeline** — Dagster asset graph raw→bronze→silver→star,
-   incremental + idempotent, quarantine lane, ingestion metrics. *(Phases 11–12)*
+   incremental + idempotent, quarantine lane, ingestion metrics. *(Phases 11–12 — DONE)*
 2. **Data-quality suite + Data Health page** — Pandera + SQL check runner, 6 categories,
    pipeline gate. *(Phase 13)*
 3. **Behavioral feature store + per-user profiles** — materialized `gold.user_*` tables,
@@ -364,3 +364,111 @@ asset graph; the ~10 remaining migration-006 functions still reading
 `streaming_history` directly are Phase 12's to finish repointing.
 
 **Next phase to start: Phase 12.**
+
+### Phase 12 — done 2026-09-02 · branch `feat/phase-12-dagster-ingestion`
+
+Detail: `documentation/20260902_000818_phase_12_dagster_ingestion.md`. Plan of record +
+owner decisions: `documentation/20260901_204014_phase_12_dagster_ingestion_PLAN.md`.
+Commits 1–2 record: `documentation/20260901_224259_phase_12_dagster_ingestion_commits_1_2.md`.
+Durable pipeline reference: `documentation/INGESTION.md`.
+
+Replaced the by-hand data load (two Supabase-only loader scripts + a one-time
+migration-008 bronze backfill) with one **Dagster asset graph**: discover → validate →
+land (bronze) → dedup (silver) → dims + fact (gold) → refresh MVs. Incremental,
+idempotent, quarantine lane, per-run/per-user metrics. Also finished the Phase 11
+star-schema migration by repointing the last 10 analytics RPCs off `streaming_history`.
+
+**Shipped (5 commits):**
+
+- `2fd02d7` **migration 011** — `row_fingerprint` columns; `bronze.ingest_state`
+  (`UNIQUE(user_id,file_hash)` = file idempotency) / `quarantine` (nullable
+  `_ingest_id`, quarantine is pre-landing) / `ingest_run` / `ingest_run_user`; four
+  `public.bronze_*` compat views (Blocker B1). Terminal destructive step: `TRUNCATE
+  silver.streams` + delete the migration-008 bronze backfill so bronze has a single
+  writer.
+- `b050473` **`app/ingest/` pipeline library** — `discover` / `landing` / `schemas` +
+  `validate` / `dedup` / `enrich` / `metrics` (+ 24 unit tests). `build_star_schema.py`
+  refactored 401 → 133 lines to a wrapper over the same modules — still a valid
+  Dagster-free entrypoint and the API-baseline gate's driver.
+- `6c266a5` **Dagster project + compose service** — `dagster_project/{__init__,
+  definitions,resources,assets,jobs,schedules}.py`, `pyproject.toml`,
+  `dagster_home/dagster.yaml` (run/event-log/schedule storage → same Postgres, schema
+  `dagster`). Assets: `raw_streams` (10-slug `StaticPartitionsDefinition`; an
+  unpartitioned job run lands ALL slugs) → `quarantine` + `silver_streams` →
+  `gold_star` (`@multi_asset`, one transaction, 6 named outs) → `refreshed_views`
+  (terminal, V7 assertion). `run_failure_sensor` flips a failed run's `ingest_run` row
+  to `failed`. Compose `dagster` service on `:3000` (`dagster dev`, `depends_on` db
+  healthy + api started, no `migrate.py`). `dagster` + `dagster-webserver` +
+  `dagster-postgres==0.29.20` moved to `requirements.txt`.
+- `711a51a` **migration 012** — `get_discovery_timeline`, `get_artist_loyalty`,
+  `get_artist_obsessions`, `get_reflective_insights`, `get_weekend_weekday_comparison`,
+  `get_most_repeated_tracks`, `get_monthly_diversity`, `get_listening_heatmap`,
+  `get_milestones_list`, `get_flashback` repointed at `gold.fact_streams`. Bodies
+  verbatim; only `FROM` + `master_metadata_*_name` → `artist_name`/`track_name`
+  changed; never `artist_key`; exact `DROP FUNCTION IF EXISTS` before each.
+- Commit 5 (this) — `INGESTION.md`; legacy loaders (`load_json_to_supabase.py`,
+  `load_multi_user_data.py`) reduced to deprecation stubs with the
+  **`ip_addr`-retaining code paths deleted** (last DB write path for `ip_addr`);
+  `enrich.DISK_FACT_COUNTS` populated with the 10 measured per-user constants (V1c now
+  active); this file; phase doc.
+
+**Verify gate results (measured):**
+
+- V1 (per-user `bronze − dups == silver == fact`): **PASS** all 11 users; primary
+  70,817 → 70,635 (182 dups), hit the plan target exactly.
+- V1c (`fact == DISK_FACT_COUNTS[user]`): **PASS** all 10 users with constants.
+- V2 (idempotent re-run): **PASS** — 27 files `SKIP (file_hash_seen)`, `files_new=0`,
+  `rows_landed=0`, bronze/silver/fact counts identical.
+- V3 (malformed fixture): **PASS** — 6 quarantine rows, 6 distinct rules, 1 landed
+  (Dagster-level `test_dagster_pipeline.py` + unit-level `test_validate.py`).
+- V4 (metrics invariants): **PASS** — `status=success`, `dups_dropped=1404`,
+  `rows_fact=338270`, `0 ≤ rates ≤ 1`.
+- V5 (dedup delta, two numbers): scope **−1,082** (video/podcast) + dedup **−1,404**,
+  reported separately.
+- V6 (API baseline): Commits 2–3 non-clean, every diff = −235 video + −182 dedup on
+  the primary user. Commit 4: 44 routes, **35 identical / 9 changed / 0 errored** —
+  every changed route explained by the same grain cutover (`/api/discovery/reflect`
+  `total_streams 71052 → 70635` exact; weekend-weekday + heatmap totals −417 exact;
+  monthly-diversity −395 = 417 − 22 null-artist rows; loyalty/timeline/milestones/
+  repeated-tracks per-group counts shift; `/health.timestamp` volatile). No
+  unexplained diff. `outputs/baseline/post_phase12` re-captured.
+- V7 (MV freshness): **PASS** — `sum(monthly_stats.total_streams) == count(fact_streams
+  WHERE track_name IS NOT NULL)` = 70,518 for the primary user; `refreshed_views`
+  asserts this and fails the run otherwise.
+- V8 (no PII): **PASS** — `bronze.raw_streams._raw ? 'ip_addr'` → 0; the legacy
+  loaders' `ip_addr` code paths deleted.
+- V9 (migration replay): **PASS** — 011 + 012 apply once, second `migrate.py` a
+  no-op; scratch-DB fresh apply 12/12.
+- V10 (RPC repoint): **PASS** — none of the 10 read `streaming_history`.
+  `get_skip_behavior` / `get_user_leaderboard` / `truncate_streaming_history` still
+  name it — outside Phase 12's scope (the plan named exactly these 10).
+
+> ROADMAP DEVIATIONS (full list in the phase doc; the material ones):
+> 1. Migration 011 also `TRUNCATE silver.streams` (plain populated FK to bronze;
+>    rebuilt every run, so free).
+> 2. No clean `pre_phase12` baseline — diffed against `pre_phase11`, every diff
+>    explained; `post_phase12` is the new reference, **`pre_phase11` superseded**.
+> 3. Migration 012's baseline diff is **not byte-clean** (the plan predicted clean).
+>    `public.streaming_history` was never deduped/video-stripped, so the 10 endpoints
+>    move by exactly the grain delta Commit 2 applied to the hot RPCs. This is the
+>    last `streaming_history → gold` cutover; every moved number is accounted for.
+> 4. `assets.py` drops `from __future__ import annotations` (Dagster rejects stringized
+>    `AssetExecutionContext`); `raw_streams` handles an unpartitioned job run;
+>    `gold_star` doesn't finish the run — `refreshed_views` marks `success`, a
+>    `run_failure_sensor` marks `failed`.
+> 5. `test_dagster_pipeline.py` is opt-in (`DAGSTER_PIPELINE_TEST_DB=1`) — it
+>    TRUNCATEs bronze/silver/gold, so throwaway-DB only.
+
+**`public.streaming_history` is now frozen legacy** — no function reads it except
+`truncate_streaming_history` (utility) and `get_skip_behavior` / `get_user_leaderboard`
+(out of scope). The pipeline never writes it. Left populated-but-stale for Phase 13's
+DQ cross-checks; dropping it is a later phase's job. Carries the old grain (71,052 for
+the primary user vs `gold.fact_streams`' 70,635).
+
+**Follow-ups for Phase 13:** `bronze.quarantine` + `bronze.ingest_run{,_user}` + the
+`public.bronze_*` views are the read surface for `/api/health/data`;
+`app/ingest/schemas.py`'s Pandera schema is the DQ rule-set starting point.
+**For Phase 16 CI:** add `dagster job execute -j nightly_ingest_job` + `pytest
+tests/test_dagster_pipeline.py` (both against a scratch Postgres) to the pipeline.
+
+**Next phase to start: Phase 13.**

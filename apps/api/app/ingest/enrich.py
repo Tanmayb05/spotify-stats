@@ -197,12 +197,24 @@ def report_match_rates(conn) -> None:
 # ---------------------------------------------------------------------------
 # V1 verification -- rewritten for the dedup era (see build_star_schema.py header)
 # ---------------------------------------------------------------------------
-# Disk-derived per-user fact-count constants. primary = 70,817 raw -> 70,635
-# silver/fact after row_fingerprint dedup (Phase 12 plan "Measured facts").
-# The 9 other users' constants are filled in once the first full run measures
-# them; until then V1c is skipped for a user with no constant.
+# Disk-derived per-user fact-count constants: rows in gold.fact_streams after
+# video exclusion + row_fingerprint dedup. Measured against the real 27 export
+# files by the Phase 12 Commit 3 full `nightly_ingest_job` run (V1 PASS for all
+# 11 users; primary hit the plan's 70,817 raw -> 70,635 target exactly). V1c
+# asserts fact_streams == this per user; a user absent here is skipped (V1a/V1b
+# still run). `demo_user_1` (fixture seed) and any user with zero export files
+# are intentionally not listed.
 DISK_FACT_COUNTS: dict[str, int] = {
-    # "primary": 70635,   # uncomment once verified against a real full run
+    "tanmay": 70635,      # primary
+    "abhiraj": 131,
+    "amit": 31558,
+    "antara": 38728,
+    "ash": 25515,
+    "nihal": 43936,
+    "prathamesh": 12905,
+    "sam": 48580,
+    "snehal": 59981,
+    "sohan": 6301,
 }
 
 
