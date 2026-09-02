@@ -692,4 +692,29 @@ deletes, so they carry constants inline rather than importing; after P14 the
 apps/api/notebooks/*.ipynb` against a scratch DB + `pytest tests/test_notebooks.py`
 + `nbstripout --verify`.
 
+**Follow-up commits on this branch** (owner-requested, beyond the roadmap's 8
+notebooks; phase doc updated in place, not re-dated):
+
+- `3bc4144` **`00_exploratory.ipynb`** — general look-and-see (trends, top
+  artists/tracks, platform mix, skip behaviour, heatmap). No decision framing —
+  `test_notebooks.py` gained a `NO_DECISION_INPUTS` set so the
+  Decision-inputs-cell checks don't apply to it.
+- `5cbe0f2` **`00b_schema_profile.ipynb`** — live schema inventory generated
+  from `information_schema` (19 base tables, 239 columns, PK/FK graph, sizes),
+  scoped to `bronze`/`silver`/`gold`/`quality`/`public`, excluding `public.*`
+  compat views and the 27-table `dagster` schema. `dim_user`/`users` PII-excluded
+  as elsewhere. Caught a real bug pre-commit: the column query wasn't filtered to
+  `BASE TABLE`, so views leaked in and nearly doubled the column count (386 vs
+  correct 239). Needed a widened notebook-discovery glob (`00b_` prefix) and a
+  `NAME_COLUMN_MENTION_ALLOWED` allowlist + paired guard test, since the blanket
+  PII substring check flagged 00b's legitimate `{"username","display_name"}`
+  exclusion-set literals as a violation.
+- `7609ac6` **`.gitignore` extension** (unrelated to notebooks) — `.claude/`,
+  root tool caches (`.pytest_cache/`, `.ruff_cache/`, `.mypy_cache/`,
+  `.coverage*`, `htmlcov/`), `Thumbs.db`, a `*.pem`/`*.key`/`*.p12` secrets net.
+
+**Final state:** 10 notebooks (00, 00b, 01-08), 70 notebook tests, 146
+passed / 4 skipped repo-wide (was 76/3 pre-phase). All verified clean on both the
+real 336,936-play warehouse and an empty migrated DB.
+
 **Next phase to start: Phase 14.**
