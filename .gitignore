@@ -57,6 +57,24 @@ build/
 *.swo
 *~
 .DS_Store
+Thumbs.db
+
+# Claude Code local project settings (machine/session-specific)
+.claude/
+
+# Python: caches from linting/type-checking/testing tools
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Secrets net -- defense in depth given this repo's PII history; nothing of
+# this shape should ever be intentionally committed.
+*.pem
+*.key
+*.p12
 
 # Jupyter Notebook
 .ipynb_checkpoints/
