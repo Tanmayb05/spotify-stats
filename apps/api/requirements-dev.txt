@@ -1,8 +1,10 @@
 # Dev / test dependencies. Install with:
 #   pip install -r apps/api/requirements-dev.txt
 #
-# dagster (Phase 12) and pandera (Phase 13) are listed now so the dev env is a
-# single install for the rest of the roadmap. Versions resolved 2026-09-01.
+# dagster (Phase 12) is listed here for now; Commit 3 moves it to
+# requirements.txt when the compose dagster service lands. pandera moved to
+# requirements.txt in Phase 12 Commit 2 (app/ingest/validate.py imports it).
+# Versions resolved 2026-09-01.
 
 -r requirements.txt
 
@@ -14,7 +16,5 @@ ruff==0.16.5             # lint + format
 
 requests==2.34.2         # scripts/{capture,compare}_api_baseline.py, backfill_artist_tags.py (Phase 11)
 
-pandera==0.33.0          # in-pipeline dataframe schemas (Phase 13)
-
-dagster==1.13.20         # orchestrator (Phase 12+)
+dagster==1.13.20         # orchestrator (Phase 12+); -> requirements.txt in Commit 3
 dagster-webserver==1.13.20

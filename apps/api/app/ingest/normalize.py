@@ -5,26 +5,24 @@ apps/api/tests/test_normalize.py). Extracted from what was inline logic in
 scripts/seed_local_db.py (Phase 10's own note assigned this file to Phase 11).
 
 Used by:
-  * scripts/seed_local_db.py       -- row validity + boolean coercion
+  * app/ingest/landing.py          -- to_utc/coerce_* per landed row;
+                                       row_fingerprint written to bronze
+  * app/ingest/dedup.py            -- collapses byte-identical rows in silver
+                                       on (user_id, row_fingerprint)
   * scripts/build_star_schema.py   -- artist_key/track_key/to_utc for the
-                                       bronze -> silver -> gold build
+                                       bronze -> silver -> gold build (wrapper)
   * app/ingest/salvage.py callers  -- release-year parsing conventions match
                                        data_loader.py's existing normalization
-
-row_fingerprint is defined here now but not yet *used* -- Phase 12's dedup.py
-consumes it to collapse genuine export duplicates (Decision D6 in the Phase 11
-plan explicitly defers dedup so this phase's "numbers unchanged" gate stays
-meaningful: fact_streams must equal streaming_history 1:1 for now).
 """
 
 from __future__ import annotations
 
 import hashlib
 from datetime import datetime, timezone
-from typing import Any, Optional
+from typing import Any
 
 
-def normalize_artist_key(artist_name: Optional[str]) -> Optional[str]:
+def normalize_artist_key(artist_name: str | None) -> str | None:
     """lower(trim(artist_name)) -- the natural key for gold.dim_artist (D3).
 
     Matches data_loader.py's existing normalization exactly (the recommender's
@@ -38,10 +36,10 @@ def normalize_artist_key(artist_name: Optional[str]) -> Optional[str]:
 
 
 def normalize_track_key(
-    spotify_track_uri: Optional[str],
-    track_name: Optional[str],
-    artist_name: Optional[str],
-) -> Optional[str]:
+    spotify_track_uri: str | None,
+    track_name: str | None,
+    artist_name: str | None,
+) -> str | None:
     """track_key = spotify_track_uri when present, else a hash fallback (D3).
 
     The hash fallback mirrors the recommender's existing "name|||artist"
@@ -60,7 +58,7 @@ def normalize_track_key(
     return "hash:" + hashlib.md5(basis.encode("utf-8")).hexdigest()
 
 
-def to_utc(ts: Any) -> Optional[datetime]:
+def to_utc(ts: Any) -> datetime | None:
     """Parse a Spotify export timestamp (ISO-8601, usually already UTC 'Z')
     into a timezone-aware UTC datetime. Returns None for anything unparsable.
 
@@ -113,12 +111,11 @@ def coerce_bool(value: Any) -> bool:
 
 
 def row_fingerprint(row: dict) -> str:
-    """Stable fingerprint of one play event for dedup (Phase 12's dedup.py).
+    """Stable fingerprint of one play event for dedup (app/ingest/dedup.py).
 
-    Not used within Phase 11 (Decision D6: this phase does not dedup so that
-    fact_streams count == source count stays an exact, checkable equality).
-    Defined here so Phase 12 has one canonical definition to import rather
-    than re-deriving the field set.
+    The single canonical definition of the row-level dedup key: landing.py
+    writes it to bronze.raw_streams.row_fingerprint, dedup.py partitions on
+    (user_id, row_fingerprint) to keep one row per fingerprint in silver.
 
     Basis: (user_id, ts, spotify_track_uri or track_key fallback, ms_played) --
     the tuple that, if repeated exactly, means either a genuine repeat play or

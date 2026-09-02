@@ -9,6 +9,10 @@ pandas==2.3.3
 numpy==2.3.3
 scikit-learn==1.7.2
 
+# app/ingest/validate.py runs this over every landed export batch (Phase 12).
+# Runtime dep from this phase forward, not a dev nicety.
+pandera==0.33.0
+
 # Supabase/PostgREST backend (DB_BACKEND=supabase, the default).
 # Imported lazily as of Phase 10, so the app boots without it configured; it is
 # still required whenever the Supabase backend is selected.
