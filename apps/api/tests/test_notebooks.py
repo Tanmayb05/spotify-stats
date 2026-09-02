@@ -27,13 +27,18 @@ EDA_FINDINGS = REPO_ROOT / "documentation" / "EDA_FINDINGS.md"
 DB_URL = os.getenv("DATABASE_URL")
 db_only = pytest.mark.skipif(not DB_URL, reason="DATABASE_URL not set")
 
-EXPECTED_NOTEBOOKS = 9  # 00 exploratory (no decision framing) + 8 decision-support
-# 00 is general look-and-see -- no downstream decision, no Decision-inputs cell.
-NO_DECISION_INPUTS = {"00_exploratory"}
+EXPECTED_NOTEBOOKS = 10  # 00 exploratory + 00b schema profile (neither decision-framed) + 8 decision-support
+# General reference notebooks -- no downstream decision, no Decision-inputs cell.
+NO_DECISION_INPUTS = {"00_exploratory", "00b_schema_profile"}
 
 
 def notebooks() -> list[Path]:
-    return sorted(NOTEBOOK_DIR.glob("[0-9][0-9]_*.ipynb"))
+    # Two leading digits, optionally one letter (00b_schema_profile), then _name.
+    found = {
+        p for pat in ("[0-9][0-9]_*.ipynb", "[0-9][0-9][a-z]_*.ipynb")
+        for p in NOTEBOOK_DIR.glob(pat)
+    }
+    return sorted(found)
 
 
 def decision_notebooks() -> list[Path]:
@@ -159,9 +164,21 @@ def test_eda_findings_contains_no_real_usernames():
     assert not found, f"EDA_FINDINGS.md contains real username(s): {sorted(found)}"
 
 
+# Notebooks that reference username/display_name ONLY to exclude them from a
+# profile (a Python set literal + a comment, never a `SELECT username`).
+# Manually reviewed -- see the notebook's own PII section for the exclusion
+# code. Adding a stem here is not a rubber stamp: check the actual usage.
+NAME_COLUMN_MENTION_ALLOWED = {"00b_schema_profile"}
+
+
 @pytest.mark.parametrize("nb_path", notebooks(), ids=lambda p: p.name)
 def test_notebook_does_not_select_name_columns(nb_path: Path):
     """No notebook may query username / display_name, even aliased later."""
+    if nb_path.stem in NAME_COLUMN_MENTION_ALLOWED:
+        pytest.skip(
+            f"{nb_path.name} references these names only to exclude them "
+            "(manually reviewed; see NAME_COLUMN_MENTION_ALLOWED)"
+        )
     nb = json.loads(nb_path.read_text())
     code = "\n".join(
         "".join(c.get("source", []))
@@ -173,6 +190,32 @@ def test_notebook_does_not_select_name_columns(nb_path: Path):
             f"{nb_path.name} references {column!r}; use the alias from "
             "_common.load_fact() instead"
         )
+
+
+@pytest.mark.parametrize("nb_path", [p for p in notebooks() if p.stem in NAME_COLUMN_MENTION_ALLOWED], ids=lambda p: p.name)
+def test_allowed_name_mention_is_only_an_exclusion(nb_path: Path):
+    """Guard the allowlist above: a notebook on it must exclude these columns,
+    never actually query them. Confirms every occurrence sits inside a Python
+    set literal (an exclusion filter) and never inside a SQL string passed to
+    C.query()."""
+    nb = json.loads(nb_path.read_text())
+    code = "\n".join(
+        "".join(c.get("source", []))
+        for c in nb["cells"]
+        if c.get("cell_type") == "code"
+    )
+    for column in ("username", "display_name"):
+        # Every mention must appear as a quoted set member: {"username", ...}
+        # or ("username", ...} -- adjacent to a closing brace/paren after the
+        # next few chars -- which is the exclude-set shape this notebook uses.
+        mentions = [m.start() for m in re.finditer(rf'"{column}"', code)]
+        assert mentions, f"{nb_path.name}: expected to find {column!r} at all"
+        for pos in mentions:
+            window = code[pos : pos + 60]
+            assert re.match(rf'"{column}"\s*[,}}]', window), (
+                f"{nb_path.name}: {column!r} at offset {pos} is not inside an "
+                f"exclusion set -- context: {window!r}"
+            )
 
 
 # ---------------------------------------------------------------------------
