@@ -70,16 +70,30 @@ The application is deployed and accessible at:
 
 ### Quick Start — Docker (no accounts needed)
 
-Brings up Postgres, the API and the web app, runs the migrations, and seeds a
-small synthetic fixture. No Spotify or Supabase credentials required.
+Brings up Postgres, the API, the web app and Dagster, runs the migrations, and
+seeds a small synthetic fixture. No Spotify or Supabase credentials required.
 
 ```bash
 docker compose up --build
 open http://localhost:3010
 ```
 
+| Service | URL | Notes |
+|---|---|---|
+| web | http://localhost:3010 | dashboard |
+| api | http://localhost:3011 | `/health`, `/docs` |
+| dagster | http://localhost:3000 | ingestion asset lineage + `nightly_ingest_job` |
+| db | localhost:5433 | Postgres (5432 inside the compose network) |
+
+Run the ingestion pipeline by hand:
+
+```bash
+docker compose exec dagster dagster job execute -j nightly_ingest_job -m dagster_project.definitions
+```
+
 See [documentation/LOCAL_DEV.md](documentation/LOCAL_DEV.md) for loading a real
-Spotify export, the `DB_BACKEND` switch, and the migration runner.
+Spotify export, the `DB_BACKEND` switch, and the migration runner;
+[documentation/INGESTION.md](documentation/INGESTION.md) for the pipeline model.
 
 ### Quick Start (macOS, against Supabase)
 

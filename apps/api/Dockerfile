@@ -18,6 +18,16 @@ COPY apps/api/db ./db
 COPY apps/api/migrations ./migrations
 COPY apps/api/scripts ./scripts
 
+# Dagster ingestion pipeline (Phase 12). Same image runs the `dagster` compose
+# service (`dagster dev -m dagster_project.definitions`). dagster_home/ holds the
+# instance config (run/event-log storage -> Postgres, schema `dagster`).
+COPY apps/api/dagster_project ./dagster_project
+COPY apps/api/pyproject.toml ./pyproject.toml
+COPY apps/api/dagster_home ./dagster_home
+# Exists + appuser-owned before the chown below, so a named volume mounted here
+# inherits appuser ownership instead of defaulting to root.
+RUN mkdir -p ./dagster_home/storage
+
 # The synthetic fixture is committed and tiny, so bake it in: the stack must be
 # able to seed itself without depending on a bind mount working. Compose still
 # mounts the host ./data over this when you have a real export.

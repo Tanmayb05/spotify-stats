@@ -1,17 +1,21 @@
-# Local-first stack: Postgres + API + web, with no Supabase account required.
+# Local-first stack: Postgres + API + web + Dagster, no Supabase account required.
 #
 #   docker compose up --build
-#     web  -> http://localhost:3010
-#     api  -> http://localhost:3011  (/health, /docs)
-#     db   -> localhost:5433         (host port; 5432 inside the network)
+#     web      -> http://localhost:3010
+#     api      -> http://localhost:3011  (/health, /docs)
+#     dagster  -> http://localhost:3000  (asset lineage + nightly_ingest_job)
+#     db       -> localhost:5433         (host port; 5432 inside the network)
 #
 # The api container runs migrations and seeds the committed fixture on start,
-# both idempotent, so repeated `up` runs are safe.
+# both idempotent, so repeated `up` runs are safe. The dagster container waits
+# for the db healthcheck and for api to have started (so migrations have run);
+# it does NOT run migrate.py itself (two containers racing the runner on a cold
+# `up` is a real failure).
 #
-# To load a real Spotify export instead of the fixture, drop it in ./data and:
-#   docker compose exec api python scripts/seed_local_db.py --from-dir /app/data --reset
-#
-# Dagster is added as a fourth service in Phase 12.
+# To load a real Spotify export instead of the fixture, drop it in ./data and
+# either re-seed the api, or run the ingestion job:
+#   docker compose exec api    python scripts/seed_local_db.py --from-dir /app/data --reset
+#   docker compose exec dagster dagster job execute -j nightly_ingest_job -m dagster_project.definitions
 
 services:
   db:
@@ -57,6 +61,42 @@ services:
              python scripts/seed_local_db.py &&
              uvicorn app.main:app --host 0.0.0.0 --port 3011"
 
+  dagster:
+    build:
+      # Same image as api (repo-root context bakes in data/fixtures).
+      context: .
+      dockerfile: apps/api/Dockerfile
+    environment:
+      DB_BACKEND: local
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-spotify}
+      INGEST_DATA_ROOT: /app/data
+      DAGSTER_HOME: /app/dagster_home
+      # dagster.yaml reads these for run / event-log / schedule storage (schema: dagster).
+      DAGSTER_PG_HOST: db
+      DAGSTER_PG_PORT: "5432"
+      DAGSTER_PG_USER: ${POSTGRES_USER:-postgres}
+      DAGSTER_PG_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      DAGSTER_PG_DB: ${POSTGRES_DB:-spotify}
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+      api:
+        condition: service_started
+    volumes:
+      # Same read-only data mounts as api, so discover.py sees real exports if present.
+      - ./data:/app/data:ro
+      - ./outputs:/app/outputs:ro
+      - dagster_storage:/app/dagster_home/storage
+    # Create the `dagster` schema (storage backend does not), then run webserver
+    # + daemon in one process. `dagster dev` is fine for a single-node local stack.
+    command: >
+      sh -c "python -c \"from sqlalchemy import create_engine, text;
+      e=create_engine('postgresql+psycopg://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-spotify}');
+      c=e.connect(); c.execute(text('CREATE SCHEMA IF NOT EXISTS dagster')); c.commit(); c.close()\" &&
+      dagster dev -h 0.0.0.0 -p 3000 -m dagster_project.definitions"
+
   web:
     build:
       context: ./apps/web
@@ -71,3 +111,4 @@ services:
 
 volumes:
   pgdata:
+  dagster_storage:

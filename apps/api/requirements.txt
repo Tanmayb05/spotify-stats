@@ -23,3 +23,10 @@ supabase==2.31.0
 # Local Postgres backend (DB_BACKEND=local) + the migration runner.
 sqlalchemy==2.0.52
 psycopg[binary]==3.3.5
+
+# Dagster (Phase 12). From this phase on, the pipeline in dagster_project/ is how
+# the warehouse gets built -- runtime, not a dev nicety. dagster-postgres backs
+# run / event-log / schedule storage with the same Postgres (schema: dagster).
+dagster==1.13.20
+dagster-webserver==1.13.20
+dagster-postgres==0.29.20

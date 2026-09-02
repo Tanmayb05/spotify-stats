@@ -1,10 +1,9 @@
 # Dev / test dependencies. Install with:
 #   pip install -r apps/api/requirements-dev.txt
 #
-# dagster (Phase 12) is listed here for now; Commit 3 moves it to
-# requirements.txt when the compose dagster service lands. pandera moved to
-# requirements.txt in Phase 12 Commit 2 (app/ingest/validate.py imports it).
-# Versions resolved 2026-09-01.
+# dagster + dagster-webserver moved to requirements.txt in Phase 12 Commit 3
+# (the compose `dagster` service makes them runtime deps). pandera moved there
+# in Commit 2 (app/ingest/validate.py imports it). Versions resolved 2026-09-01.
 
 -r requirements.txt
 
@@ -15,6 +14,3 @@ httpx==0.28.1            # FastAPI TestClient / async client
 ruff==0.16.5             # lint + format
 
 requests==2.34.2         # scripts/{capture,compare}_api_baseline.py, backfill_artist_tags.py (Phase 11)
-
-dagster==1.13.20         # orchestrator (Phase 12+); -> requirements.txt in Commit 3
-dagster-webserver==1.13.20
