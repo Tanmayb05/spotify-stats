@@ -48,7 +48,6 @@ def test_blocking_set_is_tight():
         "fact_time_key_fk",
         "ms_played_range",
         "ingest_run_match_rate_range",
-        "latest_ingest_run_terminal",
         "fact_track_name_rate",
         "fact_artist_name_rate",
         "fact_time_key_rate",

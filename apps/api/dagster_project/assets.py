@@ -5,7 +5,9 @@
       +-> silver_streams    (unpartitioned; TRUNCATE + dedup rebuild from bronze)
             +-> gold_star @multi_asset  ->  dim_user  dim_time  dim_artist
             |                               dim_track dim_album fact_streams
-            +-> refreshed_views  (terminal; refresh MVs + V7 freshness assertion)
+            +-> refreshed_views  (refresh MVs + V7 freshness assertion)
+                  +-> data_quality  (terminal; app.quality suite, owns finish_run,
+                                     raises on a blocking-severity failure)
 
 Transaction shape (matches scripts/build_star_schema.py, which stays a valid
 standalone entrypoint):
@@ -377,10 +379,10 @@ def refreshed_views(
             f"fact_streams {fact_ct} (primary user). Views are stale."
         )
 
-    # Terminal asset of nightly_ingest_job -- everything is verified, mark the run
-    # done. An earlier failure leaves status='running'; the run_failure_sensor
-    # flips those to 'failed'.
-    metrics.finish_run(postgres.engine, run_id, "success")
+    # NOT terminal any longer -- Phase 13's `data_quality` asset owns
+    # metrics.finish_run. Leaving status='running' here is deliberate: if
+    # data_quality fails on a blocking check (or never runs), the
+    # run_failure_sensor flips this run to 'failed'.
 
     return MaterializeResult(
         metadata={
@@ -390,3 +392,78 @@ def refreshed_views(
             "ingest_run_id": str(run_id),
         }
     )
+
+
+# ---------------------------------------------------------------------------
+# data_quality -- terminal. Runs app.quality over the rebuilt warehouse, owns
+# bronze.ingest_run's finish_run, raises on any blocking-severity failure.
+# ---------------------------------------------------------------------------
+@asset(
+    deps=["refreshed_views"],
+    group_name="quality",
+    description="Run the data-quality suite (app.quality) over the rebuilt "
+    "warehouse and persist to quality.dq_run/dq_result. TERMINAL asset: owns "
+    "bronze.ingest_run's finish_run (success / partial). Raises on any "
+    "blocking-severity failure, leaving status='running' for the "
+    "run_failure_sensor to flip to 'failed'.",
+)
+def data_quality(
+    context: AssetExecutionContext,
+    postgres: PostgresResource,
+) -> MaterializeResult:
+    from app.quality.run import run_all, summarize
+
+    run_id = metrics.ensure_run(postgres.engine, context.run.run_id)
+    dq_run_id, results = run_all(
+        postgres.engine,
+        ingest_run_id=run_id,
+        dagster_run_id=context.run.run_id,
+    )
+    s = summarize(results)
+
+    for r in results:
+        if not r.passed and not r.skipped:
+            context.log.warning(
+                "DQ %s [%s/%s] observed=%s expected=%s",
+                r.name, r.category, r.severity, r.observed, r.expected,
+            )
+
+    md = {
+        "dq_run_id": str(dq_run_id),
+        "ingest_run_id": str(run_id),
+        "checks_total": s["total"],
+        "passed": s["passed"],
+        "failed_blocking": s["failed"],
+        "warned": s["warned"],
+        "skipped": s["skipped"],
+        "dq_status": s["status"],
+        "by_category": MetadataValue.json(s["by_category"]),
+        "failures": MetadataValue.json(s["blocking_failures"] + s["warn_failures"]),
+    }
+
+    if s["failed"] > 0:
+        # Do NOT finish_run -- leave status='running' for the run_failure_sensor.
+        raise IngestVerificationError(
+            f"Data quality FAILED: {s['failed']} blocking check(s) -- "
+            f"{', '.join(s['blocking_failures'])}. See quality.dq_result "
+            f"(dq_run_id={dq_run_id})."
+        )
+
+    # Merge into the detail that gold_star already wrote (finish_run overwrites
+    # the whole JSONB column -- R1).
+    prev = metrics.latest_run(postgres.engine) or {}
+    prev_detail = prev.get("detail") or {}
+    if not isinstance(prev_detail, dict):
+        prev_detail = {}
+    status = "partial" if s["warned"] > 0 else "success"
+    metrics.finish_run(
+        postgres.engine, run_id, status,
+        detail={
+            **prev_detail,
+            "dq_run_id": str(dq_run_id),
+            "dq_status": s["status"],
+            "dq_warned": s["warned"],
+            "dq_failed": s["failed"],
+        },
+    )
+    return MaterializeResult(metadata=md)

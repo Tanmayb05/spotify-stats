@@ -14,7 +14,7 @@ The 6 required categories and their split:
   uniqueness (3, blocking)             -- real un-enforced invariants
   referential_integrity (4, blocking) -- FK orphans (also catches an un-VALIDated FK)
   range (4 SQL blocking/warn + 2 pandera warn)
-  freshness (3: 1 blocking, 2 warn)
+  freshness (3, all warn)
   completeness (3 blocking + 1 warn)
   anomaly (2, warn)                    -- rolling MAD + run-over-run z-score
 """
@@ -412,7 +412,7 @@ def gold_schema_contract(conn) -> CheckResult:
 
 
 # ===========================================================================
-# freshness (3: 1 blocking, 2 warn)
+# freshness (3, all warn)
 # ===========================================================================
 def _now() -> datetime:
     return datetime.now(timezone.utc)
@@ -451,14 +451,28 @@ def ingest_state_recent(conn) -> CheckResult:
     )
 
 
-@check(name="latest_ingest_run_terminal", category="freshness", severity="blocking")
+@check(name="latest_ingest_run_terminal", category="freshness", severity="warn")
 def latest_ingest_run_terminal(conn, *, exclude_run_id: str | None = None) -> CheckResult:
-    # Exclude the CURRENT run -- when data_quality itself runs, its own ingest_run
-    # row is still 'running' and would fail this check.
-    sql = "SELECT run_id, status FROM bronze.ingest_run"
+    """The most recent *completed* ingest ended cleanly.
+
+    Looks at the latest run with a TERMINAL status (success/partial/failed),
+    ignoring any 'running' rows -- the current run (still 'running' while
+    data_quality executes), a concurrent pipeline, or an abandoned run from a
+    bare `dagster asset materialize`. `exclude_run_id` additionally drops the
+    current run explicitly.
+
+    WARN, not blocking: by the time data_quality runs in nightly_ingest_job the
+    current run has already rebuilt the whole warehouse, so a stale 'failed'
+    from a prior run is not a reason to fail today's pipeline -- it is a signal
+    worth surfacing on the Data Health page.
+    """
+    sql = (
+        "SELECT run_id, status FROM bronze.ingest_run "
+        "WHERE status IN ('success', 'partial', 'failed')"
+    )
     params: dict = {}
     if exclude_run_id:
-        sql += " WHERE run_id <> :x"
+        sql += " AND run_id <> :x"
         params["x"] = exclude_run_id
     sql += " ORDER BY started_at DESC LIMIT 1"
     row = conn.execute(text(sql), params).mappings().first()
@@ -466,20 +480,20 @@ def latest_ingest_run_terminal(conn, *, exclude_run_id: str | None = None) -> Ch
         return CheckResult(
             name="latest_ingest_run_terminal",
             category="freshness",
-            severity="blocking",
+            severity="warn",
             passed=True,
             skipped=True,
             observed="no completed ingest runs",
-            expected="latest ingest_run status in (success, partial)",
+            expected="latest completed ingest_run status in (success, partial)",
         )
     ok = row["status"] in ("success", "partial")
     return CheckResult(
         name="latest_ingest_run_terminal",
         category="freshness",
-        severity="blocking",
+        severity="warn",
         passed=ok,
-        observed=f"latest ingest_run status = {row['status']}",
-        expected="latest ingest_run status in (success, partial)",
+        observed=f"latest completed ingest_run status = {row['status']}",
+        expected="latest completed ingest_run status in (success, partial)",
     )
 
 
