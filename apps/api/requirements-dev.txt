@@ -14,3 +14,14 @@ httpx==0.28.1            # FastAPI TestClient / async client
 ruff==0.16.5             # lint + format
 
 requests==2.34.2         # scripts/{capture,compare}_api_baseline.py, backfill_artist_tags.py (Phase 11)
+
+# Phase 13.5 -- the EDA notebook set (apps/api/notebooks/). pandas, numpy and
+# scikit-learn are already runtime deps in requirements.txt, so only plotting and
+# the Jupyter toolchain are new here. matplotlib/seaborn deliberately match the
+# root requirements.txt pins so the two environments cannot disagree.
+jupyter==1.1.1           # notebook UI
+ipykernel==7.3.0         # kernel the notebooks run on
+matplotlib==3.10.7       # charts (same pin as root requirements.txt)
+seaborn==0.13.2          # charts (same pin as root requirements.txt)
+nbstripout==0.9.1        # strip outputs before commit -- outputs embed real listening history
+nbconvert==7.17.1        # headless execution: the Verify step + Phase 16 CI

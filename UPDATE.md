@@ -28,12 +28,12 @@ it, then update the row + append to the log here.
 | 11 | Star schema + enrichment into Postgres + bronze/silver/gold | L | 1 (schema) | DONE | `feat/phase-11-star-schema` | 2026-09-01 |
 | 12 | Dagster ingestion pipeline (incremental / idempotent / quarantine) | XL | 1 | DONE | `feat/phase-12-dagster-ingestion` | 2026-09-02 |
 | 13 | DQ suite + Data Health page + cull to 3 pages | M | 2 | DONE | `feat/phase-13-data-quality` | 2026-09-02 |
-| 13.5 | Behavioral EDA notebook set (decision-support reference) | M | — (feeds 3,4,5) | NOT STARTED | — | — |
+| 13.5 | Behavioral EDA notebook set (decision-support reference) | M | — (feeds 3,4,5) | DONE | `feat/phase-13.5-eda-notebooks` | 2026-09-02 |
 | 14 | Feature store + nightly compute + dual-loader collapse | L | 3 | NOT STARTED | — | — |
 | 15 | 4 recommenders + eval harness + explainable recs + human-eval loop | XL | 4 + 5 | NOT STARTED | — | — |
 | 16 | Production loop + tests + CI + README/architecture/write-up | L | — | NOT STARTED | — | — |
 
-**Next phase to start:** Phase 13.5.
+**Next phase to start:** Phase 14.
 
 ---
 
@@ -560,3 +560,136 @@ notebooks can mirror. **For Phase 14:** the `user_*` feature-table checks
 `pytest tests/test_quality.py tests/test_health_data.py` to the pipeline.
 
 **Next phase to start: Phase 13.5.**
+
+### Phase 13.5 — done 2026-09-02 · branch `feat/phase-13.5-eda-notebooks`
+
+Detail: `documentation/20260902_170000_phase_13.5_eda_notebooks.md`.
+Durable reference: `documentation/EDA_FINDINGS.md` (the digest — read this, not the
+notebooks, unless you need to re-run something).
+
+Eight read-only EDA notebooks over the DQ-gated star schema, each ending in a
+`## Decision inputs` cell holding the numbers Phases 14/15/16 should quote instead
+of picking thresholds by hand. **Zero writes** — verified: `gold.fact_streams` and
+`gold.dim_user` counts identical before/after a full run.
+
+**Two findings that change planned work** (neither was known before this phase):
+
+1. **The genre kill gate no longer passes: 67.1%, not the 78.2% Phase 11
+   recorded.** P11 measured coverage when `dim_artist` held ~4,536 artists (the
+   primary user's); P12 ingested all ten users → 12,748 artists, while the opt-in
+   backfill had only ever tagged 682. Artist FK match is 100%, so this is missing
+   metadata, not a join bug. **Cheaply fixable:** backfilling the top ~941 untagged
+   artists recovers 80% of untagged plays → projected **93.4%**. Phase 14 must
+   re-run `scripts/backfill_artist_tags.py` and re-run notebook 04 before building
+   `gold.user_genre_affinity` — do not inherit the stale KEEP verdict.
+2. **`dim_time.hour` is UTC, and the app's hour-band logic ignores that.** Raw, the
+   all-user histogram peaks at 03:00–05:00 — not a listening pattern, but a
+   UTC+5:30 audience's morning. Corrected: peak 18:00, trough 04:00.
+   `_calculate_mood_metrics` applies bands like "+0.15 valence if 10:00–20:00"
+   straight to UTC timestamps, so **every band is shifted 5.5 h**. P14 must convert
+   before bucketing; `context_label` derived from raw UTC would mislabel every
+   bucket. `_common.local_hour()` / `local_iso_dow()` own this conversion.
+
+**Other decision inputs P14/P15 should quote** (full table at the end of
+`EDA_FINDINGS.md`): 5 derived `hour_bucket` cut points; `night_share` = local
+00:00–06:00; two `dow_bucket` levels (weekday peak 09:00 vs weekend 19:00);
+artist-level `repeat_ratio` (median 0.940); affinity half-life should be tested at
+**40–107 d**, not the inherited 180 d (at 180 d a play 40 days old — the p90 return
+gap — still weighs 0.86); session gap 30 min is well-chosen (90.0% of gaps within
+it) but **k=2, not the app's 3**, and the silhouette is only 0.287, so it is a
+length continuum, not archetypes; hybrid **β stays 0.15** (69.7% of plays are on
+multi-listener tracks, but mean pairwise Jaccard is just 0.075); Baseline-0 must
+page ≥300 deep (median user has already played 86.5% of the global top-100).
+
+**Shipped:**
+
+- `apps/api/notebooks/_common.py` — the phase's leverage. Reuses
+  `app.db.session.get_engine` (never a hardcoded DSN) and re-raises its
+  `ValueError` naming the **5433** compose port, since the app's own message says
+  5432. Owns: `alias_users()` (ordered `is_primary DESC, user_id` — ordering by
+  `username` would leak names through the alias order), `load_fact` / `load_dim`
+  (which **never project `username`/`display_name`**), `local_hour` /
+  `local_iso_dow` (+`LOCAL_UTC_OFFSET_HOURS = 5.5`), `enough()` guards, `PALETTE`
+  + `use_style()`, `save_fig(aggregate=)`, `decision()`, `latest_dq_run()`.
+- `apps/api/notebooks/nb_sources/*.py` + `build_notebooks.py` — notebooks are
+  authored as percent-format `.py` and rendered to `.ipynb` with **empty outputs**.
+  Notebook JSON is unreviewable in a diff; this also makes "strip before commit" a
+  rebuild rather than a discipline.
+- The 8 notebooks, `notebooks/README.md` (incl. the which-notebook-answers-what
+  map), `documentation/EDA_FINDINGS.md`, 14 aggregate charts in
+  `documentation/assets/eda/`.
+- `apps/api/tests/test_notebooks.py` — **62 tests**. The PII checks need no DB so
+  they cannot be skipped in CI: no real username in any committed notebook,
+  `_common.py`, or `EDA_FINDINGS.md`; zero `output_type`; no notebook references
+  `username`/`display_name`; every notebook has a `## Decision inputs` cell and
+  calls `C.decision()`. The 10 real names are **parsed from
+  `007_mask_user_names.sql` at test time** — hardcoding them in a committed test
+  would leak exactly what the test prevents — plus a meta-test asserting that parse
+  still finds ≥10, so the guard cannot silently pass.
+- `.gitignore` — un-ignores `apps/api/notebooks/*.ipynb` (Phase 9's blanket
+  `*.ipynb` would have silently dropped every notebook) and adds `outputs/eda/`.
+  P15's `evaluation.ipynb` inherits this fix.
+- `requirements-dev.txt` — `jupyter==1.1.1`, `ipykernel==7.3.0`,
+  `matplotlib==3.10.7`, `seaborn==0.13.2`, `nbstripout==0.9.1`, `nbconvert==7.17.1`.
+  matplotlib/seaborn deliberately match the root `requirements.txt` pins.
+
+**Verify gate results (measured):**
+
+- **Un-ignore:** `git check-ignore --quiet` exits 1 and `git status` lists the file
+  — confirmed via exit code, not the `-v` output (which prints the matched
+  *negation* rule and misleads).
+- **Real DB (336,936 plays, 10 users):** 8/8 execute clean, every `## Decision
+  inputs` cell holds concrete numbers.
+- **Empty-but-migrated DB (the hardest degradation case):** 8/8 exit 0, 50 total
+  `insufficient data -- skipped` messages, no tracebacks. This is the P16 CI job.
+  Caught 2 real bugs first — 04 and 06 gated on `if DB:` (true) instead of on row
+  counts, giving `TypeError`/`ZeroDivisionError` on empty aggregates.
+- **Outputs:** `grep -c '"output_type"'` → 0 for all 8.
+- **Tests:** `pytest tests/` → **138 passed, 3 skipped** (was 76/3 at Phase 13;
+  +62, no regressions).
+- **Lint:** `ruff --select E9,F` clean on all new files — the repo's actual gate
+  (existing `app/quality/`, `app/ingest/` show 18 default-ruff style findings, so
+  default-ruff is not enforced here). Also fixed `PLR0124`/`RUF100`/`ISC004` in the
+  new code.
+- **No writes:** `gold.fact_streams` 338,270 and `gold.dim_user` 11 identical
+  before/after; no migration, `app/`, or route touched.
+- **PII:** aliases only in every committed artifact; the per-user hour-profile
+  heatmap correctly routed to gitignored `outputs/eda/` while 14 aggregate charts
+  went to `documentation/assets/eda/`.
+
+> ROADMAP DEVIATIONS:
+> 1. Notebooks are generated from `nb_sources/*.py` via `build_notebooks.py` rather
+>    than hand-authored `.ipynb`. Same committed artifacts, reviewable diffs, and
+>    output-stripping becomes a rebuild. `nbstripout` is still a dependency and the
+>    README documents the hook.
+> 2. Roadmap's verify says "runs clean against the **fixture** DB". Tested against
+>    an **empty** migrated DB instead — strictly harder (0 rows vs 40) and it does
+>    not depend on the seeder. The fixture path is a subset of what this proves.
+> 3. `_common.py` gained `local_hour`/`local_iso_dow`/`LOCAL_UTC_OFFSET_HOURS` and
+>    `latest_dq_run`, not in the roadmap's helper list — forced by findings 2 and by
+>    Phase 13 shipping `quality.dq_run` after this phase was specced.
+> 4. Notebook 05 reports **k=2 with a weak 0.287 silhouette** rather than
+>    confirming the app's k=3. Reported honestly instead of forcing the expected
+>    answer; the archetype namer is relative to the centroids so it stays correct
+>    at whatever k.
+> 5. Notebook 02's `night_share` ranks windows by spread **per unit of listening
+>    captured**, because raw spread mechanically favours the widest window. The two
+>    criteria disagree (`00-06` vs `22-06`) and the notebook says so.
+> 6. `latest_dq_run()` catches only `ProgrammingError`, not bare `Exception` — the
+>    first draft's broad catch silently swallowed a column-name mistake (I had
+>    guessed `started_at`/`checks_passed`; the DDL has `run_at`/`passed`) and
+>    reported "no DQ run" on a warehouse with 15.
+
+**Follow-ups for Phase 14:** re-run the artist-tag backfill and re-run notebook 04
+**before** building `gold.user_genre_affinity` (finding 1); convert UTC→local
+before deriving any temporal bucket (finding 2); collapse the two unlinked 30-min
+literals in `data_loader.py` (`:68` and `:1349`); rename `mood_proxy_*` to
+`context_*`/`behavior_*`. **Note:** P14's feature-table migration is **`014`** —
+Phase 13 took `013`. The notebooks port logic *from* `data_loader.py`, which P14
+deletes, so they carry constants inline rather than importing; after P14 the
+`## Decision inputs` cells are the specification, not the deleted file.
+**For Phase 16 CI:** `jupyter nbconvert --to notebook --execute
+apps/api/notebooks/*.ipynb` against a scratch DB + `pytest tests/test_notebooks.py`
++ `nbstripout --verify`.
+
+**Next phase to start: Phase 14.**

@@ -61,6 +61,15 @@ build/
 # Jupyter Notebook
 .ipynb_checkpoints/
 *.ipynb
+# ...but the Phase 13.5 EDA notebook set IS committed (outputs stripped by
+# nbstripout -- outputs would embed real listening history for 10 people).
+# Phase 9 added the blanket ignore above because notebooks were cut from the
+# roadmap; Phase 13.5 reinstated them. Phase 15's evaluation.ipynb lands here too.
+!apps/api/notebooks/*.ipynb
+
+# Phase 13.5: full-resolution / per-user EDA charts. Only the *aggregate* ones
+# are committed, under documentation/assets/eda/.
+outputs/eda/
 
 # Environment
 spotify-insights.env
