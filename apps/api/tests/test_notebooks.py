@@ -27,11 +27,17 @@ EDA_FINDINGS = REPO_ROOT / "documentation" / "EDA_FINDINGS.md"
 DB_URL = os.getenv("DATABASE_URL")
 db_only = pytest.mark.skipif(not DB_URL, reason="DATABASE_URL not set")
 
-EXPECTED_NOTEBOOKS = 8
+EXPECTED_NOTEBOOKS = 9  # 00 exploratory (no decision framing) + 8 decision-support
+# 00 is general look-and-see -- no downstream decision, no Decision-inputs cell.
+NO_DECISION_INPUTS = {"00_exploratory"}
 
 
 def notebooks() -> list[Path]:
     return sorted(NOTEBOOK_DIR.glob("[0-9][0-9]_*.ipynb"))
+
+
+def decision_notebooks() -> list[Path]:
+    return [p for p in notebooks() if p.stem not in NO_DECISION_INPUTS]
 
 
 def real_usernames() -> set[str]:
@@ -73,9 +79,10 @@ def test_notebook_is_valid_json(nb_path: Path):
     json.loads(nb_path.read_text())
 
 
-@pytest.mark.parametrize("nb_path", notebooks(), ids=lambda p: p.name)
+@pytest.mark.parametrize("nb_path", decision_notebooks(), ids=lambda p: p.name)
 def test_notebook_has_decision_inputs_cell(nb_path: Path):
-    """Every notebook must end with the numbers a later phase can quote."""
+    """Every decision-support notebook must end with the numbers a later phase
+    can quote. Exploratory notebooks (NO_DECISION_INPUTS) are exempt."""
     nb = json.loads(nb_path.read_text())
     text = "\n".join(
         "".join(c.get("source", []))
@@ -88,7 +95,7 @@ def test_notebook_has_decision_inputs_cell(nb_path: Path):
     )
 
 
-@pytest.mark.parametrize("nb_path", notebooks(), ids=lambda p: p.name)
+@pytest.mark.parametrize("nb_path", decision_notebooks(), ids=lambda p: p.name)
 def test_notebook_calls_decision_helper(nb_path: Path):
     nb = json.loads(nb_path.read_text())
     code = "\n".join(

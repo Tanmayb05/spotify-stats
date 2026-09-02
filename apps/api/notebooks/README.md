@@ -1,18 +1,21 @@
 # EDA notebooks (Phase 13.5)
 
-Eight read-only notebooks over the quality-gated star schema, written to be
-**read later as evidence** when a Phase 14/15/16 design decision is in doubt.
-They write nothing: no app, API, or schema change belongs in this directory.
+Nine read-only notebooks over the quality-gated star schema. Eight are written to
+be **read later as evidence** when a Phase 14/15/16 design decision is in doubt;
+one (`00_exploratory`) is general look-and-see with no decision framing. They
+write nothing: no app, API, or schema change belongs in this directory.
 
 If you do not want to boot Jupyter, read
 [`documentation/EDA_FINDINGS.md`](../../../documentation/EDA_FINDINGS.md) — a
-digest of every notebook's question, chart, and the number a later phase should
-quote.
+digest of every decision-support notebook's question, chart, and the number a
+later phase should quote. `00_exploratory` isn't in that digest — it's charts and
+distributions, not decisions.
 
 ## Which notebook answers your question
 
 | Notebook | Question it settles | Feeds |
 |---|---|---|
+| `00_exploratory` | General trends, distributions, top artists/tracks, platform mix, skip behaviour, heatmaps | Nothing specific — just look-and-see |
 | `01_dataset_overview` | What is in the warehouse, how much per person, and was it gate-clean? | P16 write-up (n=10 caveats); the per-user coverage floor |
 | `02_temporal_behavior` | When do people listen, and where do the natural cut points fall? | **P14** `user_temporal_preferences`: `hour_bucket`, `dow_bucket`, `context_label`, `night_share` |
 | `03_artist_loyalty_discovery` | How fast do people return to an artist; repeat vs new? | **P14** `user_artist_affinity` half-life + `repeat_ratio`; **P15** explorer/loyalist split |
