@@ -64,9 +64,6 @@ import type {
   TopTrack,
   MonthlyData,
   PlatformStat,
-  MoodSummary,
-  MoodContexts,
-  MonthlyMood,
   DiscoveryTimeline,
   ArtistLoyalty,
   ArtistObsession,
@@ -82,26 +79,22 @@ import type {
   ListeningStreak,
   RepeatedTrack,
   MonthlyDiversity,
-  HeatmapData,
-  Milestone,
-  FlashbackData,
-  SessionClustersResponse,
-  SessionCentroid,
-  SessionAssignment,
   RecommendationsResponse,
   TargetMood,
-  SimulationResponse,
   CompareUser,
-  LeaderboardRow,
-  OverlapResult,
-  SimilarityMatrix,
-  TopArtistsMulti,
+  DataHealthResponse,
 } from '../types/api';
 
 // API functions
 export const api = {
   // Health check
   health: () => apiClient.get('/health'),
+
+  // Phase 13 - Data Health
+  getDataHealth: async (): Promise<DataHealthResponse> => {
+    const response = await apiClient.get<DataHealthResponse>('/api/health/data');
+    return response.data;
+  },
 
   // Phase 1 - Overview endpoints
   getOverviewStats: async (): Promise<OverviewStats> => {
@@ -133,29 +126,6 @@ export const api = {
   getPlatformStats: async (): Promise<PlatformStat[]> => {
     const response = await apiClient.get<PlatformStat[]>(
       `/api/platforms${qs(withUser())}`
-    );
-    return response.data;
-  },
-
-  // Phase 2 - Moods
-  getMoodSummary: async (
-    window: '7d' | '30d' | '90d' | 'all' = '30d'
-  ): Promise<MoodSummary> => {
-    const p = withUser(new URLSearchParams({ window }));
-    const response = await apiClient.get<MoodSummary>(`/api/mood/summary${qs(p)}`);
-    return response.data;
-  },
-
-  getMoodContexts: async (): Promise<MoodContexts> => {
-    const response = await apiClient.get<MoodContexts>(
-      `/api/mood/contexts${qs(withUser())}`
-    );
-    return response.data;
-  },
-
-  getMoodMonthly: async (): Promise<MonthlyMood[]> => {
-    const response = await apiClient.get<MonthlyMood[]>(
-      `/api/mood/monthly${qs(withUser())}`
     );
     return response.data;
   },
@@ -289,52 +259,6 @@ export const api = {
     return response.data;
   },
 
-  getListeningHeatmap: async (): Promise<HeatmapData[]> => {
-    const response = await apiClient.get<HeatmapData[]>(
-      `/api/patterns/heatmap${qs(withUser())}`
-    );
-    return response.data;
-  },
-
-  // Phase 4 - Milestones
-  getMilestones: async (): Promise<Milestone[]> => {
-    const response = await apiClient.get<Milestone[]>(
-      `/api/milestones/list${qs(withUser())}`
-    );
-    return response.data;
-  },
-
-  getFlashback: async (date: string): Promise<FlashbackData> => {
-    const p = withUser(new URLSearchParams({ date }));
-    const response = await apiClient.get<FlashbackData>(
-      `/api/milestones/flashback${qs(p)}`
-    );
-    return response.data;
-  },
-
-  // Phase 5 - Sessions & Clustering
-  getSessionClusters: async (): Promise<SessionClustersResponse> => {
-    const response = await apiClient.get<SessionClustersResponse>(
-      `/api/sessions/clusters${qs(withUser())}`
-    );
-    return response.data;
-  },
-
-  getSessionCentroids: async (): Promise<SessionCentroid[]> => {
-    const response = await apiClient.get<SessionCentroid[]>(
-      `/api/sessions/centroids${qs(withUser())}`
-    );
-    return response.data;
-  },
-
-  getSessionAssignments: async (limit = 100): Promise<SessionAssignment[]> => {
-    const p = withUser(new URLSearchParams({ limit: String(limit) }));
-    const response = await apiClient.get<SessionAssignment[]>(
-      `/api/sessions/assignments${qs(p)}`
-    );
-    return response.data;
-  },
-
   // Phase 6 - Recommendations
   getRecommendations: async (
     topK = 20,
@@ -354,60 +278,9 @@ export const api = {
     return `${API_BASE_URL}/api/export/recommendations${qs(p)}`;
   },
 
-  // Phase 7 - Simulator
-  getSimulation: async (
-    n = 20,
-    seed?: string,
-    hour?: number
-  ): Promise<SimulationResponse> => {
-    const p = withUser(new URLSearchParams({ n: String(n) }));
-    if (seed) p.set('seed', seed);
-    if (hour != null) p.set('hour', String(hour));
-    const response = await apiClient.get<SimulationResponse>(
-      `/api/simulate/next${qs(p)}`
-    );
-    return response.data;
-  },
-
-  getSimulationArtists: async (): Promise<string[]> => {
-    const response = await apiClient.get<{ artists: string[] }>(
-      `/api/simulate/artists${qs(withUser())}`
-    );
-    return response.data.artists;
-  },
-
-  exportSimulation: (n = 50, seed?: string, hour?: number): string => {
-    const p = withUser(new URLSearchParams({ n: String(n) }));
-    if (seed) p.set('seed', seed);
-    if (hour != null) p.set('hour', String(hour));
-    return `${API_BASE_URL}/api/export/simulation${qs(p)}`;
-  },
-
-  // Friend-group comparison (already multi-user via `users` param — no withUser)
+  // Multi-user switcher (already multi-user via `users` param — no withUser)
   getCompareUsers: async (): Promise<CompareUser[]> => {
     const response = await apiClient.get<CompareUser[]>('/api/compare/users');
-    return response.data;
-  },
-
-  getLeaderboard: async (): Promise<LeaderboardRow[]> => {
-    const response = await apiClient.get<LeaderboardRow[]>('/api/compare/leaderboard');
-    return response.data;
-  },
-
-  getOverlap: async (userIds: string[], topN = 25): Promise<OverlapResult> => {
-    const q = new URLSearchParams({ users: userIds.join(','), top_n: String(topN) });
-    const response = await apiClient.get<OverlapResult>(`/api/compare/overlap?${q.toString()}`);
-    return response.data;
-  },
-
-  getSimilarityMatrix: async (): Promise<SimilarityMatrix> => {
-    const response = await apiClient.get<SimilarityMatrix>('/api/compare/similarity-matrix');
-    return response.data;
-  },
-
-  getTopArtistsMulti: async (userIds: string[], limit = 10): Promise<TopArtistsMulti> => {
-    const q = new URLSearchParams({ users: userIds.join(','), limit: String(limit) });
-    const response = await apiClient.get<TopArtistsMulti>(`/api/compare/top-artists?${q.toString()}`);
     return response.data;
   },
 };

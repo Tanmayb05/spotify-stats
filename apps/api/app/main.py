@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
-from app.routes import health, stats, mood, discovery, patterns, milestones, sessions, reco, sim, compare
+from app.routes import health, stats, discovery, patterns, reco, compare
 
 # Create FastAPI app
 app = FastAPI(
@@ -23,13 +23,9 @@ app.add_middleware(
 # Include routers
 app.include_router(health.router)
 app.include_router(stats.router)
-app.include_router(mood.router)
 app.include_router(discovery.router)
 app.include_router(patterns.router)
-app.include_router(milestones.router)
-app.include_router(sessions.router)
 app.include_router(reco.router)
-app.include_router(sim.router)
 app.include_router(compare.router)
 
 @app.get("/")

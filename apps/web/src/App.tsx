@@ -4,14 +4,9 @@ import AppLayout from './layout/AppLayout';
 import ErrorBanner from './components/ErrorBanner';
 
 // Pages
-import Overview from './pages/Overview';
-import ListeningPatterns from './pages/ListeningPatterns';
-import Discovery from './pages/Discovery';
-import Milestones from './pages/Milestones';
-import Sessions from './pages/Sessions';
+import Insights from './pages/Insights';
 import Recommendations from './pages/Recommendations';
-import Simulator from './pages/Simulator';
-import Comparison from './pages/Comparison';
+import DataHealth from './pages/DataHealth';
 import NotFound from './pages/NotFound';
 
 function App() {
@@ -20,14 +15,9 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<AppLayout />}>
-            <Route index element={<Overview />} />
-            <Route path="listening-patterns" element={<ListeningPatterns />} />
-            <Route path="discovery" element={<Discovery />} />
-            <Route path="milestones" element={<Milestones />} />
-            <Route path="sessions" element={<Sessions />} />
+            <Route index element={<Insights />} />
             <Route path="recommendations" element={<Recommendations />} />
-            <Route path="simulator" element={<Simulator />} />
-            <Route path="comparison" element={<Comparison />} />
+            <Route path="data-health" element={<DataHealth />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
