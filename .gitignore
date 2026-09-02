@@ -19,6 +19,11 @@ outputs/lyrics/
 # ...but keep the small aggregate CSVs the current app reads:
 !outputs/data/*.csv
 
+# Phase 11: pre/post-migration API snapshots (real listening history) and the
+# MusicBrainz/Last.fm artist-tag cache -- both reproducible, neither committed.
+outputs/baseline/
+outputs/enrichment/
+
 # Local scratch copies of moved data
 archived/
 
@@ -52,10 +57,37 @@ build/
 *.swo
 *~
 .DS_Store
+Thumbs.db
+
+# Claude Code local project settings (machine/session-specific)
+.claude/
+
+# Python: caches from linting/type-checking/testing tools
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Secrets net -- defense in depth given this repo's PII history; nothing of
+# this shape should ever be intentionally committed.
+*.pem
+*.key
+*.p12
 
 # Jupyter Notebook
 .ipynb_checkpoints/
 *.ipynb
+# ...but the Phase 13.5 EDA notebook set IS committed (outputs stripped by
+# nbstripout -- outputs would embed real listening history for 10 people).
+# Phase 9 added the blanket ignore above because notebooks were cut from the
+# roadmap; Phase 13.5 reinstated them. Phase 15's evaluation.ipynb lands here too.
+!apps/api/notebooks/*.ipynb
+
+# Phase 13.5: full-resolution / per-user EDA charts. Only the *aggregate* ones
+# are committed, under documentation/assets/eda/.
+outputs/eda/
 
 # Environment
 spotify-insights.env

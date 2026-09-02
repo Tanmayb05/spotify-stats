@@ -1,0 +1,9 @@
+node_modules/
+dist/
+
+# Secrets - never bake credentials into an image
+*.env
+!*.env.example
+
+.vite/
+*.log

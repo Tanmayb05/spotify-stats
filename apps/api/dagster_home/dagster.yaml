@@ -1,0 +1,47 @@
+# DAGSTER_HOME instance config. Run / event-log / schedule storage all point at
+# the same Postgres the pipeline writes, under the `dagster` schema so the ~8
+# Dagster tables do not sit in `public` next to streaming_history and the gold_*
+# compat views.
+#
+# Env vars (set by the compose `dagster` service):
+#   DAGSTER_PG_HOST DAGSTER_PG_USER DAGSTER_PG_PASSWORD DAGSTER_PG_DB DAGSTER_PG_PORT
+# For a bare local `dagster dev` these default to the compose-db values below;
+# override via env if your Postgres differs.
+
+storage:
+  postgres:
+    postgres_db:
+      username:
+        env: DAGSTER_PG_USER
+      password:
+        env: DAGSTER_PG_PASSWORD
+      hostname:
+        env: DAGSTER_PG_HOST
+      db_name:
+        env: DAGSTER_PG_DB
+      port:
+        env: DAGSTER_PG_PORT
+      params:
+        options: "-c search_path=dagster"
+
+telemetry:
+  enabled: false
+
+run_launcher:
+  module: dagster.core.launcher
+  class: DefaultRunLauncher
+
+# Local filesystem artifacts (compute logs, IO-manager scratch). Pointed at a
+# subdir so the compose named volume can persist just this, without shadowing
+# dagster.yaml itself.
+local_artifact_storage:
+  module: dagster.core.storage.root
+  class: LocalArtifactStorage
+  config:
+    base_dir: /app/dagster_home/storage
+
+compute_logs:
+  module: dagster.core.storage.local_compute_log_manager
+  class: LocalComputeLogManager
+  config:
+    base_dir: /app/dagster_home/storage/compute_logs

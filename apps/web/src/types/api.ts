@@ -30,39 +30,6 @@ export interface PlatformStat {
   streams: number;
 }
 
-// Phase 2 - Mood Types
-
-export interface MoodSummary {
-  window_days: number;
-  avg_valence: number | null;
-  avg_energy: number | null;
-  avg_danceability: number | null;
-  sample_size: number;
-}
-
-export interface MoodMetrics {
-  avg_valence: number | null;
-  avg_energy: number | null;
-  avg_danceability: number | null;
-  sample_size: number;
-}
-
-export interface MoodContexts {
-  weekday_vs_weekend: {
-    weekday: MoodMetrics;
-    weekend: MoodMetrics;
-  };
-  by_platform: Record<string, MoodMetrics>;
-}
-
-export interface MonthlyMood {
-  month: string;
-  avg_valence: number | null;
-  avg_energy: number | null;
-  avg_danceability: number | null;
-  sample_size: number;
-}
-
 // Phase 3 - Discovery Types
 
 export interface DiscoveryTimeline {
@@ -175,93 +142,6 @@ export interface MonthlyDiversity {
   diversity_ratio: number;
 }
 
-export interface HeatmapData {
-  day: string;
-  hour: number;
-  stream_count: number;
-}
-
-// Phase 4 - Milestones Types
-
-export interface Milestone {
-  date: string;
-  year: number;
-  type: 'streak' | 'top_day' | 'first_artist' | 'diversity';
-  title: string;
-  description: string;
-  value: number;
-  badge_color: string;
-}
-
-export interface FlashbackData {
-  date: string;
-  day_of_week: string;
-  streams: number;
-  hours: number;
-  unique_artists: number;
-  unique_tracks: number;
-  skipped: number;
-  skip_rate: number;
-  first_stream: string | null;
-  last_stream: string | null;
-  listening_duration: string | null;
-  top_artists: Array<{ artist: string; streams: number }>;
-  top_tracks: Array<{ track: string; artist: string; plays: number }>;
-  message?: string;
-  error?: string;
-}
-
-// Phase 5 - Sessions & Clustering Types
-
-export interface SessionClusterProfile {
-  cluster_id: number;
-  session_count: number;
-  avg_duration: number;
-  avg_tracks: number;
-  avg_skip_ratio: number;
-  avg_diversity: number;
-  common_hour: number;
-  weekend_ratio: number;
-}
-
-export interface SessionClustersResponse {
-  n_clusters: number;
-  total_sessions: number;
-  silhouette_score: number;
-  clusters: SessionClusterProfile[];
-  error?: string;
-}
-
-export interface SessionCentroid {
-  cluster_id: number;
-  features: {
-    duration_minutes: number;
-    track_count: number;
-    unique_artists_count: number;
-    skip_ratio: number;
-    avg_track_duration: number;
-    hour_of_day: number;
-    is_weekend: number;
-    diversity_score: number;
-  };
-}
-
-export interface SessionAssignment {
-  session_id: string;
-  start_time: string;
-  end_time: string;
-  duration_minutes: number;
-  track_count: number;
-  unique_artists_count: number;
-  skip_ratio: number;
-  avg_track_duration: number;
-  hour_of_day: number;
-  is_weekend: number;
-  diversity_score: number;
-  platform: string;
-  cluster_label: number;
-}
-
 // Phase 6 - Recommendations
 export interface RecommendationWhyFeature {
   feature: string;
@@ -292,26 +172,7 @@ export interface RecommendationsResponse {
 
 export type TargetMood = 'happy' | 'energetic' | 'chill';
 
-// Phase 7 - Simulator
-export interface SimulationStep {
-  step: number;
-  from_artist: string;
-  to_artist: string;
-  probability: number;
-}
-
-export interface SimulationResponse {
-  seed: string | null;
-  seed_status: 'ok' | 'default' | 'unknown';
-  hour: number | null;
-  n: number;
-  generated_at: string;
-  count: number;
-  truncated: boolean;
-  sequence: SimulationStep[];
-}
-
-// Friend-group comparison
+// Multi-user switcher
 export interface CompareUser {
   user_id: string;
   username: string;
@@ -319,41 +180,109 @@ export interface CompareUser {
   is_primary: boolean;
 }
 
-export interface LeaderboardRow extends CompareUser {
-  total_streams: number;
-  total_hours: number;
-  unique_artists: number;
-  unique_tracks: number;
-  skip_rate: number;
-  first_stream: string;
-  last_stream: string;
+// Phase 13 - Data Health (/api/health/data)
+
+export type DqStatus = 'pass' | 'warn' | 'fail' | 'running' | 'error' | 'unknown';
+
+export interface DqCheck {
+  name: string;
+  severity: 'blocking' | 'warn';
+  passed: boolean;
+  skipped: boolean;
+  observed: string | null;
+  observed_numeric: number | null;
+  expected: string | null;
+  rows_failed: number;
+  user_id: string | null;
+  detail: Record<string, unknown> | null;
 }
 
-export interface OverlapPair {
-  user_a: string;
-  user_b: string;
-  shared: number;
-  only_a: number;
-  only_b: number;
-  jaccard: number;
+export interface DqCategory {
+  category: string;
+  total: number;
+  passed: number;
+  failed: number;
+  warned: number;
+  skipped: number;
+  status: 'pass' | 'warn' | 'fail';
+  checks: DqCheck[];
 }
 
-export interface SharedArtist {
-  artist: string;
-  total_plays: number;
+export interface DqBlock {
+  has_run: boolean;
+  status: DqStatus;
+  message?: string;
+  dq_run_id?: string;
+  run_at?: string;
+  finished_at?: string | null;
+  ingest_run_id?: string | null;
+  checks_total?: number;
+  passed?: number;
+  failed?: number;
+  warned?: number;
+  skipped?: number;
+  duration_ms?: number | null;
+  categories: DqCategory[];
 }
 
-export interface OverlapResult {
-  users: string[];
-  pairs: OverlapPair[];
-  shared_by_all_count: number;
-  top_shared_by_all: SharedArtist[];
+export interface IngestBlock {
+  has_run: boolean;
+  message?: string;
+  run_id?: string;
+  started_at?: string;
+  finished_at?: string | null;
+  status?: string;
+  users?: number;
+  files_seen?: number;
+  files_new?: number;
+  rows_raw?: number;
+  rows_valid?: number;
+  rows_quarantined?: number;
+  rows_landed?: number;
+  dups_dropped?: number;
+  rows_silver?: number;
+  rows_fact?: number;
+  track_match_rate?: number | null;
+  artist_match_rate?: number | null;
+  unmatched_tracks?: number | null;
+  unmatched_artists?: number | null;
+  invariants?: Record<string, boolean | null>;
 }
 
-export interface SimilarityMatrix {
-  users: string[];
-  matrix: (number | null)[][];
+export interface PerUserHealth {
+  user_id: string;
+  username: string | null;
+  display_name: string | null;
+  is_primary: boolean;
+  rows_raw: number;
+  rows_silver: number;
+  dups_dropped: number;
+  rows_quarantined: number;
+  max_ts: string | null;
+  freshness_days: number | null;
+  freshness_status: string;
 }
 
-// { [displayName]: { artist, streams }[] }
-export type TopArtistsMulti = Record<string, TopArtist[]>;
+export interface TrendPoint {
+  run_id: string;
+  started_at: string | null;
+  rows_fact: number;
+  rows_raw: number;
+  rows_quarantined: number;
+  dups_dropped: number;
+  status: string | null;
+}
+
+export interface DataHealthResponse {
+  backend: string;
+  generated_at: string;
+  dq: DqBlock;
+  ingest: IngestBlock;
+  per_user: PerUserHealth[];
+  quarantine: {
+    total: number;
+    by_rule: Record<string, number>;
+    sample: Array<Record<string, unknown>>;
+  };
+  trend: TrendPoint[];
+}

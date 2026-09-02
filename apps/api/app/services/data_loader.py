@@ -11,6 +11,8 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import silhouette_score
 from sklearn.metrics.pairwise import cosine_similarity
 
+from app.ingest.salvage import salvage_json_array
+
 def _find_project_root() -> Path:
     """Find repository root by walking up until data directory is found."""
     current = Path(__file__).resolve()
@@ -1848,41 +1850,79 @@ class SpotifyDataLoader:
 
     @staticmethod
     def _salvage_json_array(path: Path, array_key: str) -> List[Dict[str, Any]]:
+        """Decode a truncated JSON file's ``array_key`` array element-by-element.
+
+        Phase 11: moved to app/ingest/salvage.py so this loader and
+        scripts/load_enrichment_to_db.py share one implementation instead of
+        two copies drifting apart. Kept as a thin staticmethod wrapper here so
+        every existing internal call site (self._salvage_json_array(...))
+        keeps working unchanged.
         """
-        Decode a JSON object's ``array_key`` array element-by-element, stopping at
-        the first malformed entry. songs_info.json in this repo is a truncated
-        write, so a plain json.load fails; this salvages every clean object.
+        return salvage_json_array(path, array_key)
+
+    def _load_track_metadata_from_db(self) -> bool:
+        """Phase 11 (closes B5): when DB_BACKEND=local, read gold.dim_track /
+        gold.dim_artist instead of the gitignored outputs/data/*.json files.
+
+        Returns True if the DB path populated anything, so the caller can
+        fall back to the JSON files when the gold tables are empty (e.g. a
+        fresh clone where migrate.py has run but
+        scripts/load_enrichment_to_db.py has not).
+
+        Only attempted for the local backend: Supabase deployments have no
+        local Postgres to open a direct SQLAlchemy connection to (they go
+        through PostgREST), so this is a no-op there and the JSON-file path
+        below is unaffected for that deployment.
         """
-        if not path.exists():
-            return []
-        txt = path.read_text(encoding='utf-8')
         try:
-            marker = txt.index(f'"{array_key}"')
-            start = txt.index('[', marker) + 1
-        except ValueError:
-            return []
-        decoder = json.JSONDecoder()
-        items: List[Dict[str, Any]] = []
-        i, n = start, len(txt)
-        while i < n:
-            while i < n and txt[i] in ' \t\r\n,':
-                i += 1
-            if i >= n or txt[i] == ']':
-                break
-            try:
-                obj, end = decoder.raw_decode(txt, i)
-            except json.JSONDecodeError:
-                break
-            if isinstance(obj, dict):
-                items.append(obj)
-            i = end
-        return items
+            from app.config import settings
+            if not settings.is_local:
+                return False
+            from sqlalchemy import text
+            from app.db.session import get_engine
+            engine = get_engine()
+        except Exception:
+            return False
 
-    def _load_track_metadata(self) -> None:
-        """Load track/artist metadata caches from outputs/data/*.json (lazy)."""
-        if self._reco_meta_loaded:
-            return
+        try:
+            with engine.connect() as conn:
+                track_rows = conn.execute(text("""
+                    SELECT track_key, spotify_track_uri, popularity, duration_ms,
+                           explicit, release_year
+                    FROM gold.dim_track
+                    WHERE audio_source = 'enriched'
+                """)).mappings().all()
+                artist_rows = conn.execute(text("""
+                    SELECT artist_key, popularity, followers
+                    FROM gold.dim_artist
+                    WHERE popularity IS NOT NULL OR followers IS NOT NULL
+                """)).mappings().all()
+        except Exception as exc:
+            print(f"  (local DB metadata read failed, falling back to JSON files: {exc})")
+            return False
 
+        for r in track_rows:
+            key = r["spotify_track_uri"] or r["track_key"]
+            if not key:
+                continue
+            self._track_meta[key] = {
+                'track_popularity': r["popularity"] or 0,
+                'duration_ms': r["duration_ms"] or 0,
+                'explicit': 1.0 if r["explicit"] else 0.0,
+                'release_year': r["release_year"],
+            }
+        for r in artist_rows:
+            if not r["artist_key"]:
+                continue
+            self._artist_meta[r["artist_key"]] = {
+                'artist_popularity': r["popularity"] or 0,
+                'followers': r["followers"] or 0,
+            }
+
+        return bool(self._track_meta or self._artist_meta)
+
+    def _load_track_metadata_from_json(self) -> None:
+        """Fallback: load track/artist metadata caches from outputs/data/*.json."""
         songs = self._salvage_json_array(OUTPUTS_DATA_DIR / 'songs_info.json', 'songs')
         for s in songs:
             uri = s.get('track_uri') or s.get('track_id')
@@ -1911,11 +1951,43 @@ class SpotifyDataLoader:
                 'followers': a.get('followers') or 0,
             }
 
+    def _load_track_metadata(self) -> None:
+        """Load track/artist metadata caches (lazy).
+
+        Phase 11 (closes B5): tries gold.dim_track/gold.dim_artist in Postgres
+        first (DB_BACKEND=local only); falls back to the gitignored
+        outputs/data/*.json files when the DB path is unavailable or the gold
+        tables are empty. This is what lets /api/reco and /api/simulate work
+        on a fresh clone with zero outputs/ present, as long as migrate.py +
+        load_enrichment_to_db.py have been run (both are part of the normal
+        Docker Compose bring-up once Phase 12 wires them in; until then a
+        fresh clone still degrades to empty results exactly as before, not a
+        failure).
+        """
+        if self._reco_meta_loaded:
+            return
+
+        from_db = self._load_track_metadata_from_db()
+        if not from_db:
+            self._load_track_metadata_from_json()
+
         self._reco_meta_loaded = True
-        print(
-            f"✅ Reco metadata: {len(self._track_meta)} tracks, "
-            f"{len(self._artist_meta)} artists"
-        )
+        if not self._track_meta and not self._artist_meta:
+            # Neither the DB path nor the JSON files had anything. The
+            # recommender and simulator degrade to empty rather than failing;
+            # say so, because otherwise it looks like a silent bug.
+            print(
+                f"⚠️  Reco metadata unavailable: no gold.dim_track/dim_artist rows "
+                f"and no readable songs_info.json / artists_info.json under "
+                f"{OUTPUTS_DATA_DIR}. /api/reco and /api/simulate will return "
+                f"empty results. See documentation/LOCAL_DEV.md."
+            )
+        else:
+            source = "gold.dim_track/dim_artist (Postgres)" if from_db else "outputs/data/*.json"
+            print(
+                f"✅ Reco metadata from {source}: {len(self._track_meta)} tracks, "
+                f"{len(self._artist_meta)} artists"
+            )
 
     def _build_track_vectors(self) -> Dict[str, Any]:
         """

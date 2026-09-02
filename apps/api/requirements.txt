@@ -9,8 +9,24 @@ pandas==2.3.3
 numpy==2.3.3
 scikit-learn==1.7.2
 
-# Hard runtime dep: app/services/supabase_data_loader.py does
-# `from supabase import create_client` at import time. Was missing from this file.
+# app/ingest/validate.py runs this over every landed export batch (Phase 12).
+# Runtime dep from this phase forward, not a dev nicety.
+pandera==0.33.0
+
+# Supabase/PostgREST backend (DB_BACKEND=supabase, the default).
+# Imported lazily as of Phase 10, so the app boots without it configured; it is
+# still required whenever the Supabase backend is selected.
 # 2.31.0: 2.22.0 (the version that shipped in .venv) is yanked on PyPI and breaks
 # under Python 3.14 / pydantic 2.12; 2.31.0 installs and imports cleanly on 3.13 + 3.14.
 supabase==2.31.0
+
+# Local Postgres backend (DB_BACKEND=local) + the migration runner.
+sqlalchemy==2.0.52
+psycopg[binary]==3.3.5
+
+# Dagster (Phase 12). From this phase on, the pipeline in dagster_project/ is how
+# the warehouse gets built -- runtime, not a dev nicety. dagster-postgres backs
+# run / event-log / schedule storage with the same Postgres (schema: dagster).
+dagster==1.13.20
+dagster-webserver==1.13.20
+dagster-postgres==0.29.20

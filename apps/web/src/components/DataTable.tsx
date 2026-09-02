@@ -8,7 +8,6 @@ import {
   Paper,
   Skeleton,
   Typography,
-  Box,
 } from '@mui/material';
 
 export interface Column<T> {
@@ -16,6 +15,7 @@ export interface Column<T> {
   label: string;
   align?: 'left' | 'right' | 'center';
   width?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   format?: (value: any) => string | number;
 }
 
@@ -28,6 +28,7 @@ export interface DataTableProps<T> {
   'aria-label'?: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function DataTable<T extends Record<string, any>>({
   columns,
   data,

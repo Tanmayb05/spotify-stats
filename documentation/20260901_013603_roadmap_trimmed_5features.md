@@ -59,7 +59,7 @@ variable-order backoff before it's more than a demo."*
 | Data-quality framework | **Pandera** (in-pipeline dataframe schemas) + a thin **SQL check runner** (RI / freshness / anomaly) | Great Expectations = heavy scaffolding for n=10; dbt-tests need adopting dbt now |
 | Schema build tool | **Plain SQL migrations** (`apps/api/migrations/00X_*.sql`, existing `_effective_user_id` convention) | A dbt project is a second toolchain for a 6-table schema |
 | Data loaders | **Collapse to one** by end of Phase 14 — port salvageable compute out of `data_loader.py`, then delete it; `supabase_data_loader.py` → `data_service.py` | Two 2373/807-line loaders synced by hand is the top maintenance liability |
-| EDA notebooks | **Cut the 8-notebook set.** Fold 2–3 key charts (taste drift, explorer-vs-loyalist, session archetypes) into `RESEARCH_WRITEUP.md` | Notebooks are effort without a product surface; the write-up carries the narrative |
+| EDA notebooks | ~~Cut the 8-notebook set.~~ **REINSTATED 2026-09-01 as Phase 13.5** — 8 notebooks in `apps/api/notebooks/`, run against the DQ-gated star schema, each closing with a `## Decision inputs` cell; 2–3 key charts still fold into `RESEARCH_WRITEUP.md` | Owner will consult them when Phase 14/15 design decisions are in doubt, so their product surface is **decision support**, not the app. Placed after P13 (trusted data) and before P14 (first phase whose choices they inform) |
 | Explained user similarity | **Cut the page.** Keep a lightweight cosine-sim over the per-user behavioral vector + a "why similar / why different" explanation as a **section in `RESEARCH_WRITEUP.md` only** | The user-sim result matters; a dedicated page does not |
 
 ---
@@ -112,8 +112,9 @@ Continues existing numbering (last shipped = Phase 8). Each phase leaves the app
   documented download step or Git LFS. `.git` is currently 53 MB.
 - `data/README.md` — how to obtain a Spotify GDPR export, drop it in `data/raw/<user>/`.
 - `data/fixtures/sample_streaming_history.json` — tiny synthetic fixture for CI.
-- `.gitignore`: add `data/raw/`, `outputs/`; keep env rules. (`*.ipynb` ignore can stay —
-  notebooks are cut.)
+- `.gitignore`: add `data/raw/`, `outputs/`; keep env rules. (`*.ipynb` ignore stayed here
+  because notebooks were cut at the time — **Phase 13.5 reinstated them and must add
+  `!apps/api/notebooks/*.ipynb`**, or new notebooks silently never get committed.)
 - Pinned deps: `apps/api/requirements.txt` with exact `==` (note: it is currently
   **missing `supabase`** — a hard runtime dep); split `apps/api/requirements-dev.txt`
   (pytest, pandera, dagster, ruff).
@@ -294,6 +295,81 @@ returns ≥6 categories; Data Health + Insights + Recommendations all render; de
 `dim_track` row ⇒ referential-integrity check red and the page shows it; drawer shows
 exactly 3 items.
 
+### PHASE 13.5 — Behavioral EDA notebook set (decision-support reference) · **M**
+**Goal:** a small, re-runnable set of EDA notebooks over the quality-gated star schema,
+written to be **read later as evidence** when a Phase 14/15/16 design decision is in doubt.
+**Moves:** behavioral EDA 10 (the DS-scorecard line P14 only partially covered);
+communication 5 (partial).
+
+> **Why here, not earlier or later.** Notebooks must read a *stable, trusted* surface:
+> `gold.fact_streams` + dims exist from P11, are incrementally populated from P12, and are
+> DQ-gated from P13 — so a chart cannot be quietly wrong. And they must land *upstream of
+> the decisions they inform*: P14's feature definitions, P15's model + experiment choices.
+> Placed after P15 they would be archaeology; placed before P11 they would read the
+> un-modeled wide table and be invalidated by the star schema.
+> Numbered **13.5** deliberately: Phases 14/15/16 keep their numbers, so `UPDATE.md` rows,
+> branch names, and the already-written Phase 9/10 docs need no renumbering.
+
+**Decisions each notebook is meant to settle** (this is the point of the phase — every
+notebook ends with a **`## Decision inputs`** markdown cell stating the numbers a later
+phase should quote):
+
+| Notebook | Feeds decision in |
+|---|---|
+| `01_dataset_overview.ipynb` | P16 write-up "research question / n=10 caveats"; per-user coverage floor for every model |
+| `02_temporal_behavior.ipynb` | **P14** `user_temporal_preferences`: the actual `hour_bucket` / `dow_bucket` cut points and `context_label` set — derived, not guessed; `night_share` cutoff |
+| `03_artist_loyalty_discovery.ipynb` | **P14** `user_artist_affinity` recency-weight half-life + `repeat_ratio` definition; **P15** explorer-vs-loyalist per-user experiment breakdown |
+| `04_genre_coverage.ipynb` | **P14 genre-affinity kill gate** — the `<80% of plays` decision from the P11 backfill, with the evidence attached |
+| `05_session_archetypes.ipynb` | **P14** `_cluster_sessions` port (k, gap threshold); **P13** Insights session-archetype chart |
+| `06_mood_proxy_validation.ipynb` | **P14** `mood_proxy_*` — shows what the behavioral proxies do and do not track, so P16 can state the limitation honestly |
+| `07_cf_feasibility.ipynb` | **P15** the n=10 CF reality check *before* building Model 2: user-item sparsity, item overlap across users, cold-start mass. Decides how much weight the hybrid gives `userSim` (β) |
+| `08_candidate_pool.ipynb` | **P15** `candidates(user_id)` — how big the candidate pool actually is per user, and where the popularity baseline saturates |
+
+**Structure — `apps/api/notebooks/`:**
+- `README.md` — how to run (local Postgres via `docker compose up`, `DB_BACKEND=local`),
+  execution order, and **"read this table to find which notebook answers your question"**
+  (the decision map above).
+- `_common.py` — shared, imported by every notebook, so notebooks stay thin and no chart
+  logic is duplicated: `get_engine()` (reuses `apps/api/app/config.py` + `db/session.py`,
+  **never** a hardcoded DSN), `load_fact(users=None, cols=None)`, `PALETTE` (the project
+  hex list `#1c0b19/#140d4f/#4ea699/#2dd881/#6fedb7`), `save_fig(name)` →
+  `outputs/eda/<name>.png`, `decision(**kwargs)` helper that renders the closing
+  Decision-inputs block consistently.
+- The 8 notebooks above. Each: params cell at top (`USERS`, `SINCE`), pandas + matplotlib,
+  every chart titled + axis-labeled, and the closing `## Decision inputs` cell.
+- **Anonymization rule:** notebooks are committed **with outputs stripped by default**
+  (`nbstripout` / `--ClearOutputPreprocessor`) — outputs embed real listening history for
+  10 named people. Charts that are quoted in the write-up get exported to `outputs/eda/`
+  (gitignored) and only the *aggregate* ones are committed under
+  `documentation/assets/eda/`. Non-primary users appear as `user_02…user_10`, never by
+  name — the `_common.py` loader applies the alias map.
+
+**`.gitignore` change (reverses a Phase 9 line):** Phase 9 kept the blanket `*.ipynb`
+ignore because notebooks were cut. Un-ignore the notebook dir now:
+```gitignore
+!apps/api/notebooks/*.ipynb
+outputs/eda/
+```
+Verify with `git check-ignore -v apps/api/notebooks/01_dataset_overview.ipynb` → no match.
+(P15's `evaluation.ipynb` lands in the same dir and inherits this fix.)
+
+**Files:** `apps/api/notebooks/README.md`, `apps/api/notebooks/_common.py`,
+`apps/api/notebooks/0{1..8}_*.ipynb`, `apps/api/requirements-dev.txt` (add `jupyter`,
+`matplotlib`, `seaborn`, `nbstripout`, `nbconvert`), `.gitignore`,
+`documentation/assets/eda/.gitkeep`, `documentation/EDA_FINDINGS.md` (2–4 page digest:
+one section per notebook = question asked → chart → **the number a later phase should
+use**; this is the fast path when you do not want to boot Jupyter).
+**App still works:** notebooks are read-only consumers — zero writes, no app/API/schema
+change in this phase.
+**Verify:** `docker compose up` then
+`jupyter nbconvert --to notebook --execute apps/api/notebooks/*.ipynb --stdout > /dev/null`
+runs all 8 clean against the **fixture** DB (so this phase is CI-able in P16 — the fixture
+is 40 rows, so notebooks must degrade to "insufficient data" rather than raise);
+re-execute against the real 71k-row DB and confirm every notebook renders; every notebook
+has a `## Decision inputs` cell; committed `.ipynb` files have empty `outputs`
+(`grep -c '"output_type"' *.ipynb` → 0); no real non-primary username in any committed
+notebook or in `EDA_FINDINGS.md`; `EDA_FINDINGS.md` has 8 sections.
+
 ### PHASE 14 — Feature store: `user_*` + `track_popularity` tables + nightly compute + dual-loader collapse · **L**
 **Goal:** move heavy per-user compute off the request path into materialized `gold`
 feature tables refreshed nightly; collapse to one data loader.
@@ -410,7 +486,8 @@ communication 5 (partial). — **features 4 + 5**
   (−novelty); emits `outputs/eval/ablation_table.md`.
 - **One notebook** `apps/api/notebooks/evaluation.ipynb` — runs the harness, renders all
   metric tables + the 5 experiments + the ablation table + a "headline findings" cell.
-  (This is the single notebook that survives the EDA-notebook cut.)
+  (Lives alongside the 8 Phase-13.5 EDA notebooks in `apps/api/notebooks/` and reuses their
+  `_common.py` engine/palette/`save_fig` helpers; same outputs-stripped + alias rules.)
 
 **4C · Human-eval loop** (feature #5):
 - **Schema** `014_human_eval.sql`: `gold.eval_session(session_id, user_id, model,
@@ -492,8 +569,10 @@ tests + CI; rewrite the docs to one clear pitch.
   deleted pages carried most of them); make `npm run build` = `tsc -b && vite build`.
 - **CI** `.github/workflows/ci.yml`: `lint` (ruff + eslint), `typecheck` (`tsc -b`),
   `pytest` (Postgres service container + migrations + fixtures), `notebook`
-  (`nbconvert --execute apps/api/notebooks/evaluation.ipynb` on the fixture DB),
-  `docker-build` (`docker compose build`).
+  (`nbconvert --execute` on the fixture DB over **`evaluation.ipynb` + the 8 Phase-13.5
+  EDA notebooks** — catches an EDA notebook silently rotting after a schema change), plus
+  an `nbstripout --verify` step so no notebook lands with real listening data in its
+  outputs; `docker-build` (`docker compose build`).
 - **Communication:**
   - **Rewrite `README.md`** — pitch: *"A multi-user music intelligence platform that
     builds behavioral profiles from longitudinal listening histories and generates
@@ -511,8 +590,9 @@ tests + CI; rewrite the docs to one clear pitch.
   - `documentation/RESEARCH_WRITEUP.md` — question, method (time-split), results per
     experiment, ablation, human-vs-offline agreement, the **user-similarity section**
     (cosine over behavior vectors + explanation), 2–3 EDA charts folded in (taste drift,
-    explorer-vs-loyalist, session archetypes), the **Simulator "future work" paragraph**,
-    what worked / what didn't.
+    explorer-vs-loyalist, session archetypes) — **exported from the Phase 13.5 notebooks
+    via `save_fig`, not rebuilt**, so the write-up and the notebooks cannot disagree — the
+    **Simulator "future work" paragraph**, what worked / what didn't.
   - `documentation/DEMO_SCRIPT.md` — a 60-second walkthrough.
   - `CLAUDE.md` — update to phases 9–16 + the new architecture; keep palette/font/chart
     specs. Mark `database_schema_diagram.md` + stale phase docs superseded.
@@ -540,12 +620,19 @@ GitHub.
 2. **P10–P13 (DE backbone + page cull):** local infra → star schema → Dagster pipeline →
    DQ suite + Data Health page, and the app drops from 12 pages to 3. Features #1 and #2
    land. Every later phase depends on the schema + pipeline.
-3. **P14 (feature store):** feature #3 — unlocks the DS work, fixes on-request-compute
-   perf, enables the dual-loader collapse. Highest-leverage single phase.
-4. **P15 (models + eval + human loop):** features #4 and #5 in one phase — they share the
+3. **P13.5 (EDA notebooks):** the last cheap moment to *look at the data before committing
+   to feature definitions*. Runs on a schema that is populated (P12) and quality-gated
+   (P13), and lands immediately upstream of every phase whose choices it informs — P14's
+   bucket cut points and genre-affinity gate, P15's CF-feasibility and candidate-pool
+   sizing. Read-only, so it cannot destabilize the app.
+4. **P14 (feature store):** feature #3 — unlocks the DS work, fixes on-request-compute
+   perf, enables the dual-loader collapse. Highest-leverage single phase. Its feature
+   definitions should **quote P13.5's Decision-inputs cells** rather than pick thresholds
+   by hand.
+5. **P15 (models + eval + human loop):** features #4 and #5 in one phase — they share the
    `reco/` + `eval/` packages and the one page. The eval harness is the highest-value DS
    deliverable; do not cut it.
-5. **P16 (loop + tests + CI + docs):** makes it a *system*, not a pile of scripts; CI is
+6. **P16 (loop + tests + CI + docs):** makes it a *system*, not a pile of scripts; CI is
    table stakes; the write-up ties DE + DS + human eval into one narrative.
 
 ## Effort roll-up
@@ -557,6 +644,7 @@ GitHub.
 | 11 | Star schema + enrichment into Postgres + medallion | L | 1 (schema) |
 | 12 | Dagster ingestion pipeline (incremental / idempotent / quarantine) | XL | 1 |
 | 13 | DQ suite + Data Health page + cull to 3 pages | M | 2 |
+| 13.5 | Behavioral EDA notebook set (decision-support reference) | M | — (feeds 3, 4, 5) |
 | 14 | Feature store + nightly compute + dual-loader collapse | L | 3 |
 | 15 | 4 recommenders + eval harness + explainable recs + human-eval loop | XL | 4 + 5 |
 | 16 | Production loop + tests + CI + README/architecture/write-up | L | — |
@@ -569,7 +657,7 @@ instead of 12.
 | Cut | Disposition |
 |---|---|
 | Milestones, Sessions, Moods, Simulator, Comparison pages | deleted in Phase 13 (Sessions clustering logic kept as a chart on Insights; Simulator → "future work" paragraph in `RESEARCH_WRITEUP.md`) |
-| 8-notebook behavioral-EDA set | cut; 2–3 key charts folded into `RESEARCH_WRITEUP.md`; the single `evaluation.ipynb` survives |
+| ~~8-notebook behavioral-EDA set~~ | **UNCUT — now Phase 13.5** (see Decisions locked). `evaluation.ipynb` still ships separately in P15; 2–3 EDA charts still fold into `RESEARCH_WRITEUP.md`, now sourced from the notebooks rather than rebuilt |
 | Explained-user-similarity page | cut; `user_similarity.py` still built and consumed by the hybrid recommender; the result is a **section in `RESEARCH_WRITEUP.md`**, no route |
 | Prometheus `/metrics`, per-user auth tokens beyond a write-endpoint API key | cut; light structured logging + SLA fields on `/api/health/data` instead |
 | dbt project | cut; plain SQL migrations; note as optional future lineage-docs |

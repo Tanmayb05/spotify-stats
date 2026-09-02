@@ -1,6 +1,10 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
+// Where the dev server proxies /api and /health. Defaults to the local backend
+// from start.sh; docker compose sets it to the api service (http://api:3011).
+const apiProxyTarget = process.env.VITE_API_PROXY_TARGET ?? 'http://localhost:3011'
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
@@ -10,11 +14,11 @@ export default defineConfig({
     allowedHosts: ['dominion-undrilled-rural.ngrok-free.dev', '.ngrok-free.dev'],
     proxy: {
       '/api': {
-        target: 'http://localhost:3011',
+        target: apiProxyTarget,
         changeOrigin: true,
       },
       '/health': {
-        target: 'http://localhost:3011',
+        target: apiProxyTarget,
         changeOrigin: true,
       },
     },

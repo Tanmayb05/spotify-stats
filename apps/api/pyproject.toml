@@ -1,0 +1,7 @@
+# Minimal pyproject: the only reason it exists is so `dagster dev` / `dagster
+# job execute` can discover the code location without a -m flag. The project is
+# not packaged; dependencies stay in requirements*.txt.
+
+[tool.dagster]
+module_name = "dagster_project.definitions"
+code_location_name = "spotify_insights_ingestion"

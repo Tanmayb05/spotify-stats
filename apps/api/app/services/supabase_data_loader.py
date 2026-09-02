@@ -11,49 +11,31 @@ Performance benefits:
 - Concurrent queries possible
 """
 
-import os
-from pathlib import Path
 from typing import List, Dict, Any, Optional
-from datetime import datetime, timedelta, timezone
-from dotenv import load_dotenv
-
+from datetime import datetime
+from app.config import settings
+from app.db.backends import DBBackend, build_backend
 from app.services.data_loader import SpotifyDataLoader
 
-try:
-    from supabase import create_client, Client
-except ImportError:
-    raise ImportError(
-        "supabase-py is required. Install with: pip install supabase"
-    )
-
-# Load environment variables from spotify-insights.env.
-# Search upward from this file so it works regardless of the process CWD
-# (start.sh launches uvicorn from apps/api, scripts run from the repo root).
-_env_loaded = False
-for _parent in Path(__file__).resolve().parents:
-    _candidate = _parent / 'spotify-insights.env'
-    if _candidate.exists():
-        load_dotenv(_candidate)
-        _env_loaded = True
-        break
-if not _env_loaded:
-    load_dotenv('spotify-insights.env')  # last-resort relative fallback
-
-# Configuration
-SUPABASE_URL = os.getenv('SUPABASE_URL')
-SUPABASE_KEY = os.getenv('SUPABASE_SERVICE_KEY') or os.getenv('SUPABASE_ANON_KEY')
+# Env loading and credential resolution now live in app.config, which reads
+# spotify-insights.env with the same upward-walk search but lets real
+# environment variables win (so Docker Compose can inject configuration).
 
 
 class SupabaseDataLoader:
-    """Service to load and process Spotify streaming data from Supabase"""
+    """Loads and processes Spotify streaming data from the configured database.
 
-    def __init__(self):
-        if not SUPABASE_URL or not SUPABASE_KEY:
-            raise ValueError(
-                "Missing Supabase credentials. Set SUPABASE_URL and SUPABASE_SERVICE_KEY in spotify-insights.env"
-            )
+    Despite the name (kept so the ~35 call sites in app/routes/ are unchanged),
+    this works against either backend: PostgREST/Supabase or a local Postgres,
+    selected by DB_BACKEND. Both call the same SQL functions from
+    apps/api/migrations/, so results are identical. Renamed to data_service.py
+    in Phase 14 when the two loaders collapse.
+    """
 
-        self.supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+    def __init__(self, backend: Optional[DBBackend] = None):
+        # Credentials are validated inside the backend, so the Supabase check
+        # only fires when the Supabase path is actually selected.
+        self.db: DBBackend = backend if backend is not None else build_backend(settings)
         self._loaded = True  # Database is always "loaded"
 
         # Resolved primary user id (cached; used when a caller passes user_id=None
@@ -82,15 +64,11 @@ class SupabaseDataLoader:
             return user_id
         if self._primary_user_id is None:
             try:
-                resp = (
-                    self.supabase.table("users")
-                    .select("id")
-                    .eq("is_primary", True)
-                    .limit(1)
-                    .execute()
+                resp = self.db.select(
+                    "users", "id", eq={"is_primary": True}, limit=1
                 )
-                if resp.data:
-                    self._primary_user_id = resp.data[0]["id"]
+                if resp:
+                    self._primary_user_id = resp[0]["id"]
             except Exception as e:
                 print(f"Error resolving primary user id: {e}")
         return self._primary_user_id
@@ -110,14 +88,13 @@ class SupabaseDataLoader:
         page_size = 1000
         while True:
             start = page * page_size
-            resp = (
-                self.supabase.table("streaming_history")
-                .select(self._ROW_COLUMNS)
-                .eq("user_id", uid)
-                .range(start, start + page_size - 1)
-                .execute()
+            resp = self.db.select(
+                "streaming_history",
+                self._ROW_COLUMNS,
+                eq={"user_id": uid},
+                range_=(start, start + page_size - 1),
             )
-            batch = resp.data or []
+            batch = resp or []
             rows.extend(batch)
             if len(batch) < page_size:
                 break
@@ -151,9 +128,9 @@ class SupabaseDataLoader:
     def get_overview_stats(self, user_id: Optional[str] = None) -> Dict[str, Any]:
         """Get overview statistics using optimized SQL function"""
         try:
-            response = self.supabase.rpc('get_overview_stats', self._uid({}, user_id)).execute()
-            if response.data and len(response.data) > 0:
-                data = response.data[0]
+            response = self.db.rpc('get_overview_stats', self._uid({}, user_id))
+            if response and len(response) > 0:
+                data = response[0]
                 return {
                     'total_streams': data['total_streams'],
                     'total_hours': float(data['total_hours']),
@@ -169,14 +146,14 @@ class SupabaseDataLoader:
     def get_top_artists(self, limit: int = 10, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """Get top artists from materialized view"""
         try:
-            response = self.supabase.rpc('get_top_artists', self._uid({'limit_count': limit}, user_id)).execute()
-            if response.data:
+            response = self.db.rpc('get_top_artists', self._uid({'limit_count': limit}, user_id))
+            if response:
                 return [
                     {
                         'artist': row['artist'],
                         'streams': row['streams']
                     }
-                    for row in response.data
+                    for row in response
                 ]
             return []
         except Exception as e:
@@ -186,15 +163,15 @@ class SupabaseDataLoader:
     def get_top_tracks(self, limit: int = 10, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """Get top tracks from materialized view"""
         try:
-            response = self.supabase.rpc('get_top_tracks', self._uid({'limit_count': limit}, user_id)).execute()
-            if response.data:
+            response = self.db.rpc('get_top_tracks', self._uid({'limit_count': limit}, user_id))
+            if response:
                 return [
                     {
                         'track': row['track'],
                         'artist': row['artist'],
                         'streams': row['streams']
                     }
-                    for row in response.data
+                    for row in response
                 ]
             return []
         except Exception as e:
@@ -204,15 +181,15 @@ class SupabaseDataLoader:
     def get_monthly_data(self, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """Get monthly streaming statistics from materialized view"""
         try:
-            response = self.supabase.rpc('get_monthly_data', self._uid({}, user_id)).execute()
-            if response.data:
+            response = self.db.rpc('get_monthly_data', self._uid({}, user_id))
+            if response:
                 return [
                     {
                         'month': row['month'][:7],  # Format as YYYY-MM
                         'streams': row['streams'],
                         'hours': float(row['hours'])
                     }
-                    for row in response.data
+                    for row in response
                 ]
             return []
         except Exception as e:
@@ -222,10 +199,10 @@ class SupabaseDataLoader:
     def get_platform_stats(self, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """Get platform usage statistics"""
         try:
-            response = self.supabase.rpc('get_platform_stats', self._uid({}, user_id)).execute()
-            if response.data:
+            response = self.db.rpc('get_platform_stats', self._uid({}, user_id))
+            if response:
                 # Return top 10 platforms, group rest as "Other"
-                platforms = response.data[:10]
+                platforms = response[:10]
                 result = [
                     {
                         'platform': row['platform'],
@@ -235,8 +212,8 @@ class SupabaseDataLoader:
                 ]
 
                 # Calculate "Other" if there are more platforms
-                if len(response.data) > 10:
-                    other_streams = sum(row['streams'] for row in response.data[10:])
+                if len(response) > 10:
+                    other_streams = sum(row['streams'] for row in response[10:])
                     result.append({'platform': 'Other', 'streams': other_streams})
 
                 return result
@@ -248,14 +225,14 @@ class SupabaseDataLoader:
     def get_hourly_distribution(self, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """Get listening distribution by hour of day"""
         try:
-            response = self.supabase.rpc('get_hourly_distribution', self._uid({}, user_id)).execute()
-            if response.data:
+            response = self.db.rpc('get_hourly_distribution', self._uid({}, user_id))
+            if response:
                 return [
                     {
                         'hour': row['hour'],
                         'streams': row['streams']
                     }
-                    for row in response.data
+                    for row in response
                 ]
             return []
         except Exception as e:
@@ -265,8 +242,8 @@ class SupabaseDataLoader:
     def get_daily_distribution(self, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """Get listening distribution by day of week"""
         try:
-            response = self.supabase.rpc('get_daily_distribution', self._uid({}, user_id)).execute()
-            if response.data:
+            response = self.db.rpc('get_daily_distribution', self._uid({}, user_id))
+            if response:
                 # Map day numbers to names
                 day_names = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
                 return [
@@ -274,7 +251,7 @@ class SupabaseDataLoader:
                         'day': day_names[row['day_of_week'] - 1],
                         'streams': row['streams']
                     }
-                    for row in response.data
+                    for row in response
                 ]
             return []
         except Exception as e:
@@ -284,8 +261,8 @@ class SupabaseDataLoader:
     def get_skip_behavior(self, limit: int = 20, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """Get skip behavior by artist"""
         try:
-            response = self.supabase.rpc('get_skip_behavior', self._uid({'limit_count': limit}, user_id)).execute()
-            if response.data:
+            response = self.db.rpc('get_skip_behavior', self._uid({'limit_count': limit}, user_id))
+            if response:
                 return [
                     {
                         'artist': row['artist'],
@@ -293,7 +270,7 @@ class SupabaseDataLoader:
                         'skipped_count': row['skipped_count'],
                         'skip_rate': float(row['skip_rate'])
                     }
-                    for row in response.data
+                    for row in response
                 ]
             return []
         except Exception as e:
@@ -303,15 +280,15 @@ class SupabaseDataLoader:
     def get_yearly_comparison(self, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """Get year-over-year comparison"""
         try:
-            response = self.supabase.rpc('get_yearly_comparison', self._uid({}, user_id)).execute()
-            if response.data:
+            response = self.db.rpc('get_yearly_comparison', self._uid({}, user_id))
+            if response:
                 return [
                     {
                         'year': row['year'],
                         'streams': row['streams'],
                         'hours': float(row['hours'])
                     }
-                    for row in response.data
+                    for row in response
                 ]
             return []
         except Exception as e:
@@ -321,8 +298,8 @@ class SupabaseDataLoader:
     def get_listening_streaks(self, limit: int = 10, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """Get listening streaks"""
         try:
-            response = self.supabase.rpc('get_listening_streaks', self._uid({'limit_count': limit}, user_id)).execute()
-            if response.data:
+            response = self.db.rpc('get_listening_streaks', self._uid({'limit_count': limit}, user_id))
+            if response:
                 return [
                     {
                         'start_date': row['start_date'],
@@ -330,7 +307,7 @@ class SupabaseDataLoader:
                         'length_days': row['length_days'],
                         'total_streams': row['total_streams']
                     }
-                    for row in response.data
+                    for row in response
                 ]
             return []
         except Exception as e:
@@ -350,11 +327,11 @@ class SupabaseDataLoader:
         """All users (primary first, then alphabetical)."""
         try:
             resp = (
-                self.supabase.table('users')
-                .select('id, username, display_name, is_primary')
-                .order('is_primary', desc=True)
-                .order('username')
-                .execute()
+                self.db.select(
+                    'users',
+                    'id, username, display_name, is_primary',
+                    order=[('is_primary', True), ('username', False)],
+                )
             )
             return [
                 {
@@ -363,7 +340,7 @@ class SupabaseDataLoader:
                     'display_name': r['display_name'] or r['username'].title(),
                     'is_primary': r['is_primary'],
                 }
-                for r in (resp.data or [])
+                for r in (resp or [])
             ]
         except Exception as e:
             print(f"Error listing users: {e}")
@@ -372,9 +349,9 @@ class SupabaseDataLoader:
     def get_leaderboard(self) -> List[Dict[str, Any]]:
         """Per-user listening totals (RPC get_user_leaderboard)."""
         try:
-            resp = self.supabase.rpc('get_user_leaderboard').execute()
+            resp = self.db.rpc('get_user_leaderboard')
             out = []
-            for r in (resp.data or []):
+            for r in (resp or []):
                 out.append({
                     'user_id': r['user_id'],
                     'username': r['username'],
@@ -406,13 +383,14 @@ class SupabaseDataLoader:
         while True:
             start = page * page_size
             resp = (
-                self.supabase.table('top_artists')
-                .select('artist, stream_count')
-                .eq('user_id', user_id)
-                .range(start, start + page_size - 1)
-                .execute()
+                self.db.select(
+                    'top_artists',
+                    'artist, stream_count',
+                    eq={'user_id': user_id},
+                    range_=(start, start + page_size - 1),
+                )
             )
-            rows = resp.data or []
+            rows = resp or []
             for r in rows:
                 if r['artist']:
                     vec[r['artist']] = r['stream_count']
@@ -509,12 +487,12 @@ class SupabaseDataLoader:
     def get_mood_summary(self, window_days: int = 30, user_id: Optional[str] = None) -> Dict[str, Any]:
         """Average valence / energy / danceability over the last `window_days`."""
         try:
-            resp = self.supabase.rpc(
+            resp = self.db.rpc(
                 'get_mood_summary',
                 self._uid({'p_window_days': window_days}, user_id),
-            ).execute()
-            if resp.data and len(resp.data) > 0:
-                row = resp.data[0]
+            )
+            if resp and len(resp) > 0:
+                row = resp[0]
                 return {
                     'window_days': row['window_days'],
                     'avg_valence': float(row['avg_valence']) if row['avg_valence'] is not None else None,
@@ -535,9 +513,9 @@ class SupabaseDataLoader:
     def get_mood_contexts(self, user_id: Optional[str] = None) -> Dict[str, Any]:
         """Mood metrics for weekday vs weekend and per platform."""
         try:
-            resp = self.supabase.rpc('get_mood_contexts', self._uid({}, user_id)).execute()
-            if resp.data:
-                return resp.data  # RPC returns the full jsonb object
+            resp = self.db.rpc('get_mood_contexts', self._uid({}, user_id))
+            if resp:
+                return resp  # RPC returns the full jsonb object
         except Exception as e:
             print(f"Error getting mood contexts: {e}")
         return {
@@ -551,8 +529,8 @@ class SupabaseDataLoader:
     def get_mood_monthly(self, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """Monthly average mood metrics over time."""
         try:
-            resp = self.supabase.rpc('get_mood_monthly', self._uid({}, user_id)).execute()
-            if resp.data:
+            resp = self.db.rpc('get_mood_monthly', self._uid({}, user_id))
+            if resp:
                 return [
                     {
                         'month': row['month'],
@@ -561,7 +539,7 @@ class SupabaseDataLoader:
                         'avg_danceability': float(row['avg_danceability']) if row['avg_danceability'] is not None else None,
                         'sample_size': row['sample_size'],
                     }
-                    for row in resp.data
+                    for row in resp
                 ]
         except Exception as e:
             print(f"Error getting mood monthly: {e}")
@@ -570,11 +548,11 @@ class SupabaseDataLoader:
     def get_discovery_timeline(self, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """New-artist discoveries per month (first listen = MIN(ts))."""
         try:
-            resp = self.supabase.rpc('get_discovery_timeline', self._uid({}, user_id)).execute()
-            if resp.data:
+            resp = self.db.rpc('get_discovery_timeline', self._uid({}, user_id))
+            if resp:
                 return [
                     {'month': row['month'], 'new_artists_count': row['new_artists_count']}
-                    for row in resp.data
+                    for row in resp
                 ]
         except Exception as e:
             print(f"Error getting discovery timeline: {e}")
@@ -583,10 +561,10 @@ class SupabaseDataLoader:
     def get_artist_loyalty(self, limit: int = 20, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """Return probability and half-life for the top `limit` artists."""
         try:
-            resp = self.supabase.rpc(
+            resp = self.db.rpc(
                 'get_artist_loyalty', self._uid({'p_limit': limit}, user_id)
-            ).execute()
-            if resp.data:
+            )
+            if resp:
                 return [
                     {
                         'artist': row['artist'],
@@ -594,7 +572,7 @@ class SupabaseDataLoader:
                         'half_life_days': float(row['half_life_days']),
                         'total_streams': row['total_streams'],
                     }
-                    for row in resp.data
+                    for row in resp
                 ]
         except Exception as e:
             print(f"Error getting artist loyalty: {e}")
@@ -603,10 +581,10 @@ class SupabaseDataLoader:
     def get_artist_obsessions(self, limit: int = 15, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """Weeks where one artist held >= 30% of listening."""
         try:
-            resp = self.supabase.rpc(
+            resp = self.db.rpc(
                 'get_artist_obsessions', self._uid({'p_limit': limit}, user_id)
-            ).execute()
-            if resp.data:
+            )
+            if resp:
                 return [
                     {
                         'artist': row['artist'],
@@ -615,7 +593,7 @@ class SupabaseDataLoader:
                         'period_share': float(row['period_share']),
                         'streams_in_period': row['streams_in_period'],
                     }
-                    for row in resp.data
+                    for row in resp
                 ]
         except Exception as e:
             print(f"Error getting artist obsessions: {e}")
@@ -624,9 +602,9 @@ class SupabaseDataLoader:
     def get_reflective_insights(self, user_id: Optional[str] = None) -> Dict[str, Any]:
         """Headline listening stats + 4 templated insight sentences."""
         try:
-            resp = self.supabase.rpc('get_reflective_insights', self._uid({}, user_id)).execute()
-            if resp.data:
-                data = resp.data
+            resp = self.db.rpc('get_reflective_insights', self._uid({}, user_id))
+            if resp:
+                data = resp
                 return {
                     'total_streams': data['total_streams'],
                     'longest_streak_days': data['longest_streak_days'],
@@ -651,11 +629,11 @@ class SupabaseDataLoader:
     def get_weekend_weekday_comparison(self, user_id: Optional[str] = None) -> Dict[str, Any]:
         """Streams / hours / avg-per-day split by weekday vs weekend."""
         try:
-            resp = self.supabase.rpc(
+            resp = self.db.rpc(
                 'get_weekend_weekday_comparison', self._uid({}, user_id)
-            ).execute()
-            if resp.data:
-                return resp.data
+            )
+            if resp:
+                return resp
         except Exception as e:
             print(f"Error getting weekend/weekday comparison: {e}")
         return {
@@ -666,10 +644,10 @@ class SupabaseDataLoader:
     def get_most_repeated_tracks(self, limit: int = 20, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """Tracks with the highest plays-per-unique-day score."""
         try:
-            resp = self.supabase.rpc(
+            resp = self.db.rpc(
                 'get_most_repeated_tracks', self._uid({'p_limit': limit}, user_id)
-            ).execute()
-            if resp.data:
+            )
+            if resp:
                 return [
                     {
                         'track': row['track'],
@@ -677,7 +655,7 @@ class SupabaseDataLoader:
                         'play_count': row['play_count'],
                         'repeat_score': float(row['repeat_score']),
                     }
-                    for row in resp.data
+                    for row in resp
                 ]
         except Exception as e:
             print(f"Error getting most repeated tracks: {e}")
@@ -686,8 +664,8 @@ class SupabaseDataLoader:
     def get_monthly_diversity(self, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """Unique artists / total streams / diversity ratio per month."""
         try:
-            resp = self.supabase.rpc('get_monthly_diversity', self._uid({}, user_id)).execute()
-            if resp.data:
+            resp = self.db.rpc('get_monthly_diversity', self._uid({}, user_id))
+            if resp:
                 return [
                     {
                         'month': row['month'],
@@ -695,7 +673,7 @@ class SupabaseDataLoader:
                         'total_streams': row['total_streams'],
                         'diversity_ratio': float(row['diversity_ratio']),
                     }
-                    for row in resp.data
+                    for row in resp
                 ]
         except Exception as e:
             print(f"Error getting monthly diversity: {e}")
@@ -704,11 +682,11 @@ class SupabaseDataLoader:
     def get_listening_heatmap(self, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """168-cell day-hour heatmap (Mon..Sun outer, 0..23 inner)."""
         try:
-            resp = self.supabase.rpc('get_listening_heatmap', self._uid({}, user_id)).execute()
-            if resp.data:
+            resp = self.db.rpc('get_listening_heatmap', self._uid({}, user_id))
+            if resp:
                 return [
                     {'day': row['day'], 'hour': row['hour'], 'stream_count': row['stream_count']}
-                    for row in resp.data
+                    for row in resp
                 ]
         except Exception as e:
             print(f"Error getting listening heatmap: {e}")
@@ -717,8 +695,8 @@ class SupabaseDataLoader:
     def get_milestones_list(self, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """Streaks / top days / first-discoveries / diverse days, newest first."""
         try:
-            resp = self.supabase.rpc('get_milestones_list', self._uid({}, user_id)).execute()
-            if resp.data:
+            resp = self.db.rpc('get_milestones_list', self._uid({}, user_id))
+            if resp:
                 return [
                     {
                         'date': row['date'],
@@ -729,7 +707,7 @@ class SupabaseDataLoader:
                         'value': row['value'],
                         'badge_color': row['badge_color'],
                     }
-                    for row in resp.data
+                    for row in resp
                 ]
         except Exception as e:
             print(f"Error getting milestones list: {e}")
@@ -743,11 +721,11 @@ class SupabaseDataLoader:
             return {'error': 'Invalid date format. Use YYYY-MM-DD', 'date': date_str}
 
         try:
-            resp = self.supabase.rpc(
+            resp = self.db.rpc(
                 'get_flashback', self._uid({'p_date': date_str}, user_id)
-            ).execute()
-            if resp.data:
-                return resp.data
+            )
+            if resp:
+                return resp
         except Exception as e:
             print(f"Error getting flashback: {e}")
         return {
@@ -803,5 +781,38 @@ class SupabaseDataLoader:
         return self._delegate(user_id).get_simulation_csv_rows(seed=seed, n=n, hour=hour)
 
 
-# Global instance
-supabase_data = SupabaseDataLoader()
+# ----------------------------------------------------------------------
+# Global instance (lazy)
+# ----------------------------------------------------------------------
+# Constructed on first attribute access rather than at import time. Every route
+# module does `from app.services.supabase_data_loader import supabase_data` at
+# module scope, so an eager instance made `import app.main` fail outright when
+# credentials were absent -- the API could not boot without a Supabase account.
+# Deferring construction lets the app import cleanly and, with DB_BACKEND=local,
+# run against a local Postgres with no Supabase credentials at all.
+
+_instance: Optional[SupabaseDataLoader] = None
+
+
+def get_loader() -> SupabaseDataLoader:
+    """The process-wide loader, constructed on first use."""
+    global _instance
+    if _instance is None:
+        _instance = SupabaseDataLoader()
+    return _instance
+
+
+def reset_loader() -> None:
+    """Drop the cached loader (used by tests and the parity script)."""
+    global _instance
+    _instance = None
+
+
+class _LazyLoader:
+    """Proxies attribute access to the real loader, building it on demand."""
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(get_loader(), name)
+
+
+supabase_data = _LazyLoader()

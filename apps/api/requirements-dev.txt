@@ -1,8 +1,9 @@
 # Dev / test dependencies. Install with:
 #   pip install -r apps/api/requirements-dev.txt
 #
-# dagster (Phase 12) and pandera (Phase 13) are listed now so the dev env is a
-# single install for the rest of the roadmap. Versions resolved 2026-09-01.
+# dagster + dagster-webserver moved to requirements.txt in Phase 12 Commit 3
+# (the compose `dagster` service makes them runtime deps). pandera moved there
+# in Commit 2 (app/ingest/validate.py imports it). Versions resolved 2026-09-01.
 
 -r requirements.txt
 
@@ -12,7 +13,15 @@ httpx==0.28.1            # FastAPI TestClient / async client
 
 ruff==0.16.5             # lint + format
 
-pandera==0.33.0          # in-pipeline dataframe schemas (Phase 13)
+requests==2.34.2         # scripts/{capture,compare}_api_baseline.py, backfill_artist_tags.py (Phase 11)
 
-dagster==1.13.20         # orchestrator (Phase 12+)
-dagster-webserver==1.13.20
+# Phase 13.5 -- the EDA notebook set (apps/api/notebooks/). pandas, numpy and
+# scikit-learn are already runtime deps in requirements.txt, so only plotting and
+# the Jupyter toolchain are new here. matplotlib/seaborn deliberately match the
+# root requirements.txt pins so the two environments cannot disagree.
+jupyter==1.1.1           # notebook UI
+ipykernel==7.3.0         # kernel the notebooks run on
+matplotlib==3.10.7       # charts (same pin as root requirements.txt)
+seaborn==0.13.2          # charts (same pin as root requirements.txt)
+nbstripout==0.9.1        # strip outputs before commit -- outputs embed real listening history
+nbconvert==7.17.1        # headless execution: the Verify step + Phase 16 CI

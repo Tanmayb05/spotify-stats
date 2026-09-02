@@ -18,14 +18,9 @@ import {
 } from '@mui/material';
 import {
   Menu as MenuIcon,
-  Dashboard,
-  Mood,
-  Explore,
-  EmojiEvents,
-  Workspaces,
+  Insights as InsightsIcon,
   Recommend,
-  Science,
-  Groups,
+  HealthAndSafety,
   Brightness4,
   Brightness7,
 } from '@mui/icons-material';
@@ -35,14 +30,9 @@ import UserSwitcher from '../components/UserSwitcher';
 const drawerWidth = 240;
 
 const menuItems = [
-  { label: 'Overview', path: '/', icon: <Dashboard /> },
-  { label: 'Listening Patterns', path: '/listening-patterns', icon: <Mood /> },
-  { label: 'Discovery', path: '/discovery', icon: <Explore /> },
-  { label: 'Milestones', path: '/milestones', icon: <EmojiEvents /> },
-  { label: 'Sessions', path: '/sessions', icon: <Workspaces /> },
-  { label: 'Comparison', path: '/comparison', icon: <Groups /> },
+  { label: 'Insights', path: '/', icon: <InsightsIcon /> },
   { label: 'Recommendations ⚗️', path: '/recommendations', icon: <Recommend /> },
-  { label: 'Simulator ⚗️', path: '/simulator', icon: <Science /> },
+  { label: 'Data Health', path: '/data-health', icon: <HealthAndSafety /> },
 ];
 
 export default function AppLayout() {

@@ -68,7 +68,36 @@ The application is deployed and accessible at:
 - **Netlify Dashboard**: [https://app.netlify.com/projects/tanmays-spotify-stats/overview](https://app.netlify.com/projects/tanmays-spotify-stats/overview)
 - **Render Dashboard**: [https://dashboard.render.com/web/srv-d3lia0umcj7s739v028g/events](https://dashboard.render.com/web/srv-d3lia0umcj7s739v028g/events)
 
-### Quick Start (macOS)
+### Quick Start — Docker (no accounts needed)
+
+Brings up Postgres, the API, the web app and Dagster, runs the migrations, and
+seeds a small synthetic fixture. No Spotify or Supabase credentials required.
+
+```bash
+docker compose up --build
+open http://localhost:3010
+```
+
+| Service | URL | Notes |
+|---|---|---|
+| web | http://localhost:3010 | dashboard |
+| api | http://localhost:3011 | `/health`, `/docs` |
+| dagster | http://localhost:3000 | ingestion asset lineage + `nightly_ingest_job` |
+| db | localhost:5433 | Postgres (5432 inside the compose network) |
+
+Run the ingestion pipeline by hand:
+
+```bash
+docker compose exec dagster dagster job execute -j nightly_ingest_job -m dagster_project.definitions
+```
+
+See [documentation/LOCAL_DEV.md](documentation/LOCAL_DEV.md) for loading a real
+Spotify export, the `DB_BACKEND` switch, and the migration runner;
+[documentation/INGESTION.md](documentation/INGESTION.md) for the pipeline model.
+
+### Quick Start (macOS, against Supabase)
+
+Requires `spotify-insights.env` with Supabase credentials.
 
 ```bash
 # Start both frontend and backend servers in Terminal tabs
@@ -92,11 +121,19 @@ The start script will:
 
 ### Features
 
-- **Overview Dashboard**: Real-time statistics with 70,817 streams analyzed
-- **Interactive Charts**: Monthly trends, top artists/tracks, platform distribution
+The web app has **3 pages** (as of Phase 13):
+
+- **Insights** (`/`) — overview stat cards, monthly trends, top artists/tracks,
+  platform distribution, temporal patterns, year-over-year, discovery timeline,
+  sessions, listening behavior, artist loyalty, reflective insights.
+- **Recommendations** (`/recommendations`) — content-based track recommendations.
+- **Data Health** (`/data-health`) — pipeline status, the data-quality check
+  results (`/api/health/data`), per-user freshness, ingestion-funnel and
+  row-count trend charts.
+
 - **Responsive Design**: Works on desktop, tablet, and mobile
-- **Dark Theme**: Spotify-inspired design with #1DB954 green
-- **Fast Performance**: Parallel API requests and optimized data loading
+- **Dark Theme**: brand palette `#1c0b19 / #140d4f / #4ea699 / #2dd881 / #6fedb7`
+- **Fast Performance**: staged parallel API requests, optimized data loading
 
 ### Manual Setup
 
